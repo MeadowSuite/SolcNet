@@ -3,6 +3,7 @@ using SolcNet.InputData;
 using SolcNet.NativeLib;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using static SolcNet.NativeLib.PInvokeLib;
@@ -23,23 +24,48 @@ namespace SolcNet
             _native = NativeLibFactory.Create();
         }
 
-        [Obsolete("Use CompileStandard")]
-        public string CompileJson(string input, bool optimize = false)
+        public string CompileJson(string jsonInput, string solSourceRoot = null)
         {
-            input = EncodingUtils.RemoveBom(input);
-            return _native.compileJSON(input, optimize);
-        }
-
-        public string CompileStandard(string jsonInput, bool optimize = false)
-        {
-            var res = _native.compileStandard(jsonInput, optimize, IntPtr.Zero);
+            //solSourceRoot = solSourceRoot ?? Directory.GetCurrentDirectory();
+            var res = _native.compileStandard(jsonInput, (string path, ref string contents, ref string err) => 
+            {
+                try
+                {
+                    // if given path is relative and a root is provided, combine them
+                    if (!Uri.TryCreate(path, UriKind.Absolute, out _) && solSourceRoot != null)
+                    {
+                        path = Path.Combine(solSourceRoot, path);
+                    }
+                    if (File.Exists(path))
+                    {
+                        contents = File.ReadAllText(path);
+                    }
+                    else
+                    {
+                        err = "Source file not found: " + path;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    err = ex.ToString();
+                }
+            });
             return res;
         }
 
-        public string CompileStandard(InputDescription input, bool optimize = false)
+        public string Compile(InputDescription input, string solSourceRoot = null)
         {
             var jsonStr = input.ToJsonString();
-            return CompileStandard(jsonStr);
+            return CompileJson(jsonStr, solSourceRoot);
+        }
+
+        public string Compile(string contractFilePath)
+        {
+            var fileName = Path.GetFileName(contractFilePath);
+            var sourceRoot = fileName == contractFilePath ? null : Path.GetDirectoryName(contractFilePath);
+            var inputDesc = new InputDescription();
+            inputDesc.Sources.Add(fileName, new Source(fileName));
+            return Compile(inputDesc, sourceRoot);
         }
 
     }

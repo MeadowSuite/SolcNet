@@ -40,7 +40,6 @@ namespace SolcNet.NativeLib
             {
                 return result;
             }
-
             if (!PlatformPaths.TryGetValue(CurrentPlatformInfo, out (string Prefix, string Extension) platform))
             {
                 result = FromError(string.Join("\n", $"Unsupported platform: {CurrentPlatformDesc.Value}", "Must be one of:", SupportedPlatformDescriptions()));
@@ -48,7 +47,17 @@ namespace SolcNet.NativeLib
             else
             {
                 string libLocation = Path.GetDirectoryName(typeof(ISolcNativeLib).Assembly.Location);
-                string filePath = Path.Combine(libLocation, "native", platform.Prefix, library) + platform.Extension;
+
+                #if DEBUGx
+                if (Environment.Is64BitProcess && ProcessArchitecture == X86)
+                {
+                    platform = ("win-x64", ".dll");
+                }
+                string filePath = Path.Combine(libLocation, "lib", platform.Prefix, "Debug", library) + platform.Extension;
+                #else
+                string filePath = Path.Combine(libLocation, "lib", platform.Prefix, library) + platform.Extension;
+                #endif
+
                 if (!File.Exists(filePath))
                 {
                     result = FromError($"Platform can be supported but '{library}' lib not found for {CurrentPlatformDesc.Value} at {filePath}");

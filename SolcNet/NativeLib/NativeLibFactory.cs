@@ -8,13 +8,16 @@ namespace SolcNet.NativeLib
 {
     public class NativeLibFactory
     {
+        public const string LIB_FILE = "solc";
+
         public static ISolcNativeLib Create()
         {
             ImplementationOptions config = default; //ImplementationOptions.UseIndirectCalls | ImplementationOptions.UseLazyBinding | ImplementationOptions.GenerateDisposalChecks;
             var resolver = new LibFilePathResolver();
             try
             {
-                var library = new NativeLibraryBuilder(config, resolver).ActivateInterface<ISolcNativeLib>("solc");
+                var builder = new NativeLibraryBuilder(config, resolver);
+                var library = builder.ActivateInterface<ISolcNativeLib>(LIB_FILE);
                 return library;
             }
             catch (FileNotFoundException)

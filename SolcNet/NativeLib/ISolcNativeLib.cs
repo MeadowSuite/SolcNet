@@ -5,14 +5,38 @@ using System.Text;
 
 namespace SolcNet.NativeLib
 {
+    public delegate void ReadFileCallback(
+        [MarshalAs(UnmanagedType.LPStr)] string path,
+        [MarshalAs(UnmanagedType.LPStr)] ref string contents,
+        [MarshalAs(UnmanagedType.LPStr)] ref string error);
 
     public interface ISolcNativeLib
     {
+        [return: MarshalAs(UnmanagedType.LPStr)]
         string license();
+
+        [return: MarshalAs(UnmanagedType.LPStr)]
         string version();
-        string compileJSON(string input, bool optimize);
-        string compileJSONMulti(string input, bool optimze);
-        string compileJSONCallback(string input, bool optimize, IntPtr readCallback);
-        string compileStandard(string input, bool optimize, IntPtr readCallback);
+
+        [return: MarshalAs(UnmanagedType.LPStr)]
+        string compileJSON(
+            [MarshalAs(UnmanagedType.LPStr)] string input, 
+            bool optimize);
+
+        [return: MarshalAs(UnmanagedType.LPStr)]
+        string compileJSONMulti(
+            [MarshalAs(UnmanagedType.LPStr)] string input, 
+            bool optimze);
+
+        [return: MarshalAs(UnmanagedType.LPStr)]
+        string compileJSONCallback(
+            [MarshalAs(UnmanagedType.LPStr)] string input, 
+            bool optimize,
+            ReadFileCallback readCallback);
+
+        [return: MarshalAs(UnmanagedType.LPStr)]
+        string compileStandard(
+            [MarshalAs(UnmanagedType.LPStr)] string input, 
+            ReadFileCallback readCallback);
     }
 }
