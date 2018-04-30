@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using SolcNet.DataDescription.Parsing;
 
 namespace SolcNet.DataDescription.Input
 {
@@ -54,13 +55,15 @@ namespace SolcNet.DataDescription.Input
     /// Version of the EVM to compile for. Affects type checking and code generation.
     /// </summary>
     [JsonConverter(typeof(NamedStringTokenConverter<EvmVersion>))]
-    public class EvmVersion : INamedStringToken
+    public class EvmVersion : NamedStringTokenConverterv
     {
-        public string Value { get; set; }
-
         public static implicit operator EvmVersion(string value) => new EvmVersion { Value = value };
         public static implicit operator string(EvmVersion o) => o.Value;
-        public override string ToString() => Value;
+
+        public static bool operator ==(EvmVersion a, EvmVersion b) => a?.Value == b?.Value;
+        public static bool operator !=(EvmVersion a, EvmVersion b) => !(a == b);
+        public override int GetHashCode() => Value.GetHashCode();
+        public override bool Equals(object obj) => obj is EvmVersion a ? a == this : false;
 
         public static readonly EvmVersion Homestead = "homestead";
         public static readonly EvmVersion TangerineWhistle = "tangerineWhistle";

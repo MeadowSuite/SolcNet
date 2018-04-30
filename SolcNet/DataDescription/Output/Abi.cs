@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SolcNet.DataDescription.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,7 +13,7 @@ namespace SolcNet.DataDescription.Output
         /// "function", "constructor", or "fallback" (the unnamed "default" function);
         /// </summary>
         [JsonProperty("type")]
-        public string Type { get; set; }
+        public AbiType Type { get; set; }
 
         /// <summary>
         /// The name of the function
@@ -21,10 +22,10 @@ namespace SolcNet.DataDescription.Output
         public string Name { get; set; }
 
         [JsonProperty("inputs")]
-        public IList<Input> Inputs { get; set; }
+        public Input[] Inputs { get; set; }
 
         [JsonProperty("outputs")]
-        public IList<Output> Outputs { get; set; }
+        public Output[] Outputs { get; set; }
 
         /// <summary>
         /// true if function accepts ether, defaults to false
@@ -36,7 +37,7 @@ namespace SolcNet.DataDescription.Output
         /// a string with one of the following values: pure (specified to not read blockchain state), view (specified to not modify the blockchain state), nonpayable and payable (same as payable above).
         /// </summary>
         [JsonProperty("stateMutability")]
-        public string StateMutability { get; set; }
+        public StateMutability StateMutability { get; set; }
 
         /// <summary>
         /// true if function is either pure or view
@@ -49,6 +50,39 @@ namespace SolcNet.DataDescription.Output
         /// </summary>
         [JsonProperty("anonymous")]
         public bool? Anonymous { get; set; }
+    }
+
+    [JsonConverter(typeof(NamedStringTokenConverter<AbiType>))]
+    public class AbiType : NamedStringTokenConverterv
+    {
+        public static implicit operator AbiType(string value) => new AbiType { Value = value };
+        public static implicit operator string(AbiType o) => o.Value;
+
+        public static bool operator ==(AbiType a, AbiType b) => a?.Value == b?.Value;
+        public static bool operator !=(AbiType a, AbiType b) => !(a == b);
+        public override int GetHashCode() => Value.GetHashCode();
+        public override bool Equals(object obj) => obj is AbiType a ? a == this : false;
+
+        public static readonly AbiType Function = "function";
+        public static readonly AbiType Constructor = "constructor";
+        public static readonly AbiType Fallback = "fallback";
+    }
+
+    [JsonConverter(typeof(NamedStringTokenConverter<StateMutability>))]
+    public class StateMutability : NamedStringTokenConverterv
+    {
+        public static implicit operator StateMutability(string value) => new StateMutability { Value = value };
+        public static implicit operator string(StateMutability o) => o.Value;
+
+        public static bool operator ==(StateMutability a, StateMutability b) => a?.Value == b?.Value;
+        public static bool operator !=(StateMutability a, StateMutability b) => !(a == b);
+        public override int GetHashCode() => Value.GetHashCode();
+        public override bool Equals(object obj) => obj is StateMutability a ? a == this : false;
+
+        public static readonly StateMutability Pure = "pure";
+        public static readonly StateMutability View = "view";
+        public static readonly StateMutability NonPayable = "nonpayable";
+        public static readonly StateMutability Payable = "payable";
     }
 
     public class Input
@@ -69,7 +103,7 @@ namespace SolcNet.DataDescription.Output
         /// used for tuple types
         /// </summary>
         [JsonProperty("components")]
-        public List<Component> Components { get; set; }
+        public Component[] Components { get; set; }
 
         /// <summary>
         /// if the field is part of the log’s topics, false if it one of the log’s data segment.
@@ -90,7 +124,7 @@ namespace SolcNet.DataDescription.Output
         public string Type { get; set; }
 
         [JsonProperty("components")]
-        public List<Component> Components { get; set; }
+        public Component[] Components { get; set; }
     }
 
     public class Output
@@ -102,7 +136,7 @@ namespace SolcNet.DataDescription.Output
         public string Type { get; set; }
 
         [JsonProperty("components")]
-        public List<Component> Components { get; set; }
+        public Component[] Components { get; set; }
     }
 
 

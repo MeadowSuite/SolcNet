@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.Runtime.Serialization;
 
 namespace SolcNet.DataDescription.Output
 {
@@ -27,7 +29,7 @@ namespace SolcNet.DataDescription.Output
         /// Mandatory ("error" or "warning")
         /// </summary>
         [JsonProperty("severity", Required = Required.Always)]
-        public string Severity { get; set; }
+        public Severity Severity { get; set; }
 
         [JsonProperty("message", Required = Required.Always)]
         public string Message { get; set; }
@@ -38,6 +40,15 @@ namespace SolcNet.DataDescription.Output
         /// </summary>
         [JsonProperty("formattedMessage")]
         public string FormattedMessage { get; set; }
+    }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum Severity
+    {
+        [EnumMember(Value = "error")]
+        Error,
+        [EnumMember(Value = "warning")]
+        Warning
     }
 
     public class SourceLocation

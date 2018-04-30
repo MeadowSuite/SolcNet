@@ -2,17 +2,20 @@
 using Newtonsoft.Json;
 using System.Reflection;
 using System.Linq;
+using SolcNet.DataDescription.Parsing;
 
 namespace SolcNet.DataDescription.Input
 {
     [JsonConverter(typeof(NamedStringTokenConverter<OutputType>))]
-    public class OutputType : INamedStringToken
+    public class OutputType : NamedStringTokenConverterv
     {
-        public string Value { get; set; }
-
         public static implicit operator OutputType(string value) => new OutputType { Value = value };
         public static implicit operator string(OutputType o) => o.Value;
-        public override string ToString() => Value;
+
+        public static bool operator ==(OutputType a, OutputType b) => a?.Value == b?.Value;
+        public static bool operator !=(OutputType a, OutputType b) => !(a == b);
+        public override int GetHashCode() => Value.GetHashCode();
+        public override bool Equals(object obj) => obj is OutputType a ? a == this : false;
 
         public static OutputType[] All => _all.Value;
         static Lazy<OutputType[]> _all = new Lazy<OutputType[]>(() =>

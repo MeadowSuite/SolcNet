@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace SolcNet.DataDescription.Output
@@ -42,25 +43,19 @@ namespace SolcNet.DataDescription.Output
     public class LegacyAssembly
     {
         [JsonProperty(".code")]
-        public IList<Code> Code { get; set; }
+        public Code[] Code { get; set; }
 
         [JsonProperty(".data")]
-        public Data Data { get; set; }
+        public Dictionary<string, Data> Data { get; set; }
     }
 
     public class Data
-    {
-        [JsonProperty("0")]
-        public Zero Zero { get; set; }
-    }
-
-    public class Zero
     {
         [JsonProperty(".auxdata")]
         public string Auxdata { get; set; }
 
         [JsonProperty(".code")]
-        public IList<Code> Code { get; set; }
+        public Code[] Code { get; set; }
     }
 
     public class Code
@@ -76,45 +71,6 @@ namespace SolcNet.DataDescription.Output
 
         [JsonProperty("value")]
         public string Value { get; set; }
-    }
-
-    public class Bytecode
-    {
-        /// <summary>
-        /// The bytecode as a hex string.
-        /// </summary>
-        [JsonProperty("object")]
-        public string Object { get; set; }
-
-        /// <summary>
-        /// Opcodes list (string)
-        /// </summary>
-        [JsonProperty("opcodes")]
-        public string Opcodes { get; set; }
-
-        /// <summary>
-        /// The source mapping as a string. See the source mapping definition.
-        /// </summary>
-        [JsonProperty("sourceMap")]
-        public string SourceMap { get; set; }
-
-        /// <summary>
-        /// If given, this is an unlinked object.
-        /// </summary>
-        [JsonProperty("linkReferences")]
-        public Dictionary<string /*sol file*/, Dictionary<string/*contract name*/, List<LinkReference>>> LinkReferences { get; set; }
-    }
-
-    public class LinkReference
-    {
-        /// <summary>
-        /// Byte offsets into the bytecode. Linking replaces the 20 bytes located there.
-        /// </summary>
-        [JsonProperty("start", Required = Required.Always)]
-        public uint Start { get; set; }
-
-        [JsonProperty("length", Required = Required.Always)]
-        public uint Length { get; set; }
     }
 
     public class GasEstimates

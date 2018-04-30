@@ -2,6 +2,7 @@
 using System.Text;
 using System.Globalization;
 using Newtonsoft.Json;
+using SolcNet.DataDescription.Parsing;
 
 namespace SolcNet.DataDescription.Input
 {
@@ -42,13 +43,15 @@ namespace SolcNet.DataDescription.Input
     /// Source code language
     /// </summary>
     [JsonConverter(typeof(NamedStringTokenConverter<Language>))]
-    public class Language : INamedStringToken
+    public class Language : NamedStringTokenConverterv
     {
-        public string Value { get; set; }
-
         public static implicit operator Language(string value) => new Language { Value = value };
         public static implicit operator string(Language o) => o.Value;
-        public override string ToString() => Value;
+
+        public static bool operator ==(Language a, Language b) => a?.Value == b?.Value;
+        public static bool operator !=(Language a, Language b) => !(a == b);
+        public override int GetHashCode() => Value.GetHashCode();
+        public override bool Equals(object obj) => obj is Language a ? a == this : false;
 
         public static readonly Language Solidity = "Solidity";
         public static readonly Language Serpent = "serpent";
