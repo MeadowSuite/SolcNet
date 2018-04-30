@@ -55,7 +55,7 @@ namespace SolcNet.DataDescription.Input
     /// Version of the EVM to compile for. Affects type checking and code generation.
     /// </summary>
     [JsonConverter(typeof(NamedStringTokenConverter<EvmVersion>))]
-    public class EvmVersion : NamedStringTokenConverterv
+    public class EvmVersion : NamedStringToken
     {
         public static implicit operator EvmVersion(string value) => new EvmVersion { Value = value };
         public static implicit operator string(EvmVersion o) => o.Value;

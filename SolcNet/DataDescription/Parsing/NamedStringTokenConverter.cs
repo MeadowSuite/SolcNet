@@ -3,20 +3,20 @@ using System;
 
 namespace SolcNet.DataDescription.Parsing
 {
-    public class NamedStringTokenConverterv : IEquatable<NamedStringTokenConverterv>
+    public class NamedStringToken : IEquatable<NamedStringToken>
     {
         public virtual string Value { get; set; }
 
-        public bool Equals(NamedStringTokenConverterv other) => other?.Value == Value;
-        public override bool Equals(object obj) => obj is NamedStringTokenConverterv other ? other?.Value == Value : false;
+        public bool Equals(NamedStringToken other) => other?.Value == Value;
+        public override bool Equals(object obj) => obj is NamedStringToken other ? other?.Value == Value : false;
         public override int GetHashCode() => Value.GetHashCode();
-        public static bool operator ==(NamedStringTokenConverterv a, NamedStringTokenConverterv b) => a?.Value == b?.Value;
-        public static bool operator !=(NamedStringTokenConverterv a, NamedStringTokenConverterv b) => !(a == b);
+        public static bool operator ==(NamedStringToken a, NamedStringToken b) => a?.Value == b?.Value;
+        public static bool operator !=(NamedStringToken a, NamedStringToken b) => !(a == b);
 
         public override string ToString() => Value;
     }
 
-    class NamedStringTokenConverter<TToken> : JsonConverter<TToken> where TToken : NamedStringTokenConverterv, new()
+    class NamedStringTokenConverter<TToken> : JsonConverter<TToken> where TToken : NamedStringToken, new()
     {
         public override TToken ReadJson(JsonReader reader, Type objectType, TToken existingValue, bool hasExistingValue, JsonSerializer serializer)
         {

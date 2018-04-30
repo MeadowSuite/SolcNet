@@ -43,7 +43,7 @@ namespace SolcNet.DataDescription.Input
     /// Source code language
     /// </summary>
     [JsonConverter(typeof(NamedStringTokenConverter<Language>))]
-    public class Language : NamedStringTokenConverterv
+    public class Language : NamedStringToken
     {
         public static implicit operator Language(string value) => new Language { Value = value };
         public static implicit operator string(Language o) => o.Value;

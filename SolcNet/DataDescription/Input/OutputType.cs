@@ -7,7 +7,7 @@ using SolcNet.DataDescription.Parsing;
 namespace SolcNet.DataDescription.Input
 {
     [JsonConverter(typeof(NamedStringTokenConverter<OutputType>))]
-    public class OutputType : NamedStringTokenConverterv
+    public class OutputType : NamedStringToken
     {
         public static implicit operator OutputType(string value) => new OutputType { Value = value };
         public static implicit operator string(OutputType o) => o.Value;

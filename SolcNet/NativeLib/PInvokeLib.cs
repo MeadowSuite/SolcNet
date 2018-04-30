@@ -5,6 +5,7 @@ using System.Text;
 
 namespace SolcNet.NativeLib
 {
+    [Obsolete]
     public static class PInvokeLib
     {
         [DllImport("Kernel32.dll")]

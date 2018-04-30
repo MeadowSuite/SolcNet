@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SolcNet.CompileErrors;
 using SolcNet.DataDescription.Input;
 using SolcNet.DataDescription.Output;
 using SolcNet.NativeLib;
@@ -29,21 +30,36 @@ namespace SolcNet
             _solSourceRoot = solSourceRoot;
         }
 
-        public OutputDescription CompileJson(string jsonInput)
+        private OutputDescription CompileInputDescriptionJson(string jsonInput, 
+            CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError)
         {
             var res = _native.compileStandard(jsonInput, ReadSolSourceFileManaged);
             var output = OutputDescription.FromJsonString(res);
+            var compilerException = CompilerException.GetCompilerExceptions(output.Errors, errorHandling);
+            if (compilerException != null)
+            {
+                throw compilerException;
+            }
             return output;
         }
 
-        public OutputDescription Compile(InputDescription input)
+        public OutputDescription Compile(InputDescription input, 
+            CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError)
         {
             var jsonStr = input.ToJsonString();
-            return CompileJson(jsonStr);
+            return CompileInputDescriptionJson(jsonStr, errorHandling);
         }
 
-        public OutputDescription Compile(string contractFilePath, params OutputType[] outputSelection)
+        /// <param name="contractFilePath"></param>
+        /// <param name="outputSelection">Defaults to all output types if not specified</param>
+        /// <param name="errorHandling"></param>
+        /// <returns></returns>
+        public OutputDescription Compile(string contractFilePath, 
+            OutputType[] outputSelection = null, 
+            CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError)
         {
+            outputSelection = outputSelection ?? OutputType.All;
+
             var fileName = Path.GetFileName(contractFilePath);
             var inputDesc = new InputDescription();
             inputDesc.Settings.OutputSelection["*"] = new Dictionary<string, List<OutputType>>
@@ -52,7 +68,7 @@ namespace SolcNet
             };
             var source = new Source { Urls = new List<string> { contractFilePath } };
             inputDesc.Sources.Add(fileName, source);
-            return Compile(inputDesc);
+            return Compile(inputDesc, errorHandling);
         }
 
         void ReadSolSourceFileManaged(string path, ref string contents, ref string error)

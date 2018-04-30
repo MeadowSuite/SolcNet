@@ -53,7 +53,7 @@ namespace SolcNet.DataDescription.Output
     }
 
     [JsonConverter(typeof(NamedStringTokenConverter<AbiType>))]
-    public class AbiType : NamedStringTokenConverterv
+    public class AbiType : NamedStringToken
     {
         public static implicit operator AbiType(string value) => new AbiType { Value = value };
         public static implicit operator string(AbiType o) => o.Value;
@@ -69,7 +69,7 @@ namespace SolcNet.DataDescription.Output
     }
 
     [JsonConverter(typeof(NamedStringTokenConverter<StateMutability>))]
-    public class StateMutability : NamedStringTokenConverterv
+    public class StateMutability : NamedStringToken
     {
         public static implicit operator StateMutability(string value) => new StateMutability { Value = value };
         public static implicit operator string(StateMutability o) => o.Value;

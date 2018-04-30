@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SolcNet;
+using SolcNet.CompileErrors;
 using SolcNet.DataDescription.Input;
 using SolcNet.NativeLib;
 using System;
@@ -28,7 +29,7 @@ namespace TestApp
                     OutputType.UserDoc
                 };
             outputSelection = OutputType.All;
-            var compiled = solcLib.Compile("token/ERC20/StandardToken.sol", outputSelection);
+            var compiled = solcLib.Compile("token/ERC20/StandardToken.sol", outputSelection, CompileErrorHandling.ThrowOnWarning);
 
         }
 
