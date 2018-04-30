@@ -12,7 +12,7 @@ namespace SolcNet.NativeLib
 
         public static ISolcNativeLib Create()
         {
-            ImplementationOptions config = default; //ImplementationOptions.UseIndirectCalls | ImplementationOptions.UseLazyBinding | ImplementationOptions.GenerateDisposalChecks;
+            var config = ImplementationOptions.UseLazyBinding;
             var resolver = new LibFilePathResolver();
             try
             {

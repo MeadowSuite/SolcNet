@@ -11,9 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolcNet.Tests", "SolcNet.Te
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libsolc", "..\solc-build\solidity\build\libsolc\libsolc.vcxproj", "{FE81337E-CDEF-3C1B-893C-F775E216BD17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp.NetFramework", "TestApp.NetFramework\TestApp.NetFramework.csproj", "{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolcNet.OpenZeppelinSource", "SolcNet.OpenZeppelinSource\SolcNet.OpenZeppelinSource.csproj", "{B31D5242-B59B-4A5E-B44E-8E35264428D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolcNet.OpenZeppelinSource", "SolcNet.OpenZeppelinSource\SolcNet.OpenZeppelinSource.csproj", "{B31D5242-B59B-4A5E-B44E-8E35264428D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -115,30 +113,6 @@ Global
 		{FE81337E-CDEF-3C1B-893C-F775E216BD17}.RelWithDebInfo|Any CPU.ActiveCfg = RelWithDebInfo|x64
 		{FE81337E-CDEF-3C1B-893C-F775E216BD17}.RelWithDebInfo|x64.ActiveCfg = RelWithDebInfo|x64
 		{FE81337E-CDEF-3C1B-893C-F775E216BD17}.RelWithDebInfo|x86.ActiveCfg = RelWithDebInfo|x64
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.Debug|x64.ActiveCfg = Debug|x64
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.Debug|x64.Build.0 = Debug|x64
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.Debug|x86.Build.0 = Debug|Any CPU
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.MinSizeRel|Any CPU.ActiveCfg = Release|Any CPU
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.MinSizeRel|Any CPU.Build.0 = Release|Any CPU
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.MinSizeRel|x64.ActiveCfg = Release|x64
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.MinSizeRel|x64.Build.0 = Release|x64
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.MinSizeRel|x86.ActiveCfg = Release|Any CPU
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.MinSizeRel|x86.Build.0 = Release|Any CPU
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.Release|x64.ActiveCfg = Release|x64
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.Release|x64.Build.0 = Release|x64
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.Release|x86.ActiveCfg = Release|Any CPU
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.Release|x86.Build.0 = Release|Any CPU
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.RelWithDebInfo|Any CPU.ActiveCfg = Release|Any CPU
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.RelWithDebInfo|x64.ActiveCfg = Release|x64
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.RelWithDebInfo|x64.Build.0 = Release|x64
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.RelWithDebInfo|x86.ActiveCfg = Release|Any CPU
-		{8CF645B5-23AB-4CDB-B17F-C5CC8B698624}.RelWithDebInfo|x86.Build.0 = Release|Any CPU
 		{B31D5242-B59B-4A5E-B44E-8E35264428D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B31D5242-B59B-4A5E-B44E-8E35264428D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B31D5242-B59B-4A5E-B44E-8E35264428D4}.Debug|x64.ActiveCfg = Debug|x64

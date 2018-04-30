@@ -1,12 +1,13 @@
 ﻿using Newtonsoft.Json;
-using SolcNet.InputData;
+using SolcNet.DataDescription.Input;
+using SolcNet.DataDescription.Output;
 using SolcNet.NativeLib;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using static SolcNet.NativeLib.PInvokeLib;
 
 namespace SolcNet
 {
@@ -19,53 +20,69 @@ namespace SolcNet
 
         public string License => _native.license();
 
-        public SolcLib()
+        string _solSourceRoot = null;
+        string _lastSourceDir = null;
+
+        public SolcLib(string solSourceRoot = null)
         {
             _native = NativeLibFactory.Create();
+            _solSourceRoot = solSourceRoot;
         }
 
-        public string CompileJson(string jsonInput, string solSourceRoot = null)
+        public OutputDescription CompileJson(string jsonInput)
         {
-            //solSourceRoot = solSourceRoot ?? Directory.GetCurrentDirectory();
-            var res = _native.compileStandard(jsonInput, (string path, ref string contents, ref string err) => 
-            {
-                try
-                {
-                    // if given path is relative and a root is provided, combine them
-                    if (!Uri.TryCreate(path, UriKind.Absolute, out _) && solSourceRoot != null)
-                    {
-                        path = Path.Combine(solSourceRoot, path);
-                    }
-                    if (File.Exists(path))
-                    {
-                        contents = File.ReadAllText(path);
-                    }
-                    else
-                    {
-                        err = "Source file not found: " + path;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    err = ex.ToString();
-                }
-            });
-            return res;
+            var res = _native.compileStandard(jsonInput, ReadSolSourceFileManaged);
+            var output = OutputDescription.FromJsonString(res);
+            return output;
         }
 
-        public string Compile(InputDescription input, string solSourceRoot = null)
+        public OutputDescription Compile(InputDescription input)
         {
             var jsonStr = input.ToJsonString();
-            return CompileJson(jsonStr, solSourceRoot);
+            return CompileJson(jsonStr);
         }
 
-        public string Compile(string contractFilePath)
+        public OutputDescription Compile(string contractFilePath, params OutputType[] outputSelection)
         {
             var fileName = Path.GetFileName(contractFilePath);
-            var sourceRoot = fileName == contractFilePath ? null : Path.GetDirectoryName(contractFilePath);
             var inputDesc = new InputDescription();
-            inputDesc.Sources.Add(fileName, new Source(fileName));
-            return Compile(inputDesc, sourceRoot);
+            inputDesc.Settings.OutputSelection["*"] = new Dictionary<string, List<OutputType>>
+            {
+                ["*"] = new List<OutputType>(outputSelection)
+            };
+            var source = new Source { Urls = new List<string> { contractFilePath } };
+            inputDesc.Sources.Add(fileName, source);
+            return Compile(inputDesc);
+        }
+
+        void ReadSolSourceFileManaged(string path, ref string contents, ref string error)
+        {
+            try
+            {
+                string sourceFilePath = path;
+                // if given path is relative and a root is provided, combine them
+                if (!Uri.TryCreate(path, UriKind.Absolute, out _) && _solSourceRoot != null)
+                {
+                    sourceFilePath = Path.Combine(_solSourceRoot, path);
+                }
+                if (!File.Exists(sourceFilePath) && _lastSourceDir != null)
+                {
+                    sourceFilePath = Path.Combine(_lastSourceDir, path);
+                }
+                if (File.Exists(sourceFilePath))
+                {
+                    _lastSourceDir = Path.GetDirectoryName(sourceFilePath);
+                    contents = File.ReadAllText(sourceFilePath);
+                }
+                else
+                {
+                    error = "Source file not found: " + path;
+                }
+            }
+            catch (Exception ex)
+            {
+                error = ex.ToString();
+            }
         }
 
     }

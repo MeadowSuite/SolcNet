@@ -48,7 +48,7 @@ namespace SolcNet.NativeLib
             {
                 string libLocation = Path.GetDirectoryName(typeof(ISolcNativeLib).Assembly.Location);
 
-                #if DEBUGx
+                #if DEBUG
                 if (Environment.Is64BitProcess && ProcessArchitecture == X86)
                 {
                     platform = ("win-x64", ".dll");

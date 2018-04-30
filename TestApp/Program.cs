@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
 using SolcNet;
-using SolcNet.InputData;
+using SolcNet.DataDescription.Input;
 using SolcNet.NativeLib;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace TestApp
 {
@@ -14,17 +16,20 @@ namespace TestApp
         {
             Console.WriteLine("Init");
 
-            var solcLib = new SolcLib();
-            var verDesc = solcLib.VersionDescription;
-            var version = solcLib.Version;
-            var license = solcLib.License;
+            var solcLib = new SolcLib("OpenZeppelin");
 
-            //var inputString = File.ReadAllText("TestResources/test-input.json");
-            //var inputDesc = InputDescription.FromJsonString(inputString);
-            //var inputSol = File.ReadAllText("TestResources/Ownable.sol");
-            //inputDesc.Sources["Ownable.sol"] = new Source { Content = inputSol };
-            //var compiled = solcLib.Compile(inputDesc, "TestResources/ZeppelinErc20");
-            var compiled = solcLib.Compile("OpenZeppelin/token/ERC20/StandardToken.sol");
+            var outputSelection = new[] {
+                    OutputType.Abi,
+                    OutputType.Ast,
+                    OutputType.EvmBytecode,
+                    OutputType.Metadata,
+                    OutputType.IR,
+                    OutputType.DevDoc,
+                    OutputType.UserDoc
+                };
+            outputSelection = OutputType.All;
+            var compiled = solcLib.Compile("token/ERC20/StandardToken.sol", outputSelection);
+
         }
 
 
