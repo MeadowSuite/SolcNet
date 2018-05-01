@@ -17,7 +17,7 @@ namespace SolcNet.NativeLib
             [(Windows, X64)] = ("win-x64", ".dll"),
             [(Windows, X86)] = ("win-x86", ".dll"),
             [(Linux, X64)] = ("linux-x64", ".so"),
-            [(OSX, X86)] = ("osx-x64", ".dylib"),
+            [(OSX, X64)] = ("macos-x64", ".dylib"),
         };
 
         static readonly OSPlatform[] SupportedPlatforms = { Windows, OSX, Linux };
