@@ -19,6 +19,9 @@ namespace TestApp
 
             var solcLib = new SolcLib("OpenZeppelin");
 
+            var ver = solcLib.VersionDescription;
+            var license = solcLib.License;
+
             var outputSelection = new[] {
                     OutputType.Abi,
                     OutputType.Ast,
@@ -29,7 +32,7 @@ namespace TestApp
                     OutputType.UserDoc
                 };
             outputSelection = OutputType.All;
-            var compiled = solcLib.Compile("token/ERC20/StandardToken.sol", outputSelection, CompileErrorHandling.ThrowOnWarning);
+            var compiled = solcLib.Compile("token/ERC20/StandardToken.sol", outputSelection, CompileErrorHandling.ThrowOnError);
 
         }
 

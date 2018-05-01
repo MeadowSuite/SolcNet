@@ -14,26 +14,26 @@ namespace SolcNet
 {
     public class SolcLib
     {
-        protected ISolcNativeLib _native;
+        ISolcLib _native;
 
-        public string VersionDescription => _native.version();
+        public string VersionDescription => _native.GetVersion();
         public Version Version => Version.Parse(VersionDescription.Split(new [] { "-" }, 2, StringSplitOptions.RemoveEmptyEntries)[0]);
 
-        public string License => _native.license();
+        public string License => _native.GetLicense();
 
         string _solSourceRoot = null;
         string _lastSourceDir = null;
 
         public SolcLib(string solSourceRoot = null)
         {
-            _native = NativeLibFactory.Create();
+            _native = new SolcLibPInvoke();
             _solSourceRoot = solSourceRoot;
         }
 
         private OutputDescription CompileInputDescriptionJson(string jsonInput, 
             CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError)
         {
-            var res = _native.compileStandard(jsonInput, ReadSolSourceFileManaged);
+            var res = _native.Compile(jsonInput, ReadSolSourceFileManaged);
             var output = OutputDescription.FromJsonString(res);
             var compilerException = CompilerException.GetCompilerExceptions(output.Errors, errorHandling);
             if (compilerException != null)
@@ -88,7 +88,7 @@ namespace SolcNet
                 if (File.Exists(sourceFilePath))
                 {
                     _lastSourceDir = Path.GetDirectoryName(sourceFilePath);
-                    contents = File.ReadAllText(sourceFilePath);
+                    contents = File.ReadAllText(sourceFilePath, Encoding.UTF8);
                 }
                 else
                 {

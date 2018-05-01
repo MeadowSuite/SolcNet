@@ -6,17 +6,25 @@ namespace SolcNet.Tests
 {
     public class BindingTests
     {
-        ISolcNativeLib solcLib;
+        ISolcLib solcLib;
 
         public BindingTests()
         {
-            solcLib = NativeLibFactory.Create();
+            solcLib = new SolcLibPInvoke();
         }
 
         [Fact]
         public void VersionTest()
         {
-            var version = solcLib.version();
+            var version = solcLib.GetVersion();
+            Assert.Equal("0.4.23-develop.2018.4.28+commit.124ca40d.mod.Windows.msvc", version);
+        }
+
+        [Fact]
+        public void LicenseTest()
+        {
+            var license = solcLib.GetLicense();
+            Assert.StartsWith("Most of the code is licensed under GPLv3", license);
         }
     }
 }
