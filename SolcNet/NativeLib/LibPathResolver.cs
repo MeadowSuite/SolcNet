@@ -44,13 +44,23 @@ namespace SolcNet.NativeLib
             }
             else
             {
+
                 string libLocation = Path.GetDirectoryName(typeof(ISolcLib).Assembly.Location);
+
+                string GetPath(string subDir = "")
+                {
+                    return Path.Combine(libLocation, "lib", platform.Prefix, subDir, library) + platform.Extension;
+                }
+
+                string filePath = GetPath();
+                
 #if DEBUG
-                string subDir = "Debug";
-#else
-                string subDir = "";
+                string debugFilePath = GetPath("Debug");
+                if (File.Exists(debugFilePath))
+                {
+                    filePath = debugFilePath;
+                }
 #endif
-                string filePath = Path.Combine(libLocation, "lib", platform.Prefix, subDir, library) + platform.Extension;
            
                 if (!File.Exists(filePath))
                 {
