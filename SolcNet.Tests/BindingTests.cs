@@ -10,7 +10,7 @@ namespace SolcNet.Tests
 
         public BindingTests()
         {
-            solcLib = new SolcLibPInvoke();
+            solcLib = new SolcLibPInvokeProvider();
         }
 
         [Fact]

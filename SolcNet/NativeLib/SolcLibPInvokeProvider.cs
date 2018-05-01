@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SolcNet.NativeLib
 {
-    public partial class SolcLibPInvoke : ISolcLib
+    public class SolcLibPInvokeProvider : ISolcLib
     {
         public const string LIB_FILE = "solc";
 
@@ -48,7 +48,8 @@ namespace SolcNet.NativeLib
         [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaler))]
         static extern string NativeCompileLegacyJson(string input, bool optimize, NativeReadFileCallback readCallback);
 
-        static SolcLibPInvoke()
+
+        static SolcLibPInvokeProvider()
         {
             var libPath = LibPathResolver.Resolve(LIB_FILE);
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

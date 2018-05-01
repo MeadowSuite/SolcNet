@@ -26,7 +26,7 @@ namespace SolcNet
 
         public SolcLib(string solSourceRoot = null)
         {
-            _native = new SolcLibPInvoke();
+            _native = new SolcLibDynamicProvider();
             _solSourceRoot = solSourceRoot;
         }
 
