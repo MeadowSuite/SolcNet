@@ -12,12 +12,24 @@ namespace SolcNet.DataDescription.Output
 
         [JsonProperty("title")]
         public string Title { get; set; }
+
+        [JsonProperty("author")]
+        public string Author { get; set; }
+
+        [JsonProperty("notice")]
+        public string Notice { get; set; }
     }
 
     public class MethodDoc
     {
+        [JsonProperty("author")]
+        public string Author { get; set; }
+
         [JsonProperty("details")]
         public string Details { get; set; }
+
+        [JsonProperty("notice")]
+        public string Notice { get; set; }
 
         [JsonProperty("params")]
         public Dictionary<string /*param name*/, string /*description*/> Params { get; set; }

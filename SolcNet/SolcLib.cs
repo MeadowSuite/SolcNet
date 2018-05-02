@@ -35,6 +35,7 @@ namespace SolcNet
         {
             var res = _native.Compile(jsonInput, ReadSolSourceFileManaged);
             var output = OutputDescription.FromJsonString(res);
+
             var compilerException = CompilerException.GetCompilerExceptions(output.Errors, errorHandling);
             if (compilerException != null)
             {
@@ -50,24 +51,33 @@ namespace SolcNet
             return CompileInputDescriptionJson(jsonStr, errorHandling);
         }
 
-        /// <param name="contractFilePath"></param>
         /// <param name="outputSelection">Defaults to all output types if not specified</param>
-        /// <param name="errorHandling"></param>
-        /// <returns></returns>
-        public OutputDescription Compile(string contractFilePath, 
+        public OutputDescription Compile(string contractFilePaths,
+            OutputType[] outputSelection = null,
+            CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError)
+        {
+            return Compile(new[] { contractFilePaths }, outputSelection, errorHandling);
+        }
+
+        /// <param name="outputSelection">Defaults to all output types if not specified</param>
+        public OutputDescription Compile(string[] contractFilePaths,
             OutputType[] outputSelection = null, 
             CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError)
         {
             outputSelection = outputSelection ?? OutputType.All;
 
-            var fileName = Path.GetFileName(contractFilePath);
             var inputDesc = new InputDescription();
             inputDesc.Settings.OutputSelection["*"] = new Dictionary<string, List<OutputType>>
             {
                 ["*"] = new List<OutputType>(outputSelection)
             };
-            var source = new Source { Urls = new List<string> { contractFilePath } };
-            inputDesc.Sources.Add(fileName, source);
+
+            foreach (var filePath in contractFilePaths)
+            {
+                var source = new Source { Urls = new List<string> { filePath } };
+                inputDesc.Sources.Add(filePath, source);
+            }
+
             return Compile(inputDesc, errorHandling);
         }
 
@@ -77,7 +87,7 @@ namespace SolcNet
             {
                 string sourceFilePath = path;
                 // if given path is relative and a root is provided, combine them
-                if (!Uri.TryCreate(path, UriKind.Absolute, out _) && _solSourceRoot != null)
+                if (!Path.IsPathRooted(path) && _solSourceRoot != null)
                 {
                     sourceFilePath = Path.Combine(_solSourceRoot, path);
                 }

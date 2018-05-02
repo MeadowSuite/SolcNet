@@ -5,7 +5,7 @@ import "./ERC20.sol";
 
 
 /**
- * @title Standard ERC20 token
+ * @title Standard ERC20dfgh  token 😋 Get Emoji — All Emojis to ✂ Copy and 📋 Paste 👌
  *
  * @dev Implementation of the basic standard token.
  * @dev https://github.com/ethereum/EIPs/issues/20

@@ -56,6 +56,9 @@ namespace SolcNet.DataDescription.Output
 
         [JsonProperty(".code")]
         public Code[] Code { get; set; }
+
+        [JsonProperty(".data")]
+        public Dictionary<string, Data> DataChildren { get; set; }
     }
 
     public class Code
