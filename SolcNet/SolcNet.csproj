@@ -16,33 +16,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <_PackageFiles Include="$(OutputPath)\lib\win-x64\solc.dll">
-      <BuildAction>Runtime</BuildAction>
-      <PackagePath>runtimes\win-x64\native\</PackagePath>
-    </_PackageFiles>
-    <_PackageFiles Include="$(OutputPath)\lib\win-x86\solc.dll">
-      <BuildAction>Runtime</BuildAction>
-      <PackagePath>runtimes\win-x86\native\</PackagePath>
-    </_PackageFiles>
-    <_PackageFiles Include="$(OutputPath)\lib\macos-x64\libsolc.dylib">
-      <BuildAction>Runtime</BuildAction>
-      <PackagePath>runtimes\osx-x64\native\</PackagePath>
-    </_PackageFiles>
-    <_PackageFiles Include="$(OutputPath)\lib\linux-x64\libsolc.so">
-      <BuildAction>Runtime</BuildAction>
-      <PackagePath>runtimes\linux-x64\native\</PackagePath>
-    </_PackageFiles>
+    <Content Include="lib\linux-x64\libsolc.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\macos-x64\libsolc.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\win-x86\solc.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\win-x64\solc.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="NativeLibraryLoader" Version="1.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="lib\**\*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
