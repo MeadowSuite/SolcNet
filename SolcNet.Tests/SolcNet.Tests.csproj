@@ -21,4 +21,10 @@
     <ProjectReference Include="..\SolcNet\SolcNet.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestContracts\ExampleContract.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

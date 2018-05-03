@@ -20,8 +20,7 @@ namespace TestApp
 
             const string OPEN_ZEP_DIR = "OpenZeppelin";
 
-            //var solcLib = new SolcLib(SolcNet.AdvDL.LibFactory.Create(), OPEN_ZEP_DIR);
-            var solcLib = SolcLib.Create<SolcLibAdvDLProvider>(OPEN_ZEP_DIR);
+            var solcLib = SolcLib.Create(OPEN_ZEP_DIR);
 
             var ver = solcLib.VersionDescription;
             Console.WriteLine("Loaded solc lib version: " + ver);

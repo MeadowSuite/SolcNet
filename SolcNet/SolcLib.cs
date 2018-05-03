@@ -36,6 +36,11 @@ namespace SolcNet
             _solSourceRoot = solSourceRoot;
         }
 
+        public static SolcLib Create(string solSourceRoot = null)
+        {
+            return new SolcLib(solSourceRoot);
+        }
+
         public static SolcLib Create<TNativeLib>(string solSourceRoot = null) where TNativeLib : INativeSolcLib, new()
         {
             return new SolcLib(new TNativeLib(), solSourceRoot);

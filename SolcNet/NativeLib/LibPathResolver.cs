@@ -12,12 +12,12 @@ namespace SolcNet.NativeLib
 {
     public static class LibPathResolver
     {
-        static readonly Dictionary<PlatInfo, (string Prefix, string Extension)> PlatformPaths = new Dictionary<PlatInfo, (string, string)>
+        static readonly Dictionary<PlatInfo, (string Prefix, string LibPrefix, string Extension)> PlatformPaths = new Dictionary<PlatInfo, (string, string, string)>
         {
-            [(Windows, X64)] = ("win-x64", ".dll"),
-            [(Windows, X86)] = ("win-x86", ".dll"),
-            [(Linux, X64)] = ("linux-x64", ".so"),
-            [(OSX, X64)] = ("macos-x64", ".dylib"),
+            [(Windows, X64)] = ("win-x64", "", ".dll"),
+            [(Windows, X86)] = ("win-x86", "", ".dll"),
+            [(Linux, X64)] = ("linux-x64", "lib", ".so"),
+            [(OSX, X64)] = ("macos-x64", "lib", ".dylib"),
         };
 
         static readonly OSPlatform[] SupportedPlatforms = { Windows, OSX, Linux };
@@ -38,7 +38,7 @@ namespace SolcNet.NativeLib
             {
                 return result;
             }
-            if (!PlatformPaths.TryGetValue(CurrentPlatformInfo, out (string Prefix, string Extension) platform))
+            if (!PlatformPaths.TryGetValue(CurrentPlatformInfo, out (string Prefix, string LibPrefix, string Extension) platform))
             {
                 throw new Exception(string.Join("\n", $"Unsupported platform: {CurrentPlatformDesc.Value}", "Must be one of:", SupportedPlatformDescriptions()));
             }
@@ -49,7 +49,7 @@ namespace SolcNet.NativeLib
 
                 string GetPath(string subDir = "")
                 {
-                    return Path.Combine(libLocation, "lib", platform.Prefix, subDir, library) + platform.Extension;
+                    return Path.Combine(libLocation, "lib", platform.Prefix, subDir, platform.LibPrefix + library) + platform.Extension;
                 }
 
                 string filePath = GetPath();

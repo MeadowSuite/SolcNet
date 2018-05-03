@@ -6,7 +6,28 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
     <Platforms>AnyCPU</Platforms>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <Company>Hosho</Company>
   </PropertyGroup>
+
+  <ItemGroup>
+    <_PackageFiles Include="$(OutputPath)\lib\win-x64\solc.dll">
+      <BuildAction>Runtime</BuildAction>
+      <PackagePath>runtimes\win-x64\native\</PackagePath>
+    </_PackageFiles>
+    <_PackageFiles Include="$(OutputPath)\lib\win-x86\solc.dll">
+      <BuildAction>Runtime</BuildAction>
+      <PackagePath>runtimes\win-x86\native\</PackagePath>
+    </_PackageFiles>
+    <_PackageFiles Include="$(OutputPath)\lib\macos-x64\libsolc.dylib">
+      <BuildAction>Runtime</BuildAction>
+      <PackagePath>runtimes\osx-x64\native\</PackagePath>
+    </_PackageFiles>
+    <_PackageFiles Include="$(OutputPath)\lib\linux-x64\libsolc.so">
+      <BuildAction>Runtime</BuildAction>
+      <PackagePath>runtimes\linux-x64\native\</PackagePath>
+    </_PackageFiles>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="NativeLibraryLoader" Version="1.0.8" />
