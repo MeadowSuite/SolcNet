@@ -8,6 +8,7 @@
     <Platforms>AnyCPU</Platforms>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <Company>Hosho</Company>
+    <PackageTags>solidity solc libsolc ethereum</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
