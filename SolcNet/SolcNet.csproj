@@ -29,19 +29,19 @@
   <ItemGroup>
     <_PackageFiles Include="$(OutputPath)\lib\win-x64\solc.dll">
       <BuildAction>content</BuildAction>
-      <PackagePath>content\win-x64\</PackagePath>
+      <PackagePath>lib\$(TargetFramework)\lib\win-x64\</PackagePath>
     </_PackageFiles>
     <_PackageFiles Include="$(OutputPath)\lib\win-x86\solc.dll">
       <BuildAction>content</BuildAction>
-      <PackagePath>content\win-x86\</PackagePath>
+      <PackagePath>lib\$(TargetFramework)\lib\win-x86\</PackagePath>
     </_PackageFiles>
     <_PackageFiles Include="$(OutputPath)\lib\macos-x64\libsolc.dylib">
       <BuildAction>content</BuildAction>
-      <PackagePath>content\osx-x64\</PackagePath>
+      <PackagePath>lib\$(TargetFramework)\lib\osx-x64\</PackagePath>
     </_PackageFiles>
     <_PackageFiles Include="$(OutputPath)\lib\linux-x64\libsolc.so">
       <BuildAction>content</BuildAction>
-      <PackagePath>content\linux-x64\</PackagePath>
+      <PackagePath>lib\$(TargetFramework)\lib\linux-x64\</PackagePath>
     </_PackageFiles>
   </ItemGroup>
 
