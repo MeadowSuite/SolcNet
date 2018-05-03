@@ -7,7 +7,7 @@ namespace SolcNet.NativeLib
 {
     public delegate void ReadFileCallback(string path, ref string contents, ref string error);
 
-    public interface ISolcLib
+    public interface INativeSolcLib
     {
         string GetLicense();
         string GetVersion();

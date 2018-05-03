@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SolcNet;
+using SolcNet.AdvDL;
 using SolcNet.CompileErrors;
 using SolcNet.DataDescription.Input;
 using SolcNet.NativeLib;
@@ -19,9 +20,12 @@ namespace TestApp
 
             const string OPEN_ZEP_DIR = "OpenZeppelin";
 
-            var solcLib = new SolcLib(OPEN_ZEP_DIR);
+            //var solcLib = new SolcLib(SolcNet.AdvDL.LibFactory.Create(), OPEN_ZEP_DIR);
+            var solcLib = SolcLib.Create<SolcLibAdvDLProvider>(OPEN_ZEP_DIR);
 
             var ver = solcLib.VersionDescription;
+            Console.WriteLine("Loaded solc lib version: " + ver);
+
             var license = solcLib.License;
 
             var outputSelection = new[] {
@@ -43,7 +47,6 @@ namespace TestApp
                 "contracts/LimitBalance.sol",
                 "contracts/MerkleProof.sol",
                 "contracts/ReentrancyGuard.sol",
-                "contracts/access/SignatureBouncer.sol",
                 "contracts/crowdsale/Crowdsale.sol",
                 "contracts/examples/SampleCrowdsale.sol",
                 "contracts/examples/SimpleSavingsWallet.sol",
@@ -56,7 +59,7 @@ namespace TestApp
             int runs = 0;
             while (true)
             {
-                var compiled = solcLib.Compile(srcs, outputSelection, CompileErrorHandling.ThrowOnError);
+                var compiled = solcLib.Compile(srcs, outputSelection);
                 //GC.Collect(GC.MaxGeneration);
                 runs++;
                 Console.WriteLine(runs);

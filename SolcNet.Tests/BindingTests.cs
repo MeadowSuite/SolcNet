@@ -1,35 +1,54 @@
+using SolcNet.AdvDL;
 using SolcNet.NativeLib;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Xunit;
 
 namespace SolcNet.Tests
 {
+    public class NativeLibProvider : TheoryData<INativeSolcLib>
+    {
+        public NativeLibProvider()
+        {
+            Add(new SolcLibDynamicProvider());
+            Add(new SolcLibPInvokeProvider());
+            Add(new SolcLibAdvDLProvider());
+        }
+    }
+
     public class BindingTests
     {
-        SolcLib solcLib;
+        const string CONTRACT_SRC_DIR = "OpenZeppelin";
 
         public BindingTests()
         {
-            solcLib = new SolcLib("OpenZeppelin");
+
         }
 
-        [Fact]
-        public void VersionTest()
+        [Theory]
+        [ClassData(typeof(NativeLibProvider))]
+        public void VersionTest(INativeSolcLib nativeSolcLib)
         {
-            var version = solcLib.VersionDescription;
-            Assert.Equal("0.4.23-develop.2018.4.25+commit.124ca40d.mod.Windows.msvc", version);
+            var solcLib = new SolcLib(nativeSolcLib, CONTRACT_SRC_DIR);
+            var version = solcLib.Version;
+            Assert.Equal(Version.Parse("0.4.23"), version);
         }
 
-        [Fact]
-        public void LicenseTest()
+        [Theory]
+        [ClassData(typeof(NativeLibProvider))]
+        public void LicenseTest(INativeSolcLib nativeSolcLib)
         {
+            var solcLib = new SolcLib(nativeSolcLib, CONTRACT_SRC_DIR);
             var license = solcLib.License;
             Assert.StartsWith("Most of the code is licensed under GPLv3", license);
         }
 
-        [Fact]
-        public void CompileOpenZeppelin()
+        [Theory]
+        [ClassData(typeof(NativeLibProvider))]
+        public void CompileOpenZeppelin(INativeSolcLib nativeSolcLib)
         {
+            var solcLib = new SolcLib(nativeSolcLib, CONTRACT_SRC_DIR);
             var srcs = new[] {
                 "contracts/AddressUtils.sol",
                 "contracts/Bounty.sol",
@@ -38,7 +57,7 @@ namespace SolcNet.Tests
                 "contracts/LimitBalance.sol",
                 "contracts/MerkleProof.sol",
                 "contracts/ReentrancyGuard.sol",
-                "contracts/access/SignatureBouncer.sol",
+                //"contracts/access/SignatureBouncer.sol",
                 "contracts/crowdsale/Crowdsale.sol",
                 "contracts/crowdsale/distribution/FinalizableCrowdsale.sol",
                 "contracts/crowdsale/distribution/PostDeliveryCrowdsale.sol",

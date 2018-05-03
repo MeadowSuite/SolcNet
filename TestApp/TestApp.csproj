@@ -18,6 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SolcNet.AdvDL\SolcNet.AdvDL.csproj" />
     <ProjectReference Include="..\SolcNet.OpenZeppelinSource\SolcNet.OpenZeppelinSource.csproj" />
     <ProjectReference Include="..\SolcNet\SolcNet.csproj" />
   </ItemGroup>

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SolcNet.NativeLib
 {
-    public class SolcLibPInvokeProvider : ISolcLib
+    public class SolcLibPInvokeProvider : INativeSolcLib
     {
         public const string LIB_FILE = "solc";
 

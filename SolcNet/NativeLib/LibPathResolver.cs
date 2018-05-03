@@ -45,7 +45,7 @@ namespace SolcNet.NativeLib
             else
             {
 
-                string libLocation = Path.GetDirectoryName(typeof(ISolcLib).Assembly.Location);
+                string libLocation = Path.GetDirectoryName(typeof(INativeSolcLib).Assembly.Location);
 
                 string GetPath(string subDir = "")
                 {

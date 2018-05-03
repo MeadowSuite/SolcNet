@@ -14,7 +14,7 @@ namespace SolcNet
 {
     public class SolcLib
     {
-        ISolcLib _native;
+        INativeSolcLib _native;
 
         public string VersionDescription => _native.GetVersion();
         public Version Version => Version.Parse(VersionDescription.Split(new [] { "-" }, 2, StringSplitOptions.RemoveEmptyEntries)[0]);
@@ -28,6 +28,17 @@ namespace SolcNet
         {
             _native = new SolcLibDynamicProvider();
             _solSourceRoot = solSourceRoot;
+        }
+
+        public SolcLib(INativeSolcLib nativeLib, string solSourceRoot = null)
+        {
+            _native = nativeLib;
+            _solSourceRoot = solSourceRoot;
+        }
+
+        public static SolcLib Create<TNativeLib>(string solSourceRoot = null) where TNativeLib : INativeSolcLib, new()
+        {
+            return new SolcLib(new TNativeLib(), solSourceRoot);
         }
 
         private OutputDescription CompileInputDescriptionJson(string jsonInput, 
