@@ -1,0 +1,24 @@
+version: 1.0.{build}
+image: Visual Studio 2017
+configuration: Release
+platform: Any CPU
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+before_build:
+- cmd: msbuild /t:restore
+build:
+  parallel: true
+  verbosity: minimal
+artifacts:
+- path: SolcNet/**/*.nupkg
+deploy:
+- provider: NuGet
+  server: https://www.nuget.org/api/v2/package
+  api_key:
+    secure: R1YXHbbr7H2aVnuezr1jTDEj5eZJeB/Fb0Ye+68/eWqZkLFS+skLqbtevqYhJ0sb
