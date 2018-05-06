@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="TestData\ExampleContract.sol" />
+    <None Remove="TestData\StandardBurnableToken.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="TestData\ExampleContract.sol">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\StandardBurnableToken.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SolcNet.OpenZeppelinSource\SolcNet.OpenZeppelinSource.csproj" />
+    <ProjectReference Include="..\SolcNet\SolcNet.csproj" />
+    <ProjectReference Include="..\SolCodeGen\SolCodeGen.csproj" />
+  </ItemGroup>
+
+</Project>

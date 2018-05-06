@@ -1,23 +1,24 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace SolcNet.DataDescription.Output
 {
     public class OutputDescription
     {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public static OutputDescription FromJsonString(string jsonStr)
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
         {
-            return JsonConvert.DeserializeObject<OutputDescription>(jsonStr, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
+            var output = JsonConvert.DeserializeObject<OutputDescription>(jsonStr, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
+            output.RawJsonOutput = jsonStr;
+            return output;
         }
 
-        public string ToJsonString()
-        {
-            return JsonConvert.SerializeObject(this, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
-        }
-
- 
         /// <summary>
         /// Optional: not present if no errors/warnings were encountered
         /// </summary>
@@ -35,7 +36,37 @@ namespace SolcNet.DataDescription.Output
         /// </summary>
         [JsonProperty("contracts")]
         public Dictionary<string/*sol file name*/, Dictionary<string/*contract name*/, Contract>> Contracts { get; set; }
+
+        [JsonIgnore]
+        public string RawJsonOutput { get; set; }
     }
+
+    /*
+    class OutputDescriptionConverter : JsonConverter<OutputDescription>
+    {
+        public override OutputDescription ReadJson(JsonReader reader, Type objectType, OutputDescription existingValue, bool hasExistingValue, JsonSerializer serializer)
+        {
+            var jObj = JObject.Load(reader);
+            var settings = new JsonSerializerSettings { ContractResolver = new StripContractResolver() };
+            var output = jObj.ToObject<OutputDescription>(JsonSerializer.Create(settings));
+            output.RawJsonOutput = jObj.ToString(Formatting.Indented);
+            return output;
+        }
+
+        public override void WriteJson(JsonWriter writer, OutputDescription value, JsonSerializer serializer)
+        {
+            var settings = new JsonSerializerSettings { ContractResolver = new StripContractResolver() };
+            var output = JObject.FromObject(value, JsonSerializer.Create(settings));
+            output.WriteTo(writer);
+        }
+
+        class StripContractResolver : DefaultContractResolver
+        {
+            protected override JsonConverter ResolveContractConverter(Type objectType) => null;
+        }
+
+    }
+    */
 
     public class SourceFileOutput
     {

@@ -57,6 +57,8 @@ namespace SolcNet.DataDescription.Output
         public int Index;
         /// <summary></summary>
         public JumpInstruction Jump;
+
+        public string Raw;
     }
 
     public enum JumpInstruction : byte

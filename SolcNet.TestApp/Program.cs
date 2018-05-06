@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using SolcNet;
-using SolcNet.AdvDL;
 using SolcNet.CompileErrors;
 using SolcNet.DataDescription.Input;
 using SolcNet.NativeLib;
@@ -10,7 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TestApp
+namespace SolcNet.TestApp
 {
     class Program
     {

@@ -3,6 +3,7 @@ using SolcNet.DataDescription.Output;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 
 namespace SolcNet.DataDescription.Parsing
@@ -20,6 +21,7 @@ namespace SolcNet.DataDescription.Parsing
             var entries = new SourceMapEntry[valParts.Length];
             for (var i = 0; i < entries.Length; i++)
             {
+                entries[i].Raw = valParts[i];
                 if (valParts[i] == string.Empty)
                 {
                     entries[i] = entries[i - 1];
@@ -46,7 +48,7 @@ namespace SolcNet.DataDescription.Parsing
 
         public override void WriteJson(JsonWriter writer, SourceMapEntry[] value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            writer.WriteToken(JsonToken.String, string.Join(";", value.Select(v => v.Raw)));
         }
     }
 }

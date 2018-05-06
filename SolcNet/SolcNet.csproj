@@ -15,11 +15,13 @@
     <Description>Native solc lib with .NET wrapper</Description>
     <PackageProjectUrl>https://github.com/hosho/SolcNet/</PackageProjectUrl>
     <PackageReleaseNotes>Ships with pre-compiled solc lib verison: 0.4.23-develop.2018.5.3+commit.124ca40d</PackageReleaseNotes>
+    <NoWarn>1591,1573</NoWarn>
   </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="NativeLibraryLoader" Version="1.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="System.Memory" Version="4.5.0-preview2-26406-04" />
   </ItemGroup>
 
   <ItemGroup>

@@ -50,6 +50,8 @@ namespace SolcNet.DataDescription.Output
         /// </summary>
         [JsonProperty("anonymous")]
         public bool? Anonymous { get; set; }
+
+        public static implicit operator Abi(string json) => JsonConvert.DeserializeObject<Abi>(json);
     }
 
     [JsonConverter(typeof(NamedStringTokenConverter<AbiType>))]
@@ -66,6 +68,7 @@ namespace SolcNet.DataDescription.Output
         public static readonly AbiType Function = "function";
         public static readonly AbiType Constructor = "constructor";
         public static readonly AbiType Fallback = "fallback";
+        public static readonly AbiType Event = "event";
     }
 
     [JsonConverter(typeof(NamedStringTokenConverter<StateMutability>))]
