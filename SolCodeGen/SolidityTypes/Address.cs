@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace SolCodeGen
 {
+
     [StructLayout(LayoutKind.Sequential)]
     public struct Address : IEquatable<Address>
     {
@@ -34,7 +35,7 @@ namespace SolCodeGen
             {
                 throw new ArgumentException("Address hex string should be 40 chars long, or 42 with a 0x prefix, was given " + hexString.Length, nameof(hexString));
             }
-
+            
             Span<byte> bytes = EncodingUtils.HexToBytes(hexString);
             var uintView = MemoryMarshal.Cast<byte, uint>(bytes);
             P1 = uintView[0];
