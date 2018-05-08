@@ -38,7 +38,7 @@ namespace SolCodeGen
         }
         
 
-        public Task<(TransactionReceipt Receipt, EventLog[] EventLogs, bool _result)> ExampleFunction(
+        public async Task<(object Receipt, EventLog[] EventLogs, bool _result)> ExampleFunction(
             Address _to, UInt256 _amount, IEnumerable<ulong> _extraVals, IEnumerable<byte> _rawData,
             SendParams sendParams = null, CallType callType = CallType.Transaction)
         {
@@ -46,7 +46,7 @@ namespace SolCodeGen
             var funcHash = MethodID.GetMethodID("transfer(address,uint256,uint64[])");
 
             // get encoders for parameters
-            var encoders = new ISolidityTypeEncoder[] {
+            var encoders = new IAbiTypeEncoder[] {
                 EncoderFactory.LoadEncoder("address", _to),
                 EncoderFactory.LoadEncoder("uint256", _amount),
                 EncoderFactory.LoadEncoder("uint64[]", _extraVals, EncoderFactory.LoadEncoder("uint64", default(ulong))),
@@ -59,14 +59,16 @@ namespace SolCodeGen
             // start event log filter with eth_newFilter
             // TODO:...
 
+            string resultData;
+
             // rpc eth_sendTransaction
             if (callType == CallType.Transaction)
             {
-
+                var transactionHash = await JsonRpcClient.SendTransaction(paramHex, sendParams);
             }
             else if (callType == CallType.Call)
             {
-                // TODO: ...
+                resultData = await JsonRpcClient.Call(paramHex, sendParams);
             }
             else
             {

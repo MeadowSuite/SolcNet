@@ -7,7 +7,7 @@ using System.Numerics;
 namespace SolCodeGen.AbiEncoding
 {
 
-    public static class SolidityTypeMap
+    public static class AbiTypeMap
     {
         /// <summary>
         /// Map of all finite solidity type names and their corresponding C# type.
@@ -22,35 +22,35 @@ namespace SolCodeGen.AbiEncoding
         /// 
         /// ByteSize is zero for dynamic types.
         /// </summary>
-        static readonly ReadOnlyDictionary<string, SolidityTypeInfo> _finiteTypes;
+        static readonly ReadOnlyDictionary<string, AbiTypeInfo> _finiteTypes;
 
         /// <summary>
         /// Cache of solidity types parsed during runtime; eg: arrays, tuples
         /// </summary>
-        static readonly Dictionary<string, SolidityTypeInfo> _cachedTypes = new Dictionary<string, SolidityTypeInfo>();
+        static readonly Dictionary<string, AbiTypeInfo> _cachedTypes = new Dictionary<string, AbiTypeInfo>();
 
-        static SolidityTypeMap()
+        static AbiTypeMap()
         {
             // elementary types
-            var dict = new Dictionary<string, SolidityTypeInfo>
+            var dict = new Dictionary<string, AbiTypeInfo>
             {
                 // equivalent to uint8 restricted to the values 0 and 1
-                ["bool"] = new SolidityTypeInfo("bool", typeof(bool), 1),
+                ["bool"] = new AbiTypeInfo("bool", typeof(bool), 1),
                 
                 // 20 bytes
-                ["address"] = new SolidityTypeInfo("address", typeof(Address), 20),
+                ["address"] = new AbiTypeInfo("address", typeof(Address), 20),
                 
                 // dynamic sized unicode string assumed to be UTF - 8 encoded.
-                ["string"] = new SolidityTypeInfo("string", typeof(string), 1, SolidityTypeCategory.String),
+                ["string"] = new AbiTypeInfo("string", typeof(string), 1, SolidityTypeCategory.String),
                 
                 // dynamic sized byte sequence
-                ["bytes"] = new SolidityTypeInfo("bytes", typeof(IEnumerable<byte>), 1, SolidityTypeCategory.Bytes)
+                ["bytes"] = new AbiTypeInfo("bytes", typeof(IEnumerable<byte>), 1, SolidityTypeCategory.Bytes)
             };
 
             // fixed sized bytes elementary types
             for (var i = 1; i <= 32; i++)
             {
-                dict["bytes" + i] = new SolidityTypeInfo("bytes" + i, 
+                dict["bytes" + i] = new AbiTypeInfo("bytes" + i, 
                     typeof(IEnumerable<byte>), 
                     baseTypeByteSize: 1, 
                     SolidityTypeCategory.BytesM, 
@@ -69,12 +69,12 @@ namespace SolCodeGen.AbiEncoding
                 for (var i = byteStart; i <= byteEnd; i++)
                 {
                     var bits = i * 8;
-                    dict.Add("int" + bits, new SolidityTypeInfo("int" + bits, typeof(TIntType), i));
-                    dict.Add("uint" + bits, new SolidityTypeInfo("uint" + bits, typeof(TUIntType), i));
+                    dict.Add("int" + bits, new AbiTypeInfo("int" + bits, typeof(TIntType), i));
+                    dict.Add("uint" + bits, new AbiTypeInfo("uint" + bits, typeof(TUIntType), i));
                 }
             }
 
-            _finiteTypes = new ReadOnlyDictionary<string, SolidityTypeInfo>(dict);
+            _finiteTypes = new ReadOnlyDictionary<string, AbiTypeInfo>(dict);
         }
 
         public static string SolidityTypeToClrTypeString(string name)
@@ -84,7 +84,7 @@ namespace SolCodeGen.AbiEncoding
         }
 
         // TODO: return array size data from here...
-        public static SolidityTypeInfo GetSolidityTypeInfo(string name)
+        public static AbiTypeInfo GetSolidityTypeInfo(string name)
         {
             var arrayBracket = name.IndexOf('[');
             if (arrayBracket > 0)
@@ -96,8 +96,11 @@ namespace SolCodeGen.AbiEncoding
                 var bracketPart = name.Substring(arrayBracket);
                 int arraySize = 0;
                 var typeCategory = SolidityTypeCategory.DynamicArray;
+
+                // if a fixed array length has been set, ex: uint64[10]
                 if (bracketPart.Length > 2)
                 {
+                    // parse the number within the square brackets
                     var sizeStr = bracketPart.Substring(1, bracketPart.Length - 2);
                     arraySize = int.Parse(sizeStr, CultureInfo.InvariantCulture);
                     typeCategory = SolidityTypeCategory.FixedArray;
@@ -107,7 +110,7 @@ namespace SolCodeGen.AbiEncoding
                 if (_finiteTypes.TryGetValue(baseName, out var baseInfo))
                 {
                     var arrayType = typeof(IEnumerable<>).MakeGenericType(baseInfo.ClrType);
-                    var info = new SolidityTypeInfo(name, arrayType, baseInfo.BaseTypeByteSize, typeCategory, arraySize);
+                    var info = new AbiTypeInfo(name, arrayType, baseInfo.BaseTypeByteSize, typeCategory, arraySize);
                     _cachedTypes[name] = info;
                     return info;
                 }

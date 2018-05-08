@@ -21,11 +21,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="SolidityTypes\IntegerTypes.tt">
+    <None Update="EthTypes\IntegerTypes.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IntegerTypes.cs</LastGenOutput>
     </None>
-    <None Update="SolidityTypes\FixedN.tt">
+    <None Update="EthTypes\FixedN.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>FixedN.cs</LastGenOutput>
     </None>
@@ -36,12 +36,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="SolidityTypes\FixedN.cs">
+    <Compile Update="EthTypes\FixedN.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>FixedN.tt</DependentUpon>
     </Compile>
-    <Compile Update="SolidityTypes\IntegerTypes.cs">
+    <Compile Update="EthTypes\IntegerTypes.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>IntegerTypes.tt</DependentUpon>

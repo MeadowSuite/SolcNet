@@ -17,15 +17,16 @@ namespace SolCodeGen
             {
                 case byte v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
                 case sbyte v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
-                case short v: return GetHexFromInteger((int)v, hexPrefix: hexPrefix);
-                case ushort v: return GetHexFromInteger((int)v, hexPrefix: hexPrefix);
+                case short v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
+                case ushort v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
                 case int v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
                 case uint v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
                 case long v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
                 case ulong v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
                 case UInt256 v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
-                case Address v: return GetHexFromInteger(v, hexPrefix: hexPrefix, checkEndian: false);
-                case byte[] v: return BytesToHex(v, hexPrefix: true, checkEndian: false);
+                case Address v: return GetHex<Address>(v, hexPrefix: hexPrefix, checkEndian: false);
+                case Hash v: return GetHex<Hash>(v, hexPrefix: hexPrefix, checkEndian: false);
+                case byte[] v: return BytesToHex(v, hexPrefix: hexPrefix, checkEndian: false);
                 default:
                     throw new Exception($"Converting type '{val.GetType()}' to hex is not supported");
             }
@@ -104,7 +105,7 @@ namespace SolCodeGen
             return methodInfo.Invoke(null, new object[] { str, bigEndian });
         }
 
-        public static T HexToValue<T>(string str, bool checkEndian = true) where T : struct
+        public static T HexToValue<T>(string str, bool checkEndian = false) where T : struct
         {
             if (str.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
             {

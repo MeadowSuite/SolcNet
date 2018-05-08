@@ -2,7 +2,7 @@
 
 namespace SolCodeGen.AbiEncoding
 {
-    public interface ISolidityTypeEncoder
+    public interface IAbiTypeEncoder
     {
         int GetEncodedSize();
 
@@ -14,18 +14,18 @@ namespace SolCodeGen.AbiEncoding
         Span<byte> Encode(Span<byte> buffer);
     }
 
-    public interface ISolidityTypeEncoder<TVal> : ISolidityTypeEncoder
+    public interface IAbiTypeEncoder<TVal> : IAbiTypeEncoder
     {
         void SetValue(in TVal val);
-        void SetTypeInfo(SolidityTypeInfo info);
+        void SetTypeInfo(AbiTypeInfo info);
     }
 
-    public abstract class SolidityTypeEncoder<TVal> : ISolidityTypeEncoder<TVal>
+    public abstract class AbiTypeEncoder<TVal> : IAbiTypeEncoder<TVal>
     {
-        protected SolidityTypeInfo _info;
+        protected AbiTypeInfo _info;
         protected TVal _val;
 
-        public virtual void SetTypeInfo(SolidityTypeInfo info)
+        public virtual void SetTypeInfo(AbiTypeInfo info)
         {
             _info = info;
         }

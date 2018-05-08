@@ -14,9 +14,9 @@ namespace SolCodeGen.AbiEncoding
     {
         // TODO: if we use the t4 generated UInt<M> types, use a t4 generator to create the corresponding LoadEncoder methods here...
 
-        public static ISolidityTypeEncoder<IEnumerable<TItem>> LoadEncoder<TItem>(string solidityType, in IEnumerable<TItem> val, ISolidityTypeEncoder<TItem> itemEncoder)
+        public static IAbiTypeEncoder<IEnumerable<TItem>> LoadEncoder<TItem>(string solidityType, in IEnumerable<TItem> val, IAbiTypeEncoder<TItem> itemEncoder)
         {
-            var info = SolidityTypeMap.GetSolidityTypeInfo(solidityType);
+            var info = AbiTypeMap.GetSolidityTypeInfo(solidityType);
             if (info.Category != SolidityTypeCategory.FixedArray && info.Category != SolidityTypeCategory.DynamicArray)
             {
                 throw new ArgumentException($"Encoder factory for array types was called with a type '{info.Category}'");
@@ -27,9 +27,9 @@ namespace SolCodeGen.AbiEncoding
             return encoder;
         }
 
-        public static ISolidityTypeEncoder<IEnumerable<byte>> LoadEncoder(string solidityType, in IEnumerable<byte> val)
+        public static IAbiTypeEncoder<IEnumerable<byte>> LoadEncoder(string solidityType, in IEnumerable<byte> val)
         {
-            var into = SolidityTypeMap.GetSolidityTypeInfo(solidityType);
+            var into = AbiTypeMap.GetSolidityTypeInfo(solidityType);
             switch(into.Category)
             {
                 case SolidityTypeCategory.Bytes:
@@ -54,100 +54,100 @@ namespace SolCodeGen.AbiEncoding
 
         }
 
-        public static ISolidityTypeEncoder<string> LoadEncoder(string solidityType, in string val)
+        public static IAbiTypeEncoder<string> LoadEncoder(string solidityType, in string val)
         {
             var encoder = new StringEncoder();
             encoder.SetValue(val);
             return encoder;
         }
 
-        public static ISolidityTypeEncoder<Address> LoadEncoder(string solidityType, in Address val)
+        public static IAbiTypeEncoder<Address> LoadEncoder(string solidityType, in Address val)
         {
             var encoder = new AddressEncoder();
             encoder.SetValue(val);
             return encoder;
         }
 
-        public static ISolidityTypeEncoder<bool> LoadEncoder(string solidityType, in bool val)
+        public static IAbiTypeEncoder<bool> LoadEncoder(string solidityType, in bool val)
         {
             var encoder = new BoolEncoder();
             encoder.SetValue(val);
             return encoder;
         }
 
-        public static ISolidityTypeEncoder<sbyte> LoadEncoder(string solidityType, in sbyte val)
+        public static IAbiTypeEncoder<sbyte> LoadEncoder(string solidityType, in sbyte val)
         {
             var encoder = new Int8Encoder();
             encoder.SetValue(val);
             return encoder;
         }
 
-        public static ISolidityTypeEncoder<byte> LoadEncoder(string solidityType, in byte val)
+        public static IAbiTypeEncoder<byte> LoadEncoder(string solidityType, in byte val)
         {
             var encoder = new UInt8Encoder();
             encoder.SetValue(val);
             return encoder;
         }
 
-        public static ISolidityTypeEncoder<short> LoadEncoder(string solidityType, in short val)
+        public static IAbiTypeEncoder<short> LoadEncoder(string solidityType, in short val)
         {
             var encoder = new Int16Encoder();
             encoder.SetValue(val);
             return encoder;
         }
 
-        public static ISolidityTypeEncoder<ushort> LoadEncoder(string solidityType, in ushort val)
+        public static IAbiTypeEncoder<ushort> LoadEncoder(string solidityType, in ushort val)
         {
             var encoder = new UInt16Encoder();
-            encoder.SetTypeInfo(SolidityTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
             encoder.SetValue(val);
             return encoder;
         }
 
-        public static ISolidityTypeEncoder<int> LoadEncoder(string solidityType, in int val)
+        public static IAbiTypeEncoder<int> LoadEncoder(string solidityType, in int val)
         {
             var encoder = new Int32Encoder();
-            encoder.SetTypeInfo(SolidityTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
             encoder.SetValue(val);
             return encoder;
         }
 
-        public static ISolidityTypeEncoder<uint> LoadEncoder(string solidityType, in uint val)
+        public static IAbiTypeEncoder<uint> LoadEncoder(string solidityType, in uint val)
         {
             var encoder = new UInt32Encoder();
-            encoder.SetTypeInfo(SolidityTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
             encoder.SetValue(val);
             return encoder;
         }
 
-        public static ISolidityTypeEncoder<long> LoadEncoder(string solidityType, in long val)
+        public static IAbiTypeEncoder<long> LoadEncoder(string solidityType, in long val)
         {
             var encoder = new Int64Encoder();
-            encoder.SetTypeInfo(SolidityTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
             encoder.SetValue(val);
             return encoder;
         }
 
-        public static ISolidityTypeEncoder<ulong> LoadEncoder(string solidityType, in ulong val)
+        public static IAbiTypeEncoder<ulong> LoadEncoder(string solidityType, in ulong val)
         {
             var encoder = new UInt64Encoder();
-            encoder.SetTypeInfo(SolidityTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
             encoder.SetValue(val);
             return encoder;
         }
 
-        public static ISolidityTypeEncoder<BigInteger> LoadEncoder(string solidityType, in BigInteger val)
+        public static IAbiTypeEncoder<BigInteger> LoadEncoder(string solidityType, in BigInteger val)
         {
             var encoder = new Int256Encoder();
-            encoder.SetTypeInfo(SolidityTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
             encoder.SetValue(val);
             return encoder;
         }
 
-        public static ISolidityTypeEncoder<UInt256> LoadEncoder(string solidityType, in UInt256 val)
+        public static IAbiTypeEncoder<UInt256> LoadEncoder(string solidityType, in UInt256 val)
         {
             var encoder = new UInt256Encoder();
-            encoder.SetTypeInfo(SolidityTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
             encoder.SetValue(val);
             return encoder;
         }

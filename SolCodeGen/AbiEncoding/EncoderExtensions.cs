@@ -7,7 +7,7 @@ namespace SolCodeGen.AbiEncoding
 {
     public static class EncoderExtensions
     {
-        public static Span<byte> ToEncodedBuffer(this IEnumerable<ISolidityTypeEncoder> encoders)
+        public static Span<byte> ToEncodedBuffer(this IEnumerable<IAbiTypeEncoder> encoders)
         {
             // get length of all encoded params
             int totalLen = 0;
@@ -30,7 +30,7 @@ namespace SolCodeGen.AbiEncoding
             return buff;
         }
 
-        public static string ToEncodedHex(this IEnumerable<ISolidityTypeEncoder> encoders)
+        public static string ToEncodedHex(this IEnumerable<IAbiTypeEncoder> encoders)
         {
             // get length of all encoded params
             int totalLen = 0;
@@ -53,7 +53,7 @@ namespace SolCodeGen.AbiEncoding
             return HexConverter.BytesToHex(buff, hexPrefix: true);
         }
 
-        public static string ToEncodedHex(this ISolidityTypeEncoder encoder)
+        public static string ToEncodedHex(this IAbiTypeEncoder encoder)
         {
             return new[] { encoder }.ToEncodedHex();
         }

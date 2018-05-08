@@ -4,12 +4,12 @@ using System.Linq;
 
 namespace SolCodeGen.AbiEncoding.Encoders
 {
-    public class ArrayEncoder<TItem> : SolidityTypeEncoder<IEnumerable<TItem>>
+    public class ArrayEncoder<TItem> : AbiTypeEncoder<IEnumerable<TItem>>
     {
 
-        ISolidityTypeEncoder<TItem> _itemEncoder;
+        IAbiTypeEncoder<TItem> _itemEncoder;
 
-        public ArrayEncoder(ISolidityTypeEncoder<TItem> itemEncoder)
+        public ArrayEncoder(IAbiTypeEncoder<TItem> itemEncoder)
         {
             _itemEncoder = itemEncoder;
         }

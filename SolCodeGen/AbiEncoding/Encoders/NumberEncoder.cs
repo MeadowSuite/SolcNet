@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 namespace SolCodeGen.AbiEncoding.Encoders
 {
 
-    public abstract class NumberEncoder<TInt> : SolidityTypeEncoder<TInt> where TInt : struct
+    public abstract class NumberEncoder<TInt> : AbiTypeEncoder<TInt> where TInt : struct
     {
         protected static Dictionary<string, (int ByteSize, BigInteger MaxValue)> _unsignedTypeSizes
             = new Dictionary<string, (int ByteSize, BigInteger MaxValue)>(32);
@@ -87,7 +87,7 @@ namespace SolCodeGen.AbiEncoding.Encoders
     }
 
 
-    public class Int8Encoder : SolidityTypeEncoder<sbyte>
+    public class Int8Encoder : AbiTypeEncoder<sbyte>
     {
         public override Span<byte> Encode(Span<byte> buffer)
         {
@@ -96,7 +96,7 @@ namespace SolCodeGen.AbiEncoding.Encoders
         }
     }
 
-    public class UInt8Encoder : SolidityTypeEncoder<byte>
+    public class UInt8Encoder : AbiTypeEncoder<byte>
     {
         public override Span<byte> Encode(Span<byte> buffer)
         {
@@ -161,7 +161,7 @@ namespace SolCodeGen.AbiEncoding.Encoders
         static readonly Lazy<UInt256Encoder> UncheckedInstance = new Lazy<UInt256Encoder>(() => 
         {
             var inst = new UInt256Encoder();
-            inst.SetTypeInfo(SolidityTypeMap.GetSolidityTypeInfo("uint256"));
+            inst.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo("uint256"));
             return inst;
         });
 

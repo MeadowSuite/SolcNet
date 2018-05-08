@@ -31,7 +31,7 @@ namespace SolCodeGen.Tests
         {
             int num = -16098398;
             var numHex = HexConverter.GetHexFromInteger(num);
-            var numRoundTrip = HexConverter.HexToValue<int>(numHex);
+            var numRoundTrip = HexConverter.HexToValue<int>(numHex, checkEndian: true);
             Assert.Equal(num, numRoundTrip);
         }
 
@@ -60,6 +60,15 @@ namespace SolCodeGen.Tests
             var hex = HexConverter.GetHexFromInteger(num, checkEndian: true);
             var roundTrip = HexConverter.HexToValue<UInt256>(hex, checkEndian: true);
             Assert.Equal(num, roundTrip);
+        }
+
+        [Fact]
+        public void Hash()
+        {
+            Hash hash = "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238";
+            var hex = HexConverter.GetHex<Hash>(hash, hexPrefix: true, checkEndian: false);
+            var roundTrip = HexConverter.HexToValue<Hash>(hex, checkEndian: false);
+            Assert.Equal(hash.ToString(), roundTrip);
         }
     }
 }

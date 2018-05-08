@@ -50,9 +50,9 @@ namespace SolCodeGen
 
         public Address(byte[] bytes)
         {
-            if (bytes.Length != 20)
+            if (bytes.Length != SIZE)
             {
-                throw new ArgumentException("Byte arrays for addresse should be 20 bytes long, was given " + bytes.Length, nameof(bytes));
+                throw new ArgumentException("Byte arrays for addresses should be 20 bytes long, was given " + bytes.Length, nameof(bytes));
             }
             var uintView = MemoryMarshal.Cast<byte, uint>(bytes);
             P1 = uintView[0];
@@ -77,6 +77,7 @@ namespace SolCodeGen
         public static bool operator !=(Address a, Address b) => !a.Equals(b);
 
         public static implicit operator Address(string value) => HexConverter.HexToValue<Address>(value, checkEndian: false);
+        public static implicit operator string(Address value) => value.GetHexString();
 
         /// <summary>
         /// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md

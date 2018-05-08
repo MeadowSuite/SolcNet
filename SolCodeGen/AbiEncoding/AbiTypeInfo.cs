@@ -2,7 +2,7 @@
 
 namespace SolCodeGen.AbiEncoding
 {
-    public class SolidityTypeInfo : IEquatable<SolidityTypeInfo>
+    public class AbiTypeInfo : IEquatable<AbiTypeInfo>
     {
         /// <summary>
         /// Original type string from the json ABI.
@@ -38,12 +38,12 @@ namespace SolCodeGen.AbiEncoding
         /// <summary>
         /// The elementary/base value of an array time. Null for non-array types.
         /// </summary>
-        public readonly SolidityTypeInfo ArrayItemInfo;
+        public readonly AbiTypeInfo ArrayItemInfo;
 
 
-        public SolidityTypeInfo(string solidityName, Type clrType, int baseTypeByteSize, 
+        public AbiTypeInfo(string solidityName, Type clrType, int baseTypeByteSize, 
             SolidityTypeCategory category = SolidityTypeCategory.Elementary, 
-            int arrayTypeLength = 0, SolidityTypeInfo arrayItemInfo = null)
+            int arrayTypeLength = 0, AbiTypeInfo arrayItemInfo = null)
         {
             SolidityName = solidityName;
             ClrType = clrType;
@@ -54,14 +54,14 @@ namespace SolCodeGen.AbiEncoding
             ArrayItemInfo = arrayItemInfo;
         }
 
-        public bool Equals(SolidityTypeInfo other)
+        public bool Equals(AbiTypeInfo other)
         {
             return other.SolidityName == SolidityName;
         }
 
         public override bool Equals(object obj)
         {
-            return obj is SolidityTypeInfo info ? Equals(info) : false;
+            return obj is AbiTypeInfo info ? Equals(info) : false;
         }
 
         public override int GetHashCode()

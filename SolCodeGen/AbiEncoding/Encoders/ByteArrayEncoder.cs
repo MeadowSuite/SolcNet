@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SolCodeGen.AbiEncoding.Encoders
 {
-    public class ByteArrayEncoder : SolidityTypeEncoder<IEnumerable<byte>>
+    public class ByteArrayEncoder : AbiTypeEncoder<IEnumerable<byte>>
     {
         public override int GetEncodedSize()
         {

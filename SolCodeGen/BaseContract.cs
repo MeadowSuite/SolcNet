@@ -1,4 +1,5 @@
 ﻿using SolcNet.DataDescription.Output;
+using SolCodeGen.JsonRpc;
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -28,7 +29,7 @@ namespace SolCodeGen
     public abstract class BaseContract
     {
         public readonly Uri Server;
-        public readonly Address Address;
+        public readonly Address ContractAddress;
         public readonly Address DefaultFromAccount;
 
         public abstract string AbiJson { get; }
@@ -44,11 +45,14 @@ namespace SolCodeGen
         protected Doc _userDoc;
         public Doc UserDoc => _userDoc ?? (_userDoc = UserDocJson);
 
-        public BaseContract(Uri server, Address address, Address defaultFromAccount)
+        public JsonRpcClient JsonRpcClient { get; protected set; }
+
+        public BaseContract(Uri server, Address contractAddress, Address defaultFromAccount)
         {
             Server = server;
-            Address = address;
+            ContractAddress = contractAddress;
             DefaultFromAccount = defaultFromAccount;
+            JsonRpcClient = new JsonRpcClient(Server, ContractAddress, DefaultFromAccount);
         }
 
 

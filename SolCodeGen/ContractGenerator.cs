@@ -140,7 +140,7 @@ namespace SolCodeGen
             for (var i = 0; i < items.Length; i++)
             {
                 var input = inputs[i];
-                var type = SolidityTypeMap.SolidityTypeToClrTypeString(input.Type);
+                var type = AbiTypeMap.SolidityTypeToClrTypeString(input.Type);
                 var name = string.IsNullOrEmpty(input.Name) ? $"unamed{unnamed++}" : input.Name;
                 items[i] = type + " " + name;
             }
@@ -154,7 +154,7 @@ namespace SolCodeGen
             for (var i = 0; i < items.Length; i++)
             {
                 var output = outputs[i];
-                var type = SolidityTypeMap.SolidityTypeToClrTypeString(output.Type);
+                var type = AbiTypeMap.SolidityTypeToClrTypeString(output.Type);
                 var name = string.IsNullOrEmpty(output.Name) ? $"unamed{unnamed++}" : output.Name;
                 items[i] = type + " " + name;
             }
