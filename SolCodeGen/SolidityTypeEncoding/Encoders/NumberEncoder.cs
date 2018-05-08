@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace SolCodeGen.SolidityTypeEncoding
+namespace SolCodeGen.SolidityTypeEncoding.Encoders
 {
 
     public abstract class NumberEncoder<TInt> : SolidityTypeEncoder<TInt> where TInt : struct
@@ -38,9 +38,13 @@ namespace SolCodeGen.SolidityTypeEncoding
             base.SetValue(val);
             var bigInt = AsBigInteger;
             if (bigInt > MaxValue)
+            {
                 throw IntOverflow();
+            }
             if (Signed && bigInt < MinValue)
+            {
                 throw IntUnderflow();
+            }
         }
 
         public override Span<byte> Encode(Span<byte> buffer)
@@ -48,13 +52,25 @@ namespace SolCodeGen.SolidityTypeEncoding
             var byteSize = _info.BaseTypeByteSize;
 
             var bufferOffset = 31 - byteSize;
-            //var valBytes = new ReadOnlySpan<byte>(Unsafe.AsPointer(ref val), byteSize);
-            var valBytes = MemoryMarshal.Cast<TInt, byte>(new[] { _val });
-            
-            // TODO: implement support for bigendian systems
-            for (var i = 0; i < byteSize; i++)
+
+            //var valBytes = MemoryMarshal.Cast<TInt, byte>(new[] { _val });
+
+            Span<byte> valBytes = stackalloc byte[Unsafe.SizeOf<TInt>()];
+            MemoryMarshal.Write(valBytes, ref Unsafe.AsRef(_val));
+
+            if (BitConverter.IsLittleEndian)
             {
-                buffer[31 - i] = valBytes[i];
+                for (var i = 0; i < byteSize; i++)
+                {
+                    buffer[31 - i] = valBytes[i];
+                }
+            }
+            else
+            {
+                for (var i = 0; i < byteSize; i++)
+                {
+                    buffer[31 - byteSize + i] = valBytes[i];
+                }
             }
             return buffer.Slice(32);
         }
@@ -141,6 +157,37 @@ namespace SolCodeGen.SolidityTypeEncoding
     {
         protected override bool Signed => false;
         protected override BigInteger AsBigInteger => _val;
+
+        static readonly Lazy<UInt256Encoder> UncheckedInstance = new Lazy<UInt256Encoder>(() => 
+        {
+            var inst = new UInt256Encoder();
+            inst.SetTypeInfo(SolidityTypeMap.GetSolidityTypeInfo("uint256"));
+            return inst;
+        });
+
+        public override void SetValue(in UInt256 val)
+        {
+            // Skip unnecessary bounds check on max uint256 value.
+            // An optimization only for this common type at the moment.
+            if (_info.SolidityName == "uint256")
+            {
+                _val = val;
+            }
+            else
+            {
+                base.SetValue(val);
+            }
+        }
+
+        /// <summary>
+        /// Encodes a solidity 'uint256' (with no overflow checks since its the max value)
+        /// </summary>
+        public static Span<byte> EncodeUnchecked(Span<byte> buffer, in UInt256 val)
+        {
+            var encoder = UncheckedInstance.Value;
+            encoder._val = val;
+            return encoder.Encode(buffer);
+        }
     }
 
 

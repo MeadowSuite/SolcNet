@@ -331,13 +331,11 @@ namespace SolCodeGen
             int rsiz = STATE_SIZE == mdlen ? HASH_DATA_AREA : 200 - 2 * mdlen;
             int rsizw = rsiz / 8;
 
-            //st.AsBytes().Slice(0, STATE_SIZE).Clear();
             MemoryMarshal.AsBytes(st).Slice(0, STATE_SIZE).Clear();
 
             int i;
             for (; inlen >= rsiz; inlen -= rsiz, input = input.Slice(rsiz))
             {
-                //var input64 = input.NonPortableCast<byte, ulong>();
                 var input64 = MemoryMarshal.Cast<byte, ulong>(input);
 
                 for (i = 0; i < rsizw; i++)
@@ -357,7 +355,6 @@ namespace SolCodeGen
             temp[inlen++] = 1;
             temp[rsiz - 1] |= 0x80;
 
-            //var temp64 = temp.NonPortableCast<byte, ulong>();
             var temp64 = MemoryMarshal.Cast<byte, ulong>(temp);
 
             for (i = 0; i < rsizw; i++)
@@ -367,7 +364,6 @@ namespace SolCodeGen
 
             KeccakF(st, ROUNDS);
 
-            //st.AsBytes().Slice(0, mdlen).CopyTo(md);
             MemoryMarshal.AsBytes(st).Slice(0, mdlen).CopyTo(md);
         }
 

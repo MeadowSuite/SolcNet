@@ -93,7 +93,7 @@ namespace SolCodeGen
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            string val = HexConverter.GetHexFromObject(value);
+            string val = HexConverter.GetHexFromObject(value, hexPrefix: true);
             writer.WriteToken(JsonToken.String, val);
         }
 

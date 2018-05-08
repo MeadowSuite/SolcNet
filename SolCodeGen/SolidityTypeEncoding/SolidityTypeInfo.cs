@@ -93,14 +93,18 @@ namespace SolCodeGen.SolidityTypeEncoding
         DynamicArray,
 
         /// <summary>
-        /// Special encoded dynamic length string type
+        /// Special encoded dynamic length string
         /// </summary>
         String,
 
         /// <summary>
-        /// Special encoded dynamic length bytes type
+        /// Special dynamic length byte array
         /// </summary>
         Bytes,
+
+        /// <summary>
+        /// Special fixed length byte array up to 32 bytes
+        /// </summary>
         BytesM
     }
 

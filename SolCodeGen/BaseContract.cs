@@ -51,13 +51,6 @@ namespace SolCodeGen
             DefaultFromAccount = defaultFromAccount;
         }
 
-        public string GetFunctionHash(string functionSignature)
-        {
-            var bytes = Encoding.UTF8.GetBytes("transfer(address,uint256)");
-            var hash = Keccak.ComputeHash(bytes).Slice(0, 4);
-            string funcSignature = HexConverter.BytesToHex(hash, bigEndian: false, hexPrefix: false);
-            return funcSignature;
-        }
 
     }
 

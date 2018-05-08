@@ -20,7 +20,7 @@ namespace SolCodeGen
         readonly uint P5;
 
         public byte[] GetBytes() => MemoryMarshal.AsBytes(new Span<uint>(new[] { P1, P2, P3, P4, P5 })).ToArray();
-        public string GetHexString() => HexConverter.GetHex<Address>(this, bigEndian: false);
+        public string GetHexString() => HexConverter.GetHex<Address>(this, hexPrefix: true);
 
         public Address(string hexString)
         {
@@ -76,7 +76,7 @@ namespace SolCodeGen
         public static bool operator ==(Address a, Address b) => a.Equals(b);
         public static bool operator !=(Address a, Address b) => !a.Equals(b);
 
-        public static implicit operator Address(string value) => HexConverter.HexToValue<Address>(value, bigEndian: false);
+        public static implicit operator Address(string value) => HexConverter.HexToValue<Address>(value, checkEndian: false);
 
         /// <summary>
         /// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md

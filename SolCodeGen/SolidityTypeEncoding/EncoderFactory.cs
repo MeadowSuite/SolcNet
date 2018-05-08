@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SolCodeGen.SolidityTypeEncoding.Encoders;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -13,12 +14,44 @@ namespace SolCodeGen.SolidityTypeEncoding
     {
         // TODO: if we use the t4 generated UInt<M> types, use a t4 generator to create the corresponding LoadEncoder methods here...
 
-        public static ISolidityTypeEncoder LoadEncoder<TItem>(string solidityType, in IEnumerable<TItem> val, ISolidityTypeEncoder<TItem> itemEncoder)
+        public static ISolidityTypeEncoder<IEnumerable<TItem>> LoadEncoder<TItem>(string solidityType, in IEnumerable<TItem> val, ISolidityTypeEncoder<TItem> itemEncoder)
         {
+            var info = SolidityTypeMap.GetSolidityTypeInfo(solidityType);
+            if (info.Category != SolidityTypeCategory.FixedArray && info.Category != SolidityTypeCategory.DynamicArray)
+            {
+                throw new ArgumentException($"Encoder factory for array types was called with a type '{info.Category}'");
+            }
             var encoder = new ArrayEncoder<TItem>(itemEncoder);
-            encoder.SetTypeInfo(SolidityTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(info);
             encoder.SetValue(val);
             return encoder;
+        }
+
+        public static ISolidityTypeEncoder<IEnumerable<byte>> LoadEncoder(string solidityType, in IEnumerable<byte> val)
+        {
+            var into = SolidityTypeMap.GetSolidityTypeInfo(solidityType);
+            switch(into.Category)
+            {
+                case SolidityTypeCategory.Bytes:
+                case SolidityTypeCategory.BytesM:
+                    {
+                        var encoder = new ByteArrayEncoder();
+                        encoder.SetTypeInfo(into);
+                        encoder.SetValue(val);
+                        return encoder;
+                    }
+                case SolidityTypeCategory.DynamicArray:
+                case SolidityTypeCategory.FixedArray:
+                    {
+                        var encoder = new ArrayEncoder<byte>(new UInt8Encoder());
+                        encoder.SetTypeInfo(into);
+                        encoder.SetValue(val);
+                        return encoder;
+                    }
+                default:
+                    throw new ArgumentException($"Encoder factor method for byte arrays called with type '{into.Category}'");
+            }
+
         }
 
         public static ISolidityTypeEncoder<string> LoadEncoder(string solidityType, in string val)

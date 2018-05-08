@@ -21,7 +21,7 @@ namespace SolCodeGen.Tests
         [MemberData(nameof(Data))]
         public void NumericByDynamicObject(object val)
         {
-            var numHex = HexConverter.GetHexFromObject(val);
+            var numHex = HexConverter.GetHexFromObject(val, hexPrefix: true);
             var numRoundTrip = HexConverter.HexToObject(val.GetType(), numHex, bigEndian: true);
             Assert.Equal(val, numRoundTrip);
         }
@@ -30,7 +30,7 @@ namespace SolCodeGen.Tests
         public void IntByValue()
         {
             int num = -16098398;
-            var numHex = HexConverter.GetHex(num);
+            var numHex = HexConverter.GetHexFromInteger(num);
             var numRoundTrip = HexConverter.HexToValue<int>(numHex);
             Assert.Equal(num, numRoundTrip);
         }
@@ -39,10 +39,9 @@ namespace SolCodeGen.Tests
         public void AddressGeneric()
         {
             var addrHex = "0xb60e8dd61c5d32be8058bb8eb970870f07233155";
-            var addr = HexConverter.HexToValue<Address>(addrHex, bigEndian: false);
-            var roundTrip = HexConverter.GetHex(addr, bigEndian: false);
+            var addr = HexConverter.HexToValue<Address>(addrHex, checkEndian: false);
+            var roundTrip = HexConverter.GetHexFromInteger(addr, hexPrefix: true, checkEndian: false);
             Assert.Equal(addrHex, roundTrip);
-
         }
 
         [Fact]
@@ -50,7 +49,7 @@ namespace SolCodeGen.Tests
         {
             var addrHex = "0xb60e8dd61c5d32be8058bb8eb970870f07233155";
             var addr = (Address)HexConverter.HexToObject(typeof(Address), addrHex, bigEndian: false);
-            var roundTrip = HexConverter.GetHexFromObject(addr);
+            var roundTrip = HexConverter.GetHexFromObject(addr, hexPrefix: true);
             Assert.Equal(addrHex, roundTrip);
         }
 
@@ -58,8 +57,8 @@ namespace SolCodeGen.Tests
         public void UInt256()
         { 
             UInt256 num = 1234565;
-            var hex = HexConverter.GetHex(num, bigEndian: true);
-            var roundTrip = HexConverter.HexToValue<UInt256>(hex, bigEndian: true);
+            var hex = HexConverter.GetHexFromInteger(num, checkEndian: true);
+            var roundTrip = HexConverter.HexToValue<UInt256>(hex, checkEndian: true);
             Assert.Equal(num, roundTrip);
         }
     }

@@ -10,9 +10,11 @@ namespace SolCodeGen.SolidityTypeEncoding
     public static class SolidityTypeMap
     {
         /// <summary>
-        /// Map of all the elementary solidity type names and their corresponding C# type.
-        /// All the static types and only the 'string' and 'bytes' dynamic types.
-        /// Does not include the generic/meta types: <type>[M], <type>[], or (T1,T2,...,Tn)
+        /// Map of all finite solidity type names and their corresponding C# type.
+        /// Includes all the static / elementary types, as well as the explicit dynamic
+        /// types 'string' and 'bytes'.
+        /// 
+        /// Does not include the array or tuple types; i.e.: <type>[M], <type>[], or (T1,T2,...,Tn)
         /// 
         /// Note: All possible values of the C# types do not neccessarily fit into the corresponding
         /// solidity types. For example a UInt32 C# type is used for a UInt24 solidity type.
@@ -20,7 +22,12 @@ namespace SolCodeGen.SolidityTypeEncoding
         /// 
         /// ByteSize is zero for dynamic types.
         /// </summary>
-        static readonly ReadOnlyDictionary<string, SolidityTypeInfo> _types;
+        static readonly ReadOnlyDictionary<string, SolidityTypeInfo> _finiteTypes;
+
+        /// <summary>
+        /// Cache of solidity types parsed during runtime; eg: arrays, tuples
+        /// </summary>
+        static readonly Dictionary<string, SolidityTypeInfo> _cachedTypes = new Dictionary<string, SolidityTypeInfo>();
 
         static SolidityTypeMap()
         {
@@ -37,14 +44,14 @@ namespace SolCodeGen.SolidityTypeEncoding
                 ["string"] = new SolidityTypeInfo("string", typeof(string), 1, SolidityTypeCategory.String),
                 
                 // dynamic sized byte sequence
-                ["bytes"] = new SolidityTypeInfo("bytes", typeof(Span<byte>), 1, SolidityTypeCategory.Bytes)
+                ["bytes"] = new SolidityTypeInfo("bytes", typeof(IEnumerable<byte>), 1, SolidityTypeCategory.Bytes)
             };
 
             // fixed sized bytes elementary types
             for (var i = 1; i <= 32; i++)
             {
                 dict["bytes" + i] = new SolidityTypeInfo("bytes" + i, 
-                    typeof(Span<byte>), 
+                    typeof(IEnumerable<byte>), 
                     baseTypeByteSize: 1, 
                     SolidityTypeCategory.BytesM, 
                     arrayTypeLength: i);
@@ -67,10 +74,10 @@ namespace SolCodeGen.SolidityTypeEncoding
                 }
             }
 
-            _types = new ReadOnlyDictionary<string, SolidityTypeInfo>(dict);
+            _finiteTypes = new ReadOnlyDictionary<string, SolidityTypeInfo>(dict);
         }
 
-        public static string SolidityTypeToCSharpString(string name)
+        public static string SolidityTypeToClrTypeString(string name)
         {
             var info = GetSolidityTypeInfo(name);
             return info.ClrTypeName;
@@ -82,32 +89,34 @@ namespace SolCodeGen.SolidityTypeEncoding
             var arrayBracket = name.IndexOf('[');
             if (arrayBracket > 0)
             {
+                if (_cachedTypes.TryGetValue(name, out var t))
+                {
+                    return t;
+                }
                 var bracketPart = name.Substring(arrayBracket);
                 int arraySize = 0;
                 var typeCategory = SolidityTypeCategory.DynamicArray;
-                if (bracketPart == "[]")
+                if (bracketPart.Length > 2)
                 {
-                    var sizeStr = bracketPart.Substring(0, bracketPart.Length - 1);
+                    var sizeStr = bracketPart.Substring(1, bracketPart.Length - 2);
                     arraySize = int.Parse(sizeStr, CultureInfo.InvariantCulture);
                     typeCategory = SolidityTypeCategory.FixedArray;
                 }
 
                 var baseName = name.Substring(0, arrayBracket);
-                if (_types.TryGetValue(baseName, out var baseInfo))
+                if (_finiteTypes.TryGetValue(baseName, out var baseInfo))
                 {
                     var arrayType = typeof(IEnumerable<>).MakeGenericType(baseInfo.ClrType);
                     var info = new SolidityTypeInfo(name, arrayType, baseInfo.BaseTypeByteSize, typeCategory, arraySize);
+                    _cachedTypes[name] = info;
                     return info;
                 }
             }
-            else
+            else if (_finiteTypes.TryGetValue(name, out var t))
             {
-                if (_types.TryGetValue(name, out var t))
-                {
-                    return t;
-                }
+                return t;
             }
-
+    
             throw new ArgumentException("Unexpected solidity ABI type: " + name, nameof(name));
 
         }

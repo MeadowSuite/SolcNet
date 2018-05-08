@@ -1,18 +1,23 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 
 namespace SolCodeGen.SolidityTypeEncoding
 {
-
     public interface ISolidityTypeEncoder
     {
         int GetEncodedSize();
+
+        /// <summary>
+        /// Encodes and writes the value to the buffer, then returns the buffer 
+        /// with this position/cursor incremented to where the next writer should
+        /// start at.
+        /// </summary>
         Span<byte> Encode(Span<byte> buffer);
     }
 
     public interface ISolidityTypeEncoder<TVal> : ISolidityTypeEncoder
     {
         void SetValue(in TVal val);
+        void SetTypeInfo(SolidityTypeInfo info);
     }
 
     public abstract class SolidityTypeEncoder<TVal> : ISolidityTypeEncoder<TVal>
@@ -32,31 +37,11 @@ namespace SolCodeGen.SolidityTypeEncoding
 
         public abstract Span<byte> Encode(Span<byte> buffer);
         public virtual int GetEncodedSize() => 32;
-    }
 
-    public class BoolEncoder : SolidityTypeEncoder<bool>
-    {
-        public override Span<byte> Encode(Span<byte> buffer)
-        {
-            buffer[31] = _val ? (byte)1 : (byte)0;
-            return buffer.Slice(32);
-        }
-    }
 
-    public class AddressEncoder : SolidityTypeEncoder<Address>
-    {
-        public override Span<byte> Encode(Span<byte> buffer)
+        protected Exception UnsupportedTypeException()
         {
-            MemoryMarshal.Write(buffer.Slice(12), ref _val);
-            return buffer.Slice(32);
-        }
-    }
-
-    public class StringEncoder : SolidityTypeEncoder<string>
-    {
-        public override Span<byte> Encode(Span<byte> buffer)
-        {
-            throw new NotImplementedException();
+            return new ArgumentException($"Encoder does not support solidity type category '{_info.Category}', type name: {_info.SolidityName}");
         }
     }
 

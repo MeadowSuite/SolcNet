@@ -39,16 +39,17 @@ namespace SolCodeGen
         
 
         public Task<(TransactionReceipt Receipt, EventLog[] EventLogs, bool _result)> ExampleFunction(
-            Address _to, UInt256 _amount, IEnumerable<ulong> _extraVals,
+            Address _to, UInt256 _amount, IEnumerable<ulong> _extraVals, IEnumerable<byte> _rawData,
             SendParams sendParams = null, CallType callType = CallType.Transaction)
         {
-            var funcHash = GetFunctionHash("transfer(address,uint256,uint64[])");
+            var funcHash = MethodID.GetMethodID("transfer(address,uint256,uint64[])");
 
             // get encoders for parameters
             var encoders = new ISolidityTypeEncoder[] {
                 EncoderFactory.LoadEncoder("address", _to),
                 EncoderFactory.LoadEncoder("uint256", _amount),
-                EncoderFactory.LoadEncoder("uint64[]", _extraVals, EncoderFactory.LoadEncoder("uint64", default(ulong)))
+                EncoderFactory.LoadEncoder("uint64[]", _extraVals, EncoderFactory.LoadEncoder("uint64", default(ulong))),
+                EncoderFactory.LoadEncoder("bytes", _rawData)
             };
 
             // get length of all encoded params

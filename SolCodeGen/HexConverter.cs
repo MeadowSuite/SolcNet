@@ -11,36 +11,39 @@ namespace SolCodeGen
     public static class HexConverter
     {
 
-        public static string GetHexFromObject(object val)
+        public static string GetHexFromObject(object val, bool hexPrefix = false)
         {
             switch (val)
             {
-                case byte v: return GetHex(v);
-                case sbyte v: return GetHex(v);
-                case short v: return GetHex((int)v);
-                case ushort v: return GetHex((int)v);
-                case int v: return GetHex(v);
-                case uint v: return GetHex(v);
-                case long v: return GetHex(v);
-                case ulong v: return GetHex(v);
-                case UInt256 v: return GetHex(v);
-                case Address v: return GetHex(v, bigEndian: false);
-                case byte[] v: return BytesToHex(v, bigEndian: false, hexPrefix: true);
+                case byte v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
+                case sbyte v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
+                case short v: return GetHexFromInteger((int)v, hexPrefix: hexPrefix);
+                case ushort v: return GetHexFromInteger((int)v, hexPrefix: hexPrefix);
+                case int v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
+                case uint v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
+                case long v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
+                case ulong v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
+                case UInt256 v: return GetHexFromInteger(v, hexPrefix: hexPrefix);
+                case Address v: return GetHexFromInteger(v, hexPrefix: hexPrefix, checkEndian: false);
+                case byte[] v: return BytesToHex(v, hexPrefix: true, checkEndian: false);
                 default:
                     throw new Exception($"Converting type '{val.GetType()}' to hex is not supported");
             }
         }
 
-        public static string GetHex<T>(T s, bool bigEndian = true, bool hexPrefix = true) where T : struct
+        public static string GetHexFromInteger<T>(in T s, bool hexPrefix = false, bool checkEndian = true) where T : struct
         {
-            //var bytes = MemoryMarshal.Cast<T, byte>(new Span<T>(new[] { s }));
-            //Span<byte> bytes = stackalloc byte[Unsafe.SizeOf<T>()];
-            Span<byte> bytes = stackalloc byte[Marshal.SizeOf<T>()];
-            MemoryMarshal.Write(bytes, ref s);
-            return BytesToHex(bytes, bigEndian, hexPrefix);
+            return GetHex(s, hexPrefix: hexPrefix, checkEndian: checkEndian);
         }
 
-        public static string BytesToHex(Span<byte> bytes, bool bigEndian, bool hexPrefix)
+        public static string GetHex<T>(in T s, bool hexPrefix = false, bool checkEndian = false) where T : struct
+        {
+            Span<byte> bytes = stackalloc byte[Marshal.SizeOf<T>()];
+            MemoryMarshal.Write(bytes, ref Unsafe.AsRef(s));
+            return BytesToHex(bytes, hexPrefix: hexPrefix, checkEndian: checkEndian);
+        }
+
+        public static string BytesToHex(Span<byte> bytes, bool hexPrefix = false, bool checkEndian = false)
         {
             var charArr = new char[bytes.Length * 2 + (hexPrefix ? 2 : 0)];
             Span<char> c = charArr;
@@ -50,16 +53,34 @@ namespace SolCodeGen
                 c[1] = 'x';
                 c = c.Slice(2);
             }
-            byte b;
-            for (int i = 0; i < bytes.Length; ++i)
+            if (checkEndian && BitConverter.IsLittleEndian)
             {
-                var index = bigEndian ? bytes.Length - i - 1 : i;
-                b = ((byte)(bytes[index] >> 4));
-                c[i * 2] = (char)(b > 9 ? b + 0x57 : b + 0x30);
-                b = ((byte)(bytes[index] & 0xF));
-                c[i * 2 + 1] = (char)(b > 9 ? b + 0x57 : b + 0x30);
+                for (int i = 0; i < bytes.Length; ++i)
+                {
+                    ref byte index = ref bytes[bytes.Length - i - 1];
+                    c[i * 2] = ByteToHexChar((byte)(index >> 4));
+                    c[i * 2 + 1] = ByteToHexChar((byte)(index & 0xF));
+                }
+            }
+            else
+            {
+                for (int i = 0; i < bytes.Length; ++i)
+                {
+                    ref byte index = ref bytes[i];
+                    c[i * 2] = ByteToHexChar((byte)(index >> 4));
+                    c[i * 2 + 1] = ByteToHexChar((byte)(index & 0xF));
+                }
             }
             return new string(charArr);
+        }
+
+        /// <summary>
+        /// Returns single lowercase hex character for given byte
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static char ByteToHexChar(in byte b)
+        {
+            return (char)(b > 9 ? b + 0x57 : b + 0x30);
         }
 
         readonly static Dictionary<Type, MethodInfo> ParseHexGenericCache = new Dictionary<Type, MethodInfo>();
@@ -83,7 +104,7 @@ namespace SolCodeGen
             return methodInfo.Invoke(null, new object[] { str, bigEndian });
         }
 
-        public static T HexToValue<T>(string str, bool bigEndian = true) where T : struct
+        public static T HexToValue<T>(string str, bool checkEndian = true) where T : struct
         {
             if (str.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
             {
@@ -91,7 +112,6 @@ namespace SolCodeGen
             }
 
             var byteLen = str.Length / 2;
-            //var tSize = Unsafe.SizeOf<T>();
             var tSize = Marshal.SizeOf<T>();
             if (byteLen > tSize)
             {
@@ -107,31 +127,15 @@ namespace SolCodeGen
                 var underSize = (tSize - byteLen) * 2;
                 str = new string('0', underSize) + str;
             }
-
-            Span<T> result = new Span<T>(new T[1]);
-            var resultBytes = MemoryMarshal.AsBytes(result);
+            Span<byte> resultBytes = stackalloc byte[Marshal.SizeOf<T>()];
+            bool endianSwap = checkEndian && BitConverter.IsLittleEndian;
             for (int i = 0; i < resultBytes.Length; i++)
             {
-                var index = bigEndian ? resultBytes.Length - i - 1 : i;
+                var index = endianSwap ? resultBytes.Length - i - 1 : i;
                 resultBytes[index] = Convert.ToByte(str.Substring(i * 2, 2), 16);
             }
-            return result[0];
+            return MemoryMarshal.Read<T>(resultBytes);
         }
-
-        /*
-        public static TTo LooseStructConvert<TFrom, TTo>(TFrom val) 
-            where TFrom : struct
-            where TTo : struct
-        {
-            var fromSize = Unsafe.SizeOf<TFrom>();
-            var toSize = Unsafe.SizeOf<TTo>();
-            if (fromSize > toSize)
-            {
-                throw new ArgumentException($"From type '{typeof(TFrom)}' is larger than target type '{typeof(TTo)}', {fromSize} vs {toSize} bytes");
-            }
-
-        }
-        */
 
     }
 }
