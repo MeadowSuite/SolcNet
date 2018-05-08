@@ -69,7 +69,7 @@ namespace SolCodeGen.SolidityTypeEncoding
                 for (var i = byteStart; i <= byteEnd; i++)
                 {
                     var bits = i * 8;
-                    dict.Add("int" + bits, new SolidityTypeInfo("uint" + bits, typeof(TIntType), i));
+                    dict.Add("int" + bits, new SolidityTypeInfo("int" + bits, typeof(TIntType), i));
                     dict.Add("uint" + bits, new SolidityTypeInfo("uint" + bits, typeof(TUIntType), i));
                 }
             }

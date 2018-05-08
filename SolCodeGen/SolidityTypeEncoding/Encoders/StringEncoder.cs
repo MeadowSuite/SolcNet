@@ -7,7 +7,9 @@ namespace SolCodeGen.SolidityTypeEncoding.Encoders
     {
         public override int GetEncodedSize()
         {
-            return Encoding.UTF8.GetByteCount(_val);
+            var len = Encoding.UTF8.GetByteCount(_val);
+            int padded = PadLength(len, 32);
+            return 32 + padded;
         }
 
         public override Span<byte> Encode(Span<byte> buffer)
@@ -16,8 +18,8 @@ namespace SolCodeGen.SolidityTypeEncoding.Encoders
             int len = utf8.Length;
             buffer = UInt256Encoder.EncodeUnchecked(buffer, len);
             utf8.CopyTo(buffer);
-            int padding = len % 32;
-            return buffer.Slice(len + padding);
+            int padded = PadLength(len, 32);
+            return buffer.Slice(padded);
         }
     }
 

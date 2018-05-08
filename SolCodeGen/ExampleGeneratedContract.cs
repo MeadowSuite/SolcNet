@@ -42,6 +42,7 @@ namespace SolCodeGen
             Address _to, UInt256 _amount, IEnumerable<ulong> _extraVals, IEnumerable<byte> _rawData,
             SendParams sendParams = null, CallType callType = CallType.Transaction)
         {
+            // get function selector
             var funcHash = MethodID.GetMethodID("transfer(address,uint256,uint64[])");
 
             // get encoders for parameters
@@ -52,18 +53,9 @@ namespace SolCodeGen
                 EncoderFactory.LoadEncoder("bytes", _rawData)
             };
 
-            // get length of all encoded params
-            var len = encoders.Sum(e => e.GetEncodedSize());
+            // encoded parameters
+            var paramHex = encoders.ToEncodedHex();
 
-            // create buffer to write encoded params into
-            Span<byte> buffer = stackalloc byte[len];
-
-            // encode transaction arguments
-            var cursor = buffer;
-            foreach(var encoder in encoders)
-            {
-                cursor = encoder.Encode(cursor);
-            }
 
             // start event log filter with eth_newFilter
 

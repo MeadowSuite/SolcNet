@@ -137,5 +137,22 @@ namespace SolCodeGen
             return MemoryMarshal.Read<T>(resultBytes);
         }
 
+
+        public static byte[] HexToBytes(string str)
+        {
+            if (str.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            {
+                str = str.Substring(2);
+            }
+            
+            var outputLength = str.Length / 2;
+            var output = new byte[outputLength];
+            for (var i = 0; i < outputLength; i++)
+            {
+                output[i] = Convert.ToByte(str.Substring(i * 2, 2), 16);
+            }
+            return output;
+        }
+
     }
 }

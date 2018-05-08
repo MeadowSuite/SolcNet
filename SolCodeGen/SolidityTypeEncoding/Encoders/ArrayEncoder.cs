@@ -40,7 +40,15 @@ namespace SolCodeGen.SolidityTypeEncoding.Encoders
                 // write length prefix
                 buffer = UInt256Encoder.EncodeUnchecked(buffer, _val.Count());
             }
-            else if (_info.Category != SolidityTypeCategory.FixedArray)
+            else if (_info.Category == SolidityTypeCategory.FixedArray)
+            {
+                var itemCount = _val.Count();
+                if (itemCount != _info.ArrayLength)
+                {
+                    throw new ArgumentOutOfRangeException($"Fixed size array type '{_info.SolidityName}' needs exactly {_info.ArrayLength} items, was given {itemCount}");
+                }
+            }
+            else
             {
                 throw UnsupportedTypeException();
             }

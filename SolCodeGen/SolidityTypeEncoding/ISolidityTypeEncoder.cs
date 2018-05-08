@@ -43,6 +43,11 @@ namespace SolCodeGen.SolidityTypeEncoding
         {
             return new ArgumentException($"Encoder does not support solidity type category '{_info.Category}', type name: {_info.SolidityName}");
         }
+
+        protected int PadLength(int len, int multiple)
+        {
+            return (len + multiple - 1) / multiple * multiple;
+        }
     }
 
 }

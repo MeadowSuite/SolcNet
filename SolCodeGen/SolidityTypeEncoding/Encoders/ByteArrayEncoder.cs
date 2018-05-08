@@ -13,7 +13,7 @@ namespace SolCodeGen.SolidityTypeEncoding.Encoders
                 case SolidityTypeCategory.Bytes:
                     // 32 byte length prefix + byte array length + 32 byte remainder padding
                     var len = _val.Count();
-                    return 32 + len + (len % 32);
+                    return 32 + PadLength(len, 32);
                 case SolidityTypeCategory.BytesM:
                     return 32;
                 default:
@@ -37,8 +37,8 @@ namespace SolCodeGen.SolidityTypeEncoding.Encoders
                 {
                     buffer[i++] = b;
                 }
-                int padding = len % 32;
-                return buffer.Slice(len + padding);
+                int padded = PadLength(len, 32);
+                return buffer.Slice(padded);
             }
             else if (_info.Category == SolidityTypeCategory.BytesM)
             {
