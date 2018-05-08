@@ -1,4 +1,4 @@
-﻿using SolCodeGen.SolidityTypeEncoding;
+﻿using SolCodeGen.AbiEncoding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,10 +56,22 @@ namespace SolCodeGen
             // encoded parameters
             var paramHex = encoders.ToEncodedHex();
 
-
             // start event log filter with eth_newFilter
+            // TODO:...
 
             // rpc eth_sendTransaction
+            if (callType == CallType.Transaction)
+            {
+
+            }
+            else if (callType == CallType.Call)
+            {
+                // TODO: ...
+            }
+            else
+            {
+                throw new ArgumentException($"Unsupported call type: {callType}");
+            }
 
             // rpc eth_getTransactionReceipt
 

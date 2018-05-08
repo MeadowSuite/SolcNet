@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 namespace SolCodeGen
 {
-
-
     public class Invoker
     {
         //public delegate string[] ConvertToJsonRpcParams(TInput input);

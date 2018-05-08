@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace SolCodeGen.SolidityTypeEncoding.Encoders
+namespace SolCodeGen.AbiEncoding.Encoders
 {
     public class StringEncoder : SolidityTypeEncoder<string>
     {

@@ -1,9 +1,9 @@
-﻿using SolCodeGen.SolidityTypeEncoding.Encoders;
+﻿using SolCodeGen.AbiEncoding.Encoders;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace SolCodeGen.SolidityTypeEncoding
+namespace SolCodeGen.AbiEncoding
 {
     /// <summary>
     /// Generic-overloaded methods for easy access to typed encoders from generated contracts.

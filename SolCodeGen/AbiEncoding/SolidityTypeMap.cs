@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Numerics;
 
-namespace SolCodeGen.SolidityTypeEncoding
+namespace SolCodeGen.AbiEncoding
 {
 
     public static class SolidityTypeMap

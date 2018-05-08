@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SolCodeGen.SolidityTypeEncoding
+namespace SolCodeGen.AbiEncoding
 {
     /// <summary>
     /// The first four bytes of the call data for a function call specifies the function to be called. 

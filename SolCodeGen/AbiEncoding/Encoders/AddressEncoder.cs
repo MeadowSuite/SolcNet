@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace SolCodeGen.SolidityTypeEncoding.Encoders
+namespace SolCodeGen.AbiEncoding.Encoders
 {
     public class AddressEncoder : SolidityTypeEncoder<Address>
     {

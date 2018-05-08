@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SolCodeGen.SolidityTypeEncoding.Encoders
+namespace SolCodeGen.AbiEncoding.Encoders
 {
     public class BoolEncoder : SolidityTypeEncoder<bool>
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SolCodeGen.SolidityTypeEncoding
+namespace SolCodeGen.AbiEncoding
 {
     public class SolidityTypeInfo : IEquatable<SolidityTypeInfo>
     {

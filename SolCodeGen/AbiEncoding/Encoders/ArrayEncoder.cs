@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SolCodeGen.SolidityTypeEncoding.Encoders
+namespace SolCodeGen.AbiEncoding.Encoders
 {
     public class ArrayEncoder<TItem> : SolidityTypeEncoder<IEnumerable<TItem>>
     {

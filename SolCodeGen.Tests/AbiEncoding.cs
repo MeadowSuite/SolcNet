@@ -1,5 +1,5 @@
-﻿using SolCodeGen.SolidityTypeEncoding;
-using SolCodeGen.SolidityTypeEncoding.Encoders;
+﻿using SolCodeGen.AbiEncoding;
+using SolCodeGen.AbiEncoding.Encoders;
 using System;
 using System.Collections.Generic;
 using System.Text;

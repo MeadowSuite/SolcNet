@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace SolCodeGen.SolidityTypeEncoding.Encoders
+namespace SolCodeGen.AbiEncoding.Encoders
 {
 
     public abstract class NumberEncoder<TInt> : SolidityTypeEncoder<TInt> where TInt : struct

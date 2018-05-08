@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using SolcNet.DataDescription.Output;
-using SolCodeGen.SolidityTypeEncoding;
+using SolCodeGen.AbiEncoding;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
