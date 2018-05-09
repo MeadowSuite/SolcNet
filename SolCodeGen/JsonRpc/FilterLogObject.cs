@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace SolCodeGen.JsonRpc
 {
@@ -13,14 +15,14 @@ namespace SolCodeGen.JsonRpc
         /// <summary>
         /// QUANTITY - integer of the log index position in the block. null when its pending log.
         /// </summary>
-        [JsonProperty("logIndex")]
-        public long LogIndex { get; set; }
+        [JsonProperty("logIndex", ItemConverterType = typeof(JsonRpcHexConverter))]
+        public ulong LogIndex { get; set; }
 
         /// <summary>
         /// QUANTITY - integer of the transactions index position log was created from. null when its pending log.
         /// </summary>
-        [JsonProperty("transactionIndex")]
-        public long TransactionIndex { get; set; }
+        [JsonProperty("transactionIndex", ItemConverterType = typeof(JsonRpcHexConverter))]
+        public ulong TransactionIndex { get; set; }
 
         /// <summary>
         /// DATA, 32 Bytes - hash of the transactions this log was created from. null when its pending log.
@@ -37,8 +39,8 @@ namespace SolCodeGen.JsonRpc
         /// <summary>
         /// QUANTITY - the block number where this log was in. null when its pending. null when its pending log.
         /// </summary>
-        [JsonProperty("blockNumber")]
-        public long BlockNumber { get; set; }
+        [JsonProperty("blockNumber", ItemConverterType = typeof(JsonRpcHexConverter))]
+        public ulong BlockNumber { get; set; }
 
         /// <summary>
         /// DATA, 20 Bytes - address from which this log originated.
@@ -60,5 +62,12 @@ namespace SolCodeGen.JsonRpc
         /// </summary>
         [JsonProperty("topics")]
         public string[] Topics { get; set; }
+
+
+        /// <summary>
+        /// Properties not deserialized any members
+        /// </summary>
+        [JsonExtensionData]
+        public IDictionary<string, JToken> ExtraFields { get; set; }
     }
 }

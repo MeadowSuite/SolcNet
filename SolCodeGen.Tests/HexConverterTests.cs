@@ -6,33 +6,123 @@ namespace SolCodeGen.Tests
 {
     public class HexConverterTests
     {
-        public static IEnumerable<object[]> Data => new List<object[]>
-        {
-            new object[] { (int)-16098398, },
-            new object[] { (long)4611686018427387904 },
-            new object[] { (ulong)1844674407370955161 },
-            new object[] { int.MaxValue },
-            new object[] { int.MinValue },
-            new object[] { (byte)123 },
-            new object[] { (sbyte)-56 }
-        };
 
-        [Theory]
-        [MemberData(nameof(Data))]
-        public void NumericByDynamicObject(object val)
+        [Fact]
+        public void UInt8_1()
         {
-            var numHex = HexConverter.GetHexFromObject(val, hexPrefix: true);
-            var numRoundTrip = HexConverter.HexToObject(val.GetType(), numHex);
-            Assert.Equal(val, numRoundTrip);
+            byte num = 123;
+            var hex = "0x7b";
+            var toHex = HexConverter.GetHexFromInteger(num, hexPrefix: true);
+            Assert.Equal(hex, toHex);
+            byte numReturn = HexConverter.HexToInteger<byte>(toHex);
+            Assert.Equal(num, numReturn);
         }
 
         [Fact]
-        public void IntByValue()
+        public void Int8_1()
+        {
+            sbyte num = -56;
+            var hex = "0xc8";
+            var toHex = HexConverter.GetHexFromInteger(num, hexPrefix: true);
+            Assert.Equal(hex, toHex);
+            sbyte numReturn = HexConverter.HexToInteger<sbyte>(toHex);
+            Assert.Equal(num, numReturn);
+        }
+
+        [Fact]
+        public void Int32_1()
         {
             int num = -16098398;
-            var numHex = HexConverter.GetHexFromInteger(num);
-            var numRoundTrip = HexConverter.HexToValue<int>(numHex);
-            Assert.Equal(num, numRoundTrip);
+            var hex = "0xff0a5ba2";
+            var toHex = HexConverter.GetHexFromInteger(num, hexPrefix: true);
+            Assert.Equal(hex, toHex);
+            int numReturn = HexConverter.HexToInteger<int>(toHex);
+            Assert.Equal(num, numReturn);
+        }
+
+        [Fact]
+        public void Int32_2()
+        {
+            int num = int.MaxValue;
+            var hex = "0x7fffffff";
+            var toHex = HexConverter.GetHexFromInteger(num, hexPrefix: true);
+            Assert.Equal(hex, toHex);
+            int numReturn = HexConverter.HexToInteger<int>(toHex);
+            Assert.Equal(num, numReturn);
+        }
+
+        [Fact]
+        public void Int32_3()
+        {
+            int num = int.MinValue;
+            var hex = "0x80000000";
+            var toHex = HexConverter.GetHexFromInteger(num, hexPrefix: true);
+            Assert.Equal(hex, toHex);
+            int numReturn = HexConverter.HexToInteger<int>(toHex);
+            Assert.Equal(num, numReturn);
+        }
+
+        [Fact]
+        public void Int32_4()
+        {
+            int num = 0;
+            var hex = "0x00";
+            var toHex = HexConverter.GetHexFromInteger(num, hexPrefix: true);
+            Assert.Equal(hex, toHex);
+            int numReturn = HexConverter.HexToInteger<int>(toHex);
+            Assert.Equal(num, numReturn);
+        }
+
+        [Fact]
+        public void Int32_5()
+        {
+            int num = -16098398;
+            var hex = "0xff0a5ba2";
+            var toHex = HexConverter.GetHexFromInteger(num, hexPrefix: true);
+            Assert.Equal(hex, toHex);
+            var numReturn = HexConverter.HexToInteger<int>(toHex);
+            Assert.Equal(num, numReturn);
+        }
+
+        [Fact]
+        public void Int64_1()
+        {
+            long num = 4611686018427387904;
+            var hex = "0x4000000000000000";
+            var toHex = HexConverter.GetHexFromInteger(num, hexPrefix: true);
+            Assert.Equal(hex, toHex);
+            long numReturn = HexConverter.HexToInteger<long>(toHex);
+            Assert.Equal(num, numReturn);
+        }
+
+        [Fact]
+        public void UInt64_1()
+        {
+            ulong num = 1844674407370955161;
+            var hex = "0x1999999999999999";
+            var toHex = HexConverter.GetHexFromInteger(num, hexPrefix: true);
+            Assert.Equal(hex, toHex);
+            ulong numReturn = HexConverter.HexToInteger<ulong>(toHex);
+            Assert.Equal(num, numReturn);
+        }
+
+        [Fact]
+        public void UInt64_2()
+        {
+            ulong num = 12345;
+            var hex = "0x3039";
+            var toHex = HexConverter.GetHexFromInteger(num, hexPrefix: true);
+            Assert.Equal(hex, toHex);
+            ulong numReturn = HexConverter.HexToInteger<ulong>(toHex);
+            Assert.Equal(num, numReturn);
+        }
+
+        [Fact]
+        public void HexToIntegerGenerics()
+        {
+            uint actual = 127;
+            uint parsed = HexConverter.HexToInteger<uint>("0x7f");
+            Assert.Equal(actual, parsed);
         }
 
         [Fact]
@@ -54,12 +144,23 @@ namespace SolCodeGen.Tests
         }
 
         [Fact]
+        public void UInt64Dynamic()
+        {
+            ulong num = 12345;
+            var hex = "0x3039";
+            var toHex = HexConverter.GetHexFromObject(num, hexPrefix: true);
+            Assert.Equal(hex, toHex);
+            ulong numReturn = HexConverter.HexToInteger<ulong>(toHex);
+            Assert.Equal(num, numReturn);
+        }
+
+        [Fact]
         public void UInt256()
         { 
             UInt256 num = 1234565;
             var hex = HexConverter.GetHexFromInteger(num);
-            var roundTrip = HexConverter.HexToValue<UInt256>(hex);
-            Assert.Equal("000000000000000000000000000000000000000000000000000000000012d685", hex);
+            Assert.Equal("12d685", hex);
+            var roundTrip = HexConverter.HexToInteger<UInt256>(hex);
             Assert.Equal(num, roundTrip);
         }
 

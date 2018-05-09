@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace SolCodeGen.JsonRpc
 {
@@ -10,6 +12,12 @@ namespace SolCodeGen.JsonRpc
 
         [JsonProperty("message")]
         public string Message { get; set; }
+
+        /// <summary>
+        /// Properties not deserialized any members
+        /// </summary>
+        [JsonExtensionData]
+        public IDictionary<string, JToken> ExtraFields { get; set; }
 
         public JsonRpcErrorException ToException() => new JsonRpcErrorException(this);
     }

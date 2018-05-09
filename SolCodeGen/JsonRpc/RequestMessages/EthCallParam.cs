@@ -3,15 +3,7 @@ using System;
 
 namespace SolCodeGen.JsonRpc.RequestMessages
 {
-    public class EthSendTransaction : JsonRpcRequest<EthSendTransactionParam>
-    {
-        public EthSendTransaction(EthSendTransactionParam data) : base("eth_sendTransaction", data)
-        {
-
-        }
-    }
-
-    public class EthSendTransactionParam
+    public class EthCallParam
     {
         /// <summary>
         /// DATA, 20 Bytes - The address the transaction is send from.
@@ -48,11 +40,5 @@ namespace SolCodeGen.JsonRpc.RequestMessages
         /// </summary>
         [JsonProperty("data", Required = Required.Always)]
         public string Data { get; set; }
-
-        /// <summary>
-        /// QUANTITY - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
-        /// </summary>
-        [JsonProperty("nonce")]
-        public long? Nonce { get; set; }
     }
 }

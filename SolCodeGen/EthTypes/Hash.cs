@@ -1,10 +1,12 @@
-﻿using SolcNet;
+﻿using Newtonsoft.Json;
+using SolcNet;
+using SolCodeGen.JsonRpc;
 using System;
 using System.Runtime.InteropServices;
 
 namespace SolCodeGen
 {
-
+    [JsonConverter(typeof(JsonRpcHexConverter))]
     [StructLayout(LayoutKind.Sequential)]
     public struct Hash : IEquatable<Hash>
     {
@@ -19,7 +21,7 @@ namespace SolCodeGen
         readonly ulong P4;
 
         public byte[] GetBytes() => MemoryMarshal.AsBytes(new Span<ulong>(new[] { P1, P2, P3, P4 })).ToArray();
-        public string GetHexString() => HexConverter.GetHex<Hash>(this, hexPrefix: true);
+        public string GetHexString(bool hexPrefix = true) => HexConverter.GetHex<Hash>(this, hexPrefix: hexPrefix);
 
         public Hash(string hexString)
         {
@@ -56,6 +58,7 @@ namespace SolCodeGen
             P4 = uintView[3];
         }
 
+        public string ToString(bool hexPrefix = true) => GetHexString(hexPrefix);
         public override string ToString() => GetHexString();
 
         public override int GetHashCode() => (P1, P2, P3, P4).GetHashCode();

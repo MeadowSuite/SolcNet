@@ -1,14 +1,17 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using SolCodeGen.JsonRpc;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace System
 {
-
+    [JsonConverter(typeof(JsonRpcHexConverter))]
     [StructLayout(LayoutKind.Sequential)]
     public struct UInt256 : IComparable<UInt256>, IEquatable<UInt256>
     {
@@ -324,7 +327,6 @@ namespace System
         {
             return ToBigInteger().ToString();
         }
-        
 
     }
 

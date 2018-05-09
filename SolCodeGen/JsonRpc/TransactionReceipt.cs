@@ -13,8 +13,8 @@ namespace SolCodeGen.JsonRpc
         /// <summary>
         /// QUANTITY - integer of the transactions index position in the block.
         /// </summary>
-        [JsonProperty("transactionIndex")]
-        public long TransactionIndex { get; set; }
+        [JsonProperty("transactionIndex", ItemConverterType = typeof(JsonRpcHexConverter))]
+        public ulong TransactionIndex { get; set; }
 
         /// <summary>
         /// DATA, 32 Bytes - hash of the block where this transaction was in.
@@ -25,20 +25,20 @@ namespace SolCodeGen.JsonRpc
         /// <summary>
         /// QUANTITY - block number where this transaction was in.
         /// </summary>
-        [JsonProperty("blockNumber")]
-        public long BlockNumber { get; set; }
+        [JsonProperty("blockNumber", ItemConverterType = typeof(JsonRpcHexConverter))]
+        public ulong BlockNumber { get; set; }
 
         /// <summary>
         /// QUANTITY - The total amount of gas used when this transaction was executed in the block.
         /// </summary>
-        [JsonProperty("cumulativeGasUsed")]
-        public long CumulativeGasUsed { get; set; }
+        [JsonProperty("cumulativeGasUsed", ItemConverterType = typeof(JsonRpcHexConverter))]
+        public ulong CumulativeGasUsed { get; set; }
 
         /// <summary>
         /// QUANTITY - The amount of gas used by this specific transaction alone.
         /// </summary>
-        [JsonProperty("gasUsed")]
-        public long GasUsed { get; set; }
+        [JsonProperty("gasUsed", ItemConverterType = typeof(JsonRpcHexConverter))]
+        public ulong GasUsed { get; set; }
 
         /// <summary>
         /// DATA, 20 Bytes - The contract address created, if the transaction was a contract creation, otherwise null.
@@ -61,8 +61,8 @@ namespace SolCodeGen.JsonRpc
         /// <summary>
         /// QUANTITY either 1 (success) or 0 (failure)
         /// </summary>
-        [JsonProperty("status")]
-        public long Status { get; set; }
+        [JsonProperty("status", ItemConverterType = typeof(JsonRpcHexConverter))]
+        public ulong Status { get; set; }
 
     }
 }

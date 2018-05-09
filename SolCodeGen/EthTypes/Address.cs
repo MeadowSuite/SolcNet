@@ -1,4 +1,6 @@
-﻿using SolcNet;
+﻿using Newtonsoft.Json;
+using SolcNet;
+using SolCodeGen.JsonRpc;
 using System;
 using System.Buffers.Text;
 using System.Diagnostics;
@@ -9,6 +11,7 @@ using System.Text;
 namespace SolCodeGen
 {
 
+    [JsonConverter(typeof(JsonRpcHexConverter))]
     [StructLayout(LayoutKind.Sequential)]
     public struct Address : IEquatable<Address>
     {
