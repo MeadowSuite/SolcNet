@@ -10,9 +10,7 @@ namespace SolcNet.DataDescription.Output
 {
     public class OutputDescription
     {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public static OutputDescription FromJsonString(string jsonStr)
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
         {
             var output = JsonConvert.DeserializeObject<OutputDescription>(jsonStr, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
             output.RawJsonOutput = jsonStr;

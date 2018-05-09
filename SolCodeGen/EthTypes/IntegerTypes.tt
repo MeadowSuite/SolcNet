@@ -25,19 +25,26 @@ namespace SolCodeGen.SolidityTypes
         public static implicit operator BigInteger(UInt<#=i#> v) => new BigInteger(v.GetSpan().ToArray());
         public static implicit operator UInt<#=i#>(BigInteger v) => FromBigInteger(v);
         public static implicit operator UInt<#=i#>(byte v) => FromBigInteger(new BigInteger(v));
+        public static implicit operator UInt<#=i#>(sbyte v) => FromBigInteger(new BigInteger(v));
         public static implicit operator UInt<#=i#>(uint v) => FromBigInteger(new BigInteger(v));
+        public static implicit operator UInt<#=i#>(int v) => FromBigInteger(new BigInteger(v));
         public static implicit operator UInt<#=i#>(ulong v) => FromBigInteger(new BigInteger(v));
+        public static implicit operator UInt<#=i#>(long v) => FromBigInteger(new BigInteger(v));
 
+        public static explicit operator byte(UInt<#=i#> v) => (byte)v.ToBigInteger();
+        public static explicit operator sbyte(UInt<#=i#> v) => (sbyte)v.ToBigInteger();
+        public static explicit operator short(UInt<#=i#> v) => (short)v.ToBigInteger();
         public static explicit operator ushort(UInt<#=i#> v) => (ushort)v.ToBigInteger();
         public static explicit operator uint(UInt<#=i#> v) => (uint)v.ToBigInteger();
+        public static explicit operator int(UInt<#=i#> v) => (int)v.ToBigInteger();
         public static explicit operator ulong(UInt<#=i#> v) => (ulong)v.ToBigInteger();
+        public static explicit operator long(UInt<#=i#> v) => (long)v.ToBigInteger();
 
         public static UInt<#=i#> operator %(UInt<#=i#> a, UInt<#=i#> b) => BigInteger.Remainder(a, b);
         public static UInt<#=i#> operator +(UInt<#=i#> a, UInt<#=i#> b) => BigInteger.Add(a, b);
         public static UInt<#=i#> operator -(UInt<#=i#> a, UInt<#=i#> b) => BigInteger.Min(a, b);
         public static UInt<#=i#> operator *(UInt<#=i#> a, UInt<#=i#> b) => BigInteger.Multiply(a, b);
         public static UInt<#=i#> operator /(UInt<#=i#> a, UInt<#=i#> b) => BigInteger.Divide(a, b);
-        public static UInt<#=i#> operator ~(UInt<#=i#> a) => ~a.ToBigInteger();
         public static UInt<#=i#> operator |(UInt<#=i#> a, UInt<#=i#> b) => a.ToBigInteger() | b.ToBigInteger();
         public static UInt<#=i#> operator &(UInt<#=i#> a, UInt<#=i#> b) => a.ToBigInteger() & b.ToBigInteger();
         public static UInt<#=i#> operator ^(UInt<#=i#> a, UInt<#=i#> b) => a.ToBigInteger() ^ b.ToBigInteger();

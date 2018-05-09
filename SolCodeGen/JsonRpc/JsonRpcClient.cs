@@ -75,7 +75,7 @@ namespace SolCodeGen.JsonRpc
             return result.Value<string>();
         }
 
-        public async Task<EthGetTransactionReceiptResponse> GetTransactionReceipt(Hash transactionHash)
+        public async Task<TransactionReceipt> GetTransactionReceipt(Hash transactionHash)
         {
             var requestData = new EthGetTransactionReceipt(transactionHash);
             var jsonStr = JsonConvert.SerializeObject(requestData);
@@ -84,7 +84,7 @@ namespace SolCodeGen.JsonRpc
             {
                 throw error.ToException();
             }
-            var receipt = result.ToObject<EthGetTransactionReceiptResponse>();
+            var receipt = result.ToObject<TransactionReceipt>();
             return receipt;
         }
 

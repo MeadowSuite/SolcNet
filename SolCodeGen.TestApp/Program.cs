@@ -13,7 +13,8 @@ namespace SolCodeGen.TestApp
     {
         static async Task Main(string[] args)
         {
-            var abi = new SolcLib("TestData").Compile("ExampleContract.sol", new[] { OutputType.Abi }).Contracts.Values.First().Values.First().Abi;
+            var compiledExample = new SolcLib("TestData").Compile("ExampleContract.sol");
+            var abi = compiledExample.Contracts.Values.First().Values.First().Abi;
             var abiJson = JsonConvert.SerializeObject(abi, Formatting.Indented);
 
             //var ex = await ExampleGeneratedContract.New("My Token", 8);

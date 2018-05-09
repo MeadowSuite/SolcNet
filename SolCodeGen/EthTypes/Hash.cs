@@ -70,7 +70,7 @@ namespace SolCodeGen
         public static bool operator ==(Hash a, Hash b) => a.Equals(b);
         public static bool operator !=(Hash a, Hash b) => !a.Equals(b);
 
-        public static implicit operator Hash(string value) => HexConverter.HexToValue<Hash>(value, checkEndian: false);
+        public static implicit operator Hash(string value) => HexConverter.HexToValue<Hash>(value);
         public static implicit operator string(Hash value) => value.GetHexString();
     }
 

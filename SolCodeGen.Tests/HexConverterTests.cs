@@ -22,7 +22,7 @@ namespace SolCodeGen.Tests
         public void NumericByDynamicObject(object val)
         {
             var numHex = HexConverter.GetHexFromObject(val, hexPrefix: true);
-            var numRoundTrip = HexConverter.HexToObject(val.GetType(), numHex, bigEndian: true);
+            var numRoundTrip = HexConverter.HexToObject(val.GetType(), numHex);
             Assert.Equal(val, numRoundTrip);
         }
 
@@ -31,7 +31,7 @@ namespace SolCodeGen.Tests
         {
             int num = -16098398;
             var numHex = HexConverter.GetHexFromInteger(num);
-            var numRoundTrip = HexConverter.HexToValue<int>(numHex, checkEndian: true);
+            var numRoundTrip = HexConverter.HexToValue<int>(numHex);
             Assert.Equal(num, numRoundTrip);
         }
 
@@ -39,8 +39,8 @@ namespace SolCodeGen.Tests
         public void AddressGeneric()
         {
             var addrHex = "0xb60e8dd61c5d32be8058bb8eb970870f07233155";
-            var addr = HexConverter.HexToValue<Address>(addrHex, checkEndian: false);
-            var roundTrip = HexConverter.GetHexFromInteger(addr, hexPrefix: true, checkEndian: false);
+            var addr = HexConverter.HexToValue<Address>(addrHex);
+            var roundTrip = HexConverter.GetHex(addr, hexPrefix: true);
             Assert.Equal(addrHex, roundTrip);
         }
 
@@ -48,7 +48,7 @@ namespace SolCodeGen.Tests
         public void AddressDynamic()
         {
             var addrHex = "0xb60e8dd61c5d32be8058bb8eb970870f07233155";
-            var addr = (Address)HexConverter.HexToObject(typeof(Address), addrHex, bigEndian: false);
+            var addr = (Address)HexConverter.HexToObject(typeof(Address), addrHex);
             var roundTrip = HexConverter.GetHexFromObject(addr, hexPrefix: true);
             Assert.Equal(addrHex, roundTrip);
         }
@@ -57,8 +57,9 @@ namespace SolCodeGen.Tests
         public void UInt256()
         { 
             UInt256 num = 1234565;
-            var hex = HexConverter.GetHexFromInteger(num, checkEndian: true);
-            var roundTrip = HexConverter.HexToValue<UInt256>(hex, checkEndian: true);
+            var hex = HexConverter.GetHexFromInteger(num);
+            var roundTrip = HexConverter.HexToValue<UInt256>(hex);
+            Assert.Equal("000000000000000000000000000000000000000000000000000000000012d685", hex);
             Assert.Equal(num, roundTrip);
         }
 
@@ -66,8 +67,8 @@ namespace SolCodeGen.Tests
         public void Hash()
         {
             Hash hash = "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238";
-            var hex = HexConverter.GetHex<Hash>(hash, hexPrefix: true, checkEndian: false);
-            var roundTrip = HexConverter.HexToValue<Hash>(hex, checkEndian: false);
+            var hex = HexConverter.GetHex<Hash>(hash, hexPrefix: true);
+            var roundTrip = HexConverter.HexToValue<Hash>(hex);
             Assert.Equal(hash.ToString(), roundTrip);
         }
     }

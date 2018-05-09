@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace SolCodeGen.JsonRpc.RequestMessages
+namespace SolCodeGen.JsonRpc
 {
     public class FilterLogObject
     {

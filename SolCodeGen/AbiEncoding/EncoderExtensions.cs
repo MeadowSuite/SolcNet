@@ -50,7 +50,7 @@ namespace SolCodeGen.AbiEncoding
                 cursor = encoder.Encode(cursor);
             }
 
-            return HexConverter.BytesToHex(buff, hexPrefix: true);
+            return HexConverter.GetHexFromBytes(buff, hexPrefix: true);
         }
 
         public static string ToEncodedHex(this IAbiTypeEncoder encoder)

@@ -1,4 +1,5 @@
 ﻿using SolCodeGen.AbiEncoding;
+using SolCodeGen.JsonRpc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace SolCodeGen
         }
         
 
-        public async Task<(object Receipt, EventLog[] EventLogs, bool _result)> ExampleFunction(
+        public async Task<(TransactionReceipt Receipt, FilterLogObject[] EventLogs, bool? _result)> ExampleFunction(
             Address _to, UInt256 _amount, IEnumerable<ulong> _extraVals, IEnumerable<byte> _rawData,
             SendParams sendParams = null, CallType callType = CallType.Transaction)
         {
@@ -56,34 +57,27 @@ namespace SolCodeGen
             // encoded parameters
             var paramHex = encoders.ToEncodedHex();
 
-            // start event log filter with eth_newFilter
-            // TODO:...
-
-            string resultData;
-
             // rpc eth_sendTransaction
             if (callType == CallType.Transaction)
             {
                 var transactionHash = await JsonRpcClient.SendTransaction(paramHex, sendParams);
+                // rpc eth_getTransactionReceipt
+                var receipt = await JsonRpcClient.GetTransactionReceipt(transactionHash);
+                // TODO: ...
+                // parse log data into C# objects...
+                return (receipt, receipt.Logs, null);
             }
             else if (callType == CallType.Call)
             {
-                resultData = await JsonRpcClient.Call(paramHex, sendParams);
+                var resultData = await JsonRpcClient.Call(paramHex, sendParams);
+                // TODO: ...
+                // parse return values
+                return (null, null, null);
             }
             else
             {
                 throw new ArgumentException($"Unsupported call type: {callType}");
             }
-
-            // rpc eth_getTransactionReceipt
-
-            // parse return values
-
-            // get event logs with eth_getFilterChanges
-
-            // parse event logs
-
-            throw new NotImplementedException();
 
         }
 
@@ -91,22 +85,5 @@ namespace SolCodeGen
         public override string DevDocJson { get; } = "{ TODO: ... }";
         public override string UserDocJson { get; } = "{ TODO: ... }";
 
-        /*
-        public Invoker<(Address _to, UInt256 _amount), (Receipt Receipt, bool _result)> Transfer
-        {
-            get
-            {
-                return new Invoker<
-                    (Address _to, UInt256 _amount),
-                    (Receipt Receipt, bool _result)>
-                (
-                    Server,
-                    new string[] { "address", "uint" },
-                    new string[] { "bool" },
-                    DefaultFromAccount
-                );
-            }
-        }
-        */
     }
 }

@@ -27,7 +27,7 @@ namespace SolCodeGen.Tests
             Span<byte> buffer = new byte[encodedSize];
             var bufferCursor = encoder.Encode(buffer);
             Assert.Equal(0, bufferCursor.Length);
-            var result = HexConverter.BytesToHex(buffer, checkEndian: false, hexPrefix: false);
+            var result = HexConverter.GetHexFromBytes(buffer, hexPrefix: false);
             Assert.Equal("00000000000000000000000011f4d0a3c12e86b4b5f39b213f7e19d048276dae", result);
         }
 
@@ -42,7 +42,7 @@ namespace SolCodeGen.Tests
             Span<byte> buffer = new byte[encodedSize];
             var bufferCursor = encoder.Encode(buffer);
             Assert.Equal(0, bufferCursor.Length);
-            var result = HexConverter.BytesToHex(buffer, checkEndian: false, hexPrefix: false);
+            var result = HexConverter.GetHexFromBytes(buffer, hexPrefix: false);
             Assert.Equal("00000000000000000000000000000000000000000000000000000000ffff5544", result);
         }
 
@@ -58,12 +58,12 @@ namespace SolCodeGen.Tests
             Span<byte> buffer = new byte[encodedSize];
             var bufferCursor = encoder.Encode(buffer);
             Assert.Equal(0, bufferCursor.Length);
-            var result = HexConverter.BytesToHex(buffer);
+            var result = HexConverter.GetHexFromBytes(buffer);
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000000001", result);
 
             encoder.SetValue(false);
             bufferCursor = encoder.Encode(buffer);
-            result = HexConverter.BytesToHex(buffer);
+            result = HexConverter.GetHexFromBytes(buffer);
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000000000", result);
         }
 
@@ -79,7 +79,7 @@ namespace SolCodeGen.Tests
             Span<byte> buffer = new byte[encodedSize];
             var bufferCursor = encoder.Encode(buffer);
             Assert.Equal(0, bufferCursor.Length);
-            var result = HexConverter.BytesToHex(buffer);
+            var result = HexConverter.GetHexFromBytes(buffer);
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001", result);
         }
 
@@ -95,7 +95,7 @@ namespace SolCodeGen.Tests
             Span<byte> buffer = new byte[encodedSize];
             var bufferCursor = encoder.Encode(buffer);
             Assert.Equal(0, bufferCursor.Length);
-            var result = HexConverter.BytesToHex(buffer);
+            var result = HexConverter.GetHexFromBytes(buffer);
             Assert.Equal("00000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001", result);
         }
 
@@ -111,7 +111,7 @@ namespace SolCodeGen.Tests
             Span<byte> buffer = new byte[encodedSize];
             var bufferCursor = encoder.Encode(buffer);
             Assert.Equal(0, bufferCursor.Length);
-            var result = HexConverter.BytesToHex(buffer);
+            var result = HexConverter.GetHexFromBytes(buffer);
             Assert.Equal("000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000", result);
         }
 
@@ -127,7 +127,7 @@ namespace SolCodeGen.Tests
             Span<byte> buffer = new byte[encodedSize];
             var bufferCursor = encoder.Encode(buffer);
             Assert.Equal(0, bufferCursor.Length);
-            var result = HexConverter.BytesToHex(buffer);
+            var result = HexConverter.GetHexFromBytes(buffer);
             Assert.Equal("00000000000000000000000000000000000000000000000000000000000000f54c6f72656d20497073756d2069732073696d706c792064756d6d792074657874206f6620746865207072696e74696e6720616e64207479706573657474696e6720696e6475737472792e204c6f72656d20497073756d20686173206265656e2074686520696e6475737472792773207374616e646172642064756d6d79207465787420657665722073696e6365207468652031353030732c207768656e20616e20756e6b6e6f776e207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970652073706563696d656e20626f6f6b2e0000000000000000000000", result);
         }
 
@@ -143,7 +143,7 @@ namespace SolCodeGen.Tests
             Span<byte> buffer = new byte[encodedSize];
             var bufferCursor = encoder.Encode(buffer);
             Assert.Equal(0, bufferCursor.Length);
-            var result = HexConverter.BytesToHex(buffer);
+            var result = HexConverter.GetHexFromBytes(buffer);
             Assert.Equal("000000000000000000000000000000000000000000000000000000000000003d207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970000000", result);
         }
 
@@ -159,7 +159,7 @@ namespace SolCodeGen.Tests
             Span<byte> buffer = new byte[encodedSize];
             var bufferCursor = encoder.Encode(buffer);
             Assert.Equal(0, bufferCursor.Length);
-            var result = HexConverter.BytesToHex(buffer);
+            var result = HexConverter.GetHexFromBytes(buffer);
             Assert.Equal("072696e74657220746f6f6b20612067616c6c657920600000000000000000000", result);
         }
 
@@ -175,7 +175,7 @@ namespace SolCodeGen.Tests
             Span<byte> buffer = new byte[encodedSize];
             var bufferCursor = encoder.Encode(buffer);
             Assert.Equal(0, bufferCursor.Length);
-            var result = HexConverter.BytesToHex(buffer);
+            var result = HexConverter.GetHexFromBytes(buffer);
             Assert.Equal("00000000000000000000000000000000000000000000000000000000000000070000000000000000000000000000000000000000000000000000000000000026000000000000000000000000000000000000000000000000000000000000009600000000000000000000000000000000000000000000000000000000000000e70000000000000000000000000000000000000000000000000000000000000046", result);
         }
 
@@ -191,7 +191,7 @@ namespace SolCodeGen.Tests
             Span<byte> buffer = new byte[encodedSize];
             var bufferCursor = encoder.Encode(buffer);
             Assert.Equal(0, bufferCursor.Length);
-            var result = HexConverter.BytesToHex(buffer);
+            var result = HexConverter.GetHexFromBytes(buffer);
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000011c20000000000000000000000000000000000000000000000007fffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007fffffffffffffff", result);
         }
 

@@ -24,7 +24,7 @@ namespace SolCodeGen.AbiEncoding
         {
             var bytes = Encoding.UTF8.GetBytes(functionSignature);
             var hash = Keccak.ComputeHash(bytes).Slice(0, 4);
-            string funcSignature = HexConverter.BytesToHex(hash, hexPrefix: hexPrefix, checkEndian: false);
+            string funcSignature = HexConverter.GetHexFromBytes(hash, hexPrefix: hexPrefix);
             return funcSignature;
         }
     }
