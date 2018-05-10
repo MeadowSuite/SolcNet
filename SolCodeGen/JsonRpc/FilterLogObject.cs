@@ -15,37 +15,37 @@ namespace SolCodeGen.JsonRpc
         /// <summary>
         /// QUANTITY - integer of the log index position in the block. null when its pending log.
         /// </summary>
-        [JsonProperty("logIndex", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("logIndex"), JsonConverter(typeof(JsonRpcHexConverter))]
         public ulong LogIndex { get; set; }
 
         /// <summary>
         /// QUANTITY - integer of the transactions index position log was created from. null when its pending log.
         /// </summary>
-        [JsonProperty("transactionIndex", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("transactionIndex"), JsonConverter(typeof(JsonRpcHexConverter))]
         public ulong TransactionIndex { get; set; }
 
         /// <summary>
         /// DATA, 32 Bytes - hash of the transactions this log was created from. null when its pending log.
         /// </summary>
-        [JsonProperty("transactionHash", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("transactionHash"), JsonConverter(typeof(JsonRpcHexConverter))]
         public Hash TransactionHash { get; set; }
 
         /// <summary>
         /// DATA, 32 Bytes - hash of the block where this log was in. null when its pending. null when its pending log.
         /// </summary>
-        [JsonProperty("blockHash", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("blockHash"), JsonConverter(typeof(JsonRpcHexConverter))]
         public Hash BlockHash { get; set; }
 
         /// <summary>
         /// QUANTITY - the block number where this log was in. null when its pending. null when its pending log.
         /// </summary>
-        [JsonProperty("blockNumber", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("blockNumber"), JsonConverter(typeof(JsonRpcHexConverter))]
         public ulong BlockNumber { get; set; }
 
         /// <summary>
         /// DATA, 20 Bytes - address from which this log originated.
         /// </summary>
-        [JsonProperty("address", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("address"), JsonConverter(typeof(JsonRpcHexConverter))]
         public Address Address { get; set; }
 
         /// <summary>

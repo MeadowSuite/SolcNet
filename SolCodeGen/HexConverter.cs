@@ -125,11 +125,17 @@ namespace SolCodeGen
             return GetHexFromBytes(bytes, hexPrefix: hexPrefix);
         }
 
+        public static string GetHexFromBytes(this byte[] bytes, bool hexPrefix = false)
+        {
+            Span<byte> span = bytes;
+            return GetHexFromBytes(span, hexPrefix);
+        }
+
         public static string GetHexFromBytes(this Span<byte> bytes, bool hexPrefix = false)
         {
             if (hexPrefix && bytes.Length == 0)
             {
-                return "0x00";
+                return "0x0";
             }
             Span<char> charArr = stackalloc char[bytes.Length * 2 + (hexPrefix ? 2 : 0)];
             Span<char> c = charArr;
@@ -200,7 +206,7 @@ namespace SolCodeGen
         {
             ReadOnlySpan<char> strSpan = str.AsSpan();
             StripHexPrefix(ref strSpan);
-            int byteLen = strSpan.Length / 2;
+            int byteLen = (strSpan.Length / 2) + (strSpan.Length % 2);
             Span<byte> bytes = stackalloc byte[byteLen];
             HexToSpan(strSpan, bytes);
             int typeSize = Unsafe.SizeOf<TInt>();
@@ -298,9 +304,18 @@ namespace SolCodeGen
         /// </summary>
         public static void HexToSpan(ReadOnlySpan<char> str, in Span<byte> bytes)
         {
-            for (var i = 0; i < bytes.Length; i++)
+            // Special case for compact single char hex format.
+            // For example 0xf should be read the same as 0x0f
+            if (str.Length == 1)
             {
-                bytes[i] = (byte)(HexCharToByte(str[i * 2]) << 4 | HexCharToByte(str[i * 2 + 1]));
+                bytes[0] = HexCharToByte(str[0]);
+            }
+            else
+            {
+                for (var i = 0; i < bytes.Length; i++)
+                {
+                    bytes[i] = (byte)((HexCharToByte(str[i * 2]) << 4) | HexCharToByte(str[i * 2 + 1]));
+                }
             }
         }
 

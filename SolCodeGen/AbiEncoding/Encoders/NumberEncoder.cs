@@ -50,13 +50,11 @@ namespace SolCodeGen.AbiEncoding.Encoders
         public override Span<byte> Encode(Span<byte> buffer)
         {
             var byteSize = _info.BaseTypeByteSize;
+            Span<byte> valBytes = stackalloc byte[Marshal.SizeOf<TInt>()];
+            MemoryMarshal.Write(valBytes, ref _val);
 
-            var bufferOffset = 31 - byteSize;
-
-            //var valBytes = MemoryMarshal.Cast<TInt, byte>(new[] { _val });
-
-            Span<byte> valBytes = stackalloc byte[Unsafe.SizeOf<TInt>()];
-            MemoryMarshal.Write(valBytes, ref Unsafe.AsRef(_val));
+            //Span<byte> valBytes = MemoryMarshal.Cast<TInt, byte>(new[] { _val });
+            //Unsafe.WriteUnaligned(ref valBytes[0], _val);
 
             if (BitConverter.IsLittleEndian)
             {
@@ -77,12 +75,12 @@ namespace SolCodeGen.AbiEncoding.Encoders
 
         protected Exception IntOverflow()
         {
-            return new ArgumentException($"Max value for type '{_info}' is {MaxValue}, was given {_val}");
+            return new OverflowException($"Max value for type '{_info}' is {MaxValue}, was given {_val}");
         }
 
         protected Exception IntUnderflow()
         {
-            return new ArgumentException($"Min value for type '{_info}' is {MinValue}, was given {_val}");
+            return new OverflowException($"Min value for type '{_info}' is {MinValue}, was given {_val}");
         }
     }
 

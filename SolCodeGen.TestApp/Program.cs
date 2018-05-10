@@ -13,6 +13,18 @@ namespace SolCodeGen.TestApp
     {
         static async Task Main(string[] args)
         {
+
+            Uri server = new Uri("http://127.0.0.1:7545");
+            var rpcClient = new JsonRpc.JsonRpcClient(server, "0x0", "0x0");
+            var accounts = await rpcClient.Accounts();
+            var balance = await rpcClient.GetBalance(accounts[0]);
+
+            await rpcClient.EvmMine();
+            var blockNum = await rpcClient.BlockNumber();
+            var block = await rpcClient.GetBlockByNumber(blockNumber: blockNum);
+
+
+
             var compiledExample = new SolcLib("TestData").Compile("ExampleContract.sol");
             var abi = compiledExample.Contracts.Values.First().Values.First().Abi;
             var abiJson = JsonConvert.SerializeObject(abi, Formatting.Indented);

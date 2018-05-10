@@ -17,18 +17,20 @@ namespace SolCodeGen.JsonRpc.RequestMessages
         [JsonProperty("id")]
         public long ID = Interlocked.Increment(ref RPC_MSG_ID);
 
-    }
-
-    public class JsonRpcRequest<TParam> : JsonRpcRequest
-    {
         [JsonProperty("params")]
-        public TParam[] Params { get; set; }
+        public object[] Params { get; set; }
 
-        public JsonRpcRequest(string method, TParam data)
+        public JsonRpcRequest()
+        {
+
+        }
+
+        public JsonRpcRequest(string method, params object[] args)
         {
             Method = method;
-            Params = new[] { data };
+            Params = args;
         }
     }
+
 
 }

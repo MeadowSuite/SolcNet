@@ -27,7 +27,7 @@ namespace SolCodeGen
         readonly uint P5;
 
         public byte[] GetBytes() => MemoryMarshal.AsBytes(new Span<uint>(new[] { P1, P2, P3, P4, P5 })).ToArray();
-        public string GetHexString() => HexConverter.GetHex<Address>(this, hexPrefix: true);
+        public string GetHexString(bool hexPrefix = true) => HexConverter.GetHex<Address>(this, hexPrefix: hexPrefix);
 
         public Address(string hexString)
         {
@@ -76,6 +76,7 @@ namespace SolCodeGen
             P5 = uintView[4];
         }
 
+        public string ToString(bool hexPrefix = true) => GetHexString(hexPrefix);
         public override string ToString() => GetHexString();
 
         public override int GetHashCode() => (P1, P2, P3, P4, P5).GetHashCode();

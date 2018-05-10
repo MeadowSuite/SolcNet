@@ -11,19 +11,25 @@ namespace SolCodeGen.JsonRpc
         /// <summary>
         /// QUANTITY - the block number. null when its pending block.
         /// </summary>
-        [JsonProperty("number", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("number"), JsonConverter(typeof(JsonRpcHexConverter))]
         public ulong? Number { get; set; }
 
         /// <summary>
         /// DATA, 32 Bytes - hash of the block. null when its pending block.
         /// </summary>
-        [JsonProperty("hash", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("hash"), JsonConverter(typeof(JsonRpcHexConverter))]
         public Hash? Hash { get; set; }
+
+        /// <summary>
+        /// Hash which proves combined with the nonce that a sufficient amount of computation has been carried out on this block
+        /// </summary>
+        [JsonProperty("mixHash"), JsonConverter(typeof(JsonRpcHexConverter))]
+        public Hash? MixHash { get; set; }
 
         /// <summary>
         /// DATA, 32 Bytes - hash of the parent block.
         /// </summary>
-        [JsonProperty("parentHash", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("parentHash"), JsonConverter(typeof(JsonRpcHexConverter))]
         public Hash ParentHash { get; set; }
 
         /// <summary>
@@ -35,7 +41,7 @@ namespace SolCodeGen.JsonRpc
         /// <summary>
         /// DATA, 32 Bytes - SHA3 of the uncles data in the block.
         /// </summary>
-        [JsonProperty("sha3Uncles", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("sha3Uncles"), JsonConverter(typeof(JsonRpcHexConverter))]
         public Hash Sha3Uncles { get; set; }
 
         /// <summary>
@@ -65,19 +71,19 @@ namespace SolCodeGen.JsonRpc
         /// <summary>
         /// DATA, 20 Bytes - the address of the beneficiary to whom the mining rewards were given.
         /// </summary>
-        [JsonProperty("miner", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("miner"), JsonConverter(typeof(JsonRpcHexConverter))]
         public Address Miner { get; set; }
 
         /// <summary>
         /// QUANTITY - integer of the difficulty for this block.
         /// </summary>
-        [JsonProperty("difficulty", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("difficulty"), JsonConverter(typeof(JsonRpcHexConverter))]
         public ulong Difficulty { get; set; }
 
         /// <summary>
         /// QUANTITY - integer of the total difficulty of the chain until this block.
         /// </summary>
-        [JsonProperty("totalDifficulty", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("totalDifficulty"), JsonConverter(typeof(JsonRpcHexConverter))]
         public ulong TotalDifficulty { get; set; }
 
         /// <summary>
@@ -89,25 +95,25 @@ namespace SolCodeGen.JsonRpc
         /// <summary>
         /// QUANTITY - integer the size of this block in bytes.
         /// </summary>
-        [JsonProperty("size", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("size"), JsonConverter(typeof(JsonRpcHexConverter))]
         public ulong Size { get; set; }
 
         /// <summary>
         /// QUANTITY - the maximum gas allowed in this block.
         /// </summary>
-        [JsonProperty("gasLimit", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("gasLimit"), JsonConverter(typeof(JsonRpcHexConverter))]
         public ulong GasLimit { get; set; }
 
         /// <summary>
         /// QUANTITY - the total used gas by all transactions in this block.
         /// </summary>
-        [JsonProperty("gasUsed", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("gasUsed"), JsonConverter(typeof(JsonRpcHexConverter))]
         public ulong GasUsed { get; set; }
 
         /// <summary>
         /// QUANTITY - the unix timestamp for when the block was collated.
         /// </summary>
-        [JsonProperty("timestamp", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("timestamp"), JsonConverter(typeof(JsonRpcHexConverter))]
         public ulong Timestamp { get; set; }
 
         /// <summary>

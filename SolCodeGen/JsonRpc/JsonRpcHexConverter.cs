@@ -14,6 +14,10 @@ namespace SolCodeGen.JsonRpc
         {
             if (reader.Value is string hex)
             {
+                if (objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    objectType = Nullable.GetUnderlyingType(objectType);
+                }
                 return HexConverter.HexToObject(objectType, hex);
             }
             throw new NotImplementedException();

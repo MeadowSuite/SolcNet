@@ -7,43 +7,43 @@ namespace SolCodeGen.JsonRpc
         /// <summary>
         /// DATA, 32 Bytes - hash of the transaction.
         /// </summary>
-        [JsonProperty("transactionHash", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("transactionHash"), JsonConverter(typeof(JsonRpcHexConverter))]
         public Hash TransactionHash { get; set; }
 
         /// <summary>
         /// QUANTITY - integer of the transactions index position in the block.
         /// </summary>
-        [JsonProperty("transactionIndex", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("transactionIndex"), JsonConverter(typeof(JsonRpcHexConverter))]
         public ulong TransactionIndex { get; set; }
 
         /// <summary>
         /// DATA, 32 Bytes - hash of the block where this transaction was in.
         /// </summary>
-        [JsonProperty("blockHash", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("blockHash"), JsonConverter(typeof(JsonRpcHexConverter))]
         public Hash BlockHash { get; set; }
 
         /// <summary>
         /// QUANTITY - block number where this transaction was in.
         /// </summary>
-        [JsonProperty("blockNumber", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("blockNumber"), JsonConverter(typeof(JsonRpcHexConverter))]
         public ulong BlockNumber { get; set; }
 
         /// <summary>
         /// QUANTITY - The total amount of gas used when this transaction was executed in the block.
         /// </summary>
-        [JsonProperty("cumulativeGasUsed", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("cumulativeGasUsed"), JsonConverter(typeof(JsonRpcHexConverter))]
         public ulong CumulativeGasUsed { get; set; }
 
         /// <summary>
         /// QUANTITY - The amount of gas used by this specific transaction alone.
         /// </summary>
-        [JsonProperty("gasUsed", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("gasUsed"), JsonConverter(typeof(JsonRpcHexConverter))]
         public ulong GasUsed { get; set; }
 
         /// <summary>
         /// DATA, 20 Bytes - The contract address created, if the transaction was a contract creation, otherwise null.
         /// </summary>
-        [JsonProperty("contractAddress", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("contractAddress"), JsonConverter(typeof(JsonRpcHexConverter))]
         public Address? ContractAddress { get; set; }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace SolCodeGen.JsonRpc
         /// <summary>
         /// QUANTITY either 1 (success) or 0 (failure)
         /// </summary>
-        [JsonProperty("status", ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("status"), JsonConverter(typeof(JsonRpcHexConverter))]
         public ulong Status { get; set; }
 
     }

@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using SolCodeGen.JsonRpc.RequestMessages;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,19 +28,50 @@ namespace SolCodeGen.JsonRpc
             _contractAddress = contractAddress;
             _defaultFrom = defaultFrom;
         }
+
+        /// <summary>
+        /// evm_mine - 
+        /// Special non-standard ganache client methods (not included within the original RPC specification).
+        /// Force a block to be mined. Takes no parameters. Mines a block independent of whether or not mining is started or stopped.
+        /// </summary>
+        public async Task EvmMine()
+        {
+            var request = new JsonRpcRequest("evm_mine");
+            var (error, result) = await InvokeRpcMethod(request);
+        }
+
+        /// <summary>
+        /// eth_accounts - 
+        /// Returns a list of addresses owned by client.
+        /// </summary>
+        /// <returns>Array of DATA, 20 Bytes - addresses owned by the client</returns>
+        public async Task<Address[]> Accounts()
+        {
+            var request = new JsonRpcRequest("eth_accounts");
+            var (error, result) = await InvokeRpcMethod(request);
+            return result.ToObject<Address[]>();
+        }
+
         /// <summary>
         /// eth_getBalance - 
         /// Returns the balance of the account of given address.
         /// </summary>
         /// <param name="account">20 Bytes - address to check for balance</param>
-        /// <param name="blockTag">integer block number, or the string "latest", "earliest" or "pending", see the default block parameter</param>
-        /// <returns></returns>
-        public async Task<UInt256> GetBalance(Address account, BlockTagParameter blockTag)
+        /// <param name="blockTag">Defaults to "latest" block</param>
+        /// <param name="blockNumber">integer block number (only if blockTag is not specified)</param>
+        /// <returns>Eth balance in wei</returns>
+        public async Task<UInt256> GetBalance(Address account, BlockTagParameter? blockTag = null, long? blockNumber = null)
         {
-            var request = new JsonRpcRequest { Method = "eth_blockNumber" };
-            var jsonStr = JsonConvert.SerializeObject(request);
-            var (error, result) = await InvokeRpcMethod(jsonStr);
-            return HexConverter.HexToValue<long>(result.Value<string>());
+            var blockTagParam = GetBlockTagParams(blockTag, blockNumber);
+            var methodParams = new object[]
+            {
+                account.GetHexString(hexPrefix: true),
+                blockTagParam
+            };
+            
+            var request = new JsonRpcRequest("eth_getBalance", methodParams);
+            var (error, result) = await InvokeRpcMethod(request);
+            return HexConverter.HexToInteger<long>(result.Value<string>());
         }
 
         /// <summary>
@@ -48,10 +80,9 @@ namespace SolCodeGen.JsonRpc
         /// </summary>
         public async Task<long> BlockNumber()
         {
-            var request = new JsonRpcRequest { Method = "eth_blockNumber" };
-            var jsonStr = JsonConvert.SerializeObject(request);
-            var (error, result) = await InvokeRpcMethod(jsonStr);
-            return HexConverter.HexToValue<long>(result.Value<string>());
+            var request = new JsonRpcRequest("eth_blockNumber");
+            var (error, result) = await InvokeRpcMethod(request);
+            return HexConverter.HexToInteger<long>(result.Value<string>());
         }
 
         /// <summary>
@@ -64,10 +95,9 @@ namespace SolCodeGen.JsonRpc
         /// <returns>A block object, or null when no block was found</returns>
         public async Task<Block> GetBlockByHash(Hash hash, bool getFullTransactionObjects = false)
         {
-            var request = new JsonRpcRequest<string>("eth_getBlockByHash", hash.GetHexString());
-            var jsonStr = JsonConvert.SerializeObject(request);
-            var (error, result) = await InvokeRpcMethod(jsonStr);
-            return result.Value<Block>();
+            var request = new JsonRpcRequest("eth_getBlockByHash", hash.GetHexString());
+            var (error, result) = await InvokeRpcMethod(request);
+            return result.ToObject<Block>();
         }
 
         /// <summary>
@@ -75,36 +105,21 @@ namespace SolCodeGen.JsonRpc
         /// Returns information about a block by block number
         /// <see href="https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber"/>
         /// </summary>
-        /// <param name="blockNumber">integer of a block number</param>
-        /// <param name="blockTag">"earliest", "latest" or "pending", as in the default block parameter.</param>
         /// <param name="getFullTransactionObjects">If true it returns the full transaction objects, if false only the hashes of the transactions.</param>
-        public async Task<Block> GetBlockByNumber(long? blockNumber = null, BlockTagParameter? blockTag = null, bool getFullTransactionObjects = false)
+        /// <param name="blockTag">Defaults to "latest" block</param>
+        /// <param name="blockNumber">integer block number (only if blockTag is not specified)</param>
+        public async Task<Block> GetBlockByNumber(bool getFullTransactionObjects = false, BlockTagParameter ? blockTag = null, long? blockNumber = null)
         {
-            if (blockTag == null && blockTag == null)
+            var blockTagParam = GetBlockTagParams(blockTag, blockNumber);
+            var methodParams = new object[]
             {
-                throw new ArgumentException($"A parameter of '{nameof(blockNumber)}' or '{nameof(blockTag)}' must be specified");
-            }
-            if (blockTag != null && blockTag != null)
-            {
-                throw new ArgumentException($"Both parameters '{nameof(blockNumber)}' and '{nameof(blockTag)}' must not be specified");
-            }
+                blockTagParam,
+                getFullTransactionObjects
+            };
 
-            object[] methodParams = new object[2];
-            methodParams[1] = getFullTransactionObjects;
-
-            if (blockNumber.HasValue)
-            {
-                methodParams[0] = HexConverter.GetHexFromInteger(blockNumber.Value, hexPrefix: true);
-            }
-            else
-            {
-                methodParams[0] = JToken.FromObject(blockTag.Value).Value<string>();
-            }
-
-            var request = new JsonRpcRequest<object[]>("eth_getBlockByNumber", methodParams);
-            var jsonStr = JsonConvert.SerializeObject(request);
-            var (error, result) = await InvokeRpcMethod(jsonStr);
-            return result.Value<Block>();
+            var request = new JsonRpcRequest("eth_getBlockByNumber", methodParams);
+            var (error, result) = await InvokeRpcMethod(request);
+            return result.ToObject<Block>();
         }
 
         /// <summary>
@@ -116,9 +131,8 @@ namespace SolCodeGen.JsonRpc
         /// <returns>the transaction hash, or the zero hash if the transaction is not yet available</returns>
         public async Task<Hash> SendRawTransaction(string signedHexData)
         {
-            var request = new JsonRpcRequest<string>("eth_sendRawTransaction", signedHexData);
-            var jsonStr = JsonConvert.SerializeObject(request);
-            var (error, result) = await InvokeRpcMethod(jsonStr);
+            var request = new JsonRpcRequest("eth_sendRawTransaction", signedHexData);
+            var (error, result) = await InvokeRpcMethod(request);
             return result.Value<string>();
         }
 
@@ -138,23 +152,29 @@ namespace SolCodeGen.JsonRpc
                 Value = sendParams?.Value ?? 0,
                 Data = encodedHexParams
             };
-            var request = new JsonRpcRequest<EthSendTransactionParam>("eth_sendTransaction", requestData);
+            var request = new JsonRpcRequest("eth_sendTransaction", requestData);
 
-            var jsonStr = JsonConvert.SerializeObject(request);
-            var (error, result) = await InvokeRpcMethod(jsonStr);
+            var (error, result) = await InvokeRpcMethod(request);
             var hashHexStr = result.Value<string>();
             var hash = HexConverter.HexToValue<Hash>(hashHexStr);
             return hash;
         }
+
 
         /// <summary>
         /// eth_call - 
         /// Executes a new message call immediately without creating a transaction on the block chain
         /// <see href="https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call"/>
         /// </summary>
+        /// <param name="encodedHexParams">Hash of the method signature and encoded parameters</param>
+        /// <param name="sendParams">Specify to override the default</param>
+        /// <param name="blockTag">Defaults to "latest" block</param>
+        /// <param name="blockNumber">integer block number (only if blockTag is not specified)</param>
         /// <returns>the return value of executed contract</returns>
-        public async Task<string> Call(string encodedHexParams, SendParams sendParams = null)
+        public async Task<string> Call(string encodedHexParams, SendParams sendParams = null, BlockTagParameter? blockTag = null, long? blockNumber = null)
         {
+            var blockTagParam = GetBlockTagParams(blockTag, blockNumber);
+
             var requestData = new EthCallParam
             {
                 From = sendParams?.From ?? _defaultFrom,
@@ -162,10 +182,10 @@ namespace SolCodeGen.JsonRpc
                 Value = sendParams?.Value ?? 0,
                 Data = encodedHexParams
             };
-            var request = new JsonRpcRequest<EthCallParam>("eth_call", requestData);
 
-            var jsonStr = JsonConvert.SerializeObject(request);
-            var (error, result) = await InvokeRpcMethod(jsonStr);
+            var request = new JsonRpcRequest("eth_call", requestData, blockTagParam);
+
+            var (error, result) = await InvokeRpcMethod(request);
             return result.Value<string>();
         }
 
@@ -178,15 +198,20 @@ namespace SolCodeGen.JsonRpc
         /// <returns></returns>
         public async Task<TransactionReceipt> GetTransactionReceipt(Hash transactionHash)
         {
-            var requestData = new JsonRpcRequest<string>("eth_getTransactionReceipt", transactionHash.GetHexString());
-            var jsonStr = JsonConvert.SerializeObject(requestData);
-            var (error, result) = await InvokeRpcMethod(jsonStr);
+            var requestData = new JsonRpcRequest("eth_getTransactionReceipt", transactionHash.GetHexString());
+            var (error, result) = await InvokeRpcMethod(requestData);
             var receipt = result.ToObject<TransactionReceipt>();
             return receipt;
         }
 
+        public Task<(JsonRpcError Error, JToken Result)> InvokeRpcMethod(JsonRpcRequest request, bool throwOnError = true)
+        {
+            var jsonStr = JsonConvert.SerializeObject(request);
+            return InvokeRpcMethod(jsonStr, throwOnError);
+        }
+
         /// <param name="msgJson">Full message data as json string to POST</param>
-        async Task<(JsonRpcError Error, JToken Result)> InvokeRpcMethod(string msgJson, bool throwOnError = true)
+        public async Task<(JsonRpcError Error, JToken Result)> InvokeRpcMethod(string msgJson, bool throwOnError = true)
         {
             var payload = new StringContent(msgJson, Encoding.UTF8, "application/json");
             var requestMsg = new HttpRequestMessage(HttpMethod.Post, _server);
@@ -212,6 +237,29 @@ namespace SolCodeGen.JsonRpc
                 throw new Exception("Unexpected JSON-RPC response: " + responseBody);
             }
         }
+
+        string GetBlockTagParams(BlockTagParameter? blockTag = null, long? blockNumber = null)
+        {
+            if (blockTag != null && blockTag != null)
+            {
+                throw new ArgumentException($"Both parameters '{nameof(blockNumber)}' and '{nameof(blockTag)}' must not be specified");
+            }
+
+            if (blockTag == null && blockNumber == null)
+            {
+                blockTag = BlockTagParameter.Latest;
+            }
+
+            if (blockTag.HasValue)
+            {
+                return JToken.FromObject(blockTag.Value).Value<string>();
+            }
+            else
+            {
+                return HexConverter.GetHexFromInteger(blockNumber.Value, hexPrefix: true);
+            }
+        }
+
 
     }
 }
