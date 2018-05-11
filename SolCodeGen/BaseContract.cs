@@ -32,9 +32,11 @@ namespace SolCodeGen
         public readonly Address ContractAddress;
         public readonly Address DefaultFromAccount;
 
+        public abstract string BytecodeHex { get; }
         public abstract string AbiJson { get; }
         public abstract string DevDocJson { get; }
         public abstract string UserDocJson { get; }
+
 
         protected Abi _abi;
         public Abi Abi => _abi ?? (_abi = AbiJson);
@@ -44,6 +46,9 @@ namespace SolCodeGen
 
         protected Doc _userDoc;
         public Doc UserDoc => _userDoc ?? (_userDoc = UserDocJson);
+
+        protected ReadOnlyMemory<byte>? _bytecode;
+        public ReadOnlyMemory<byte> Bytecode => (_bytecode ?? (_bytecode = BytecodeHex.HexToReadOnlyMemory())).Value;
 
         public JsonRpcClient JsonRpcClient { get; protected set; }
 
@@ -55,6 +60,22 @@ namespace SolCodeGen
             JsonRpcClient = new JsonRpcClient(Server, ContractAddress, DefaultFromAccount);
         }
 
+        /// <summary>
+        /// Deploys a contract that has no constructor arguments
+        /// </summary>
+        /// <param name="abiEncodedConstructorParams">ABI encoded function selector and constructor parameters</param>
+        protected void Deploy(ReadOnlySpan<byte> abiEncodedConstructorArgs, SendParams sendParams = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Deploys a contract that has no constructor arguments
+        /// </summary>
+        protected void Deploy()
+        {
+            throw new NotImplementedException();
+        }
 
     }
 

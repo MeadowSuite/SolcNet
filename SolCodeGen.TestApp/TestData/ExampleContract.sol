@@ -35,7 +35,7 @@ contract ExampleContract {
 
     /// @notice The constructor
     /// @param _name Name param
-    constructor(string _name) public {
+    constructor(string _name, bytes _data) public {
 
     }
 
@@ -45,6 +45,16 @@ contract ExampleContract {
 
 	function staticArrayInputFunc(int[15] staticArr) public returns (bool) {
 		return true;
+	}
+
+	function getArray() public returns (int16[4]){
+		
+		int16[4] arr;
+		arr[0] = 1;
+		arr[1] = -2;
+		arr[2] = 29;
+		arr[3] = 399;
+		return arr;
 	}
 
     /// @author Unknown author

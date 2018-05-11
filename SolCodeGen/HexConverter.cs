@@ -302,19 +302,29 @@ namespace SolCodeGen
         /// Expected str to already be stripped of hex prefix, 
         /// and expects bytes to already be allocated to the correct size
         /// </summary>
-        public static void HexToSpan(ReadOnlySpan<char> str, in Span<byte> bytes)
+        public static void HexToSpan(ReadOnlySpan<char> hexStr, in Span<byte> bytes)
         {
             // Special case for compact single char hex format.
             // For example 0xf should be read the same as 0x0f
-            if (str.Length == 1)
+            if (hexStr.Length == 1)
             {
-                bytes[0] = HexCharToByte(str[0]);
+                bytes[0] = HexCharToByte(hexStr[0]);
             }
             else
             {
-                for (var i = 0; i < bytes.Length; i++)
+                Span<byte> cursor = bytes;
+
+                if (hexStr.Length % 2 == 1)
                 {
-                    bytes[i] = (byte)((HexCharToByte(str[i * 2]) << 4) | HexCharToByte(str[i * 2 + 1]));
+                    cursor[0] = HexCharToByte(hexStr[0]);
+                    cursor = cursor.Slice(1);
+                    hexStr = hexStr.Slice(1);
+
+                }
+
+                for (var i = 0; i < cursor.Length; i++)
+                {
+                    cursor[i] = (byte)((HexCharToByte(hexStr[i * 2]) << 4) | HexCharToByte(hexStr[i * 2 + 1]));
                 }
             }
         }
@@ -327,6 +337,11 @@ namespace SolCodeGen
             Span<byte> bytes = byteArr;
             HexToSpan(strSpan, bytes);
             return byteArr;
+        }
+
+        public static ReadOnlyMemory<byte> HexToMemory(string str)
+        {
+            return HexToBytes(str);
         }
 
     }

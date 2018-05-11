@@ -81,6 +81,7 @@ namespace SolCodeGen
 
         }
 
+        public override string BytecodeHex { get; } = "TODO...";
         public override string AbiJson { get; } = "{ TODO: ... }";
         public override string DevDocJson { get; } = "{ TODO: ... }";
         public override string UserDocJson { get; } = "{ TODO: ... }";

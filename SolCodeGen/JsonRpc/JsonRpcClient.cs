@@ -30,6 +30,36 @@ namespace SolCodeGen.JsonRpc
         }
 
         /// <summary>
+        /// net_version - Returns the current network id.
+        /// </summary>
+        /// <returns>
+        /// String - The current network id. Examples:
+        /// "1": Ethereum Mainnet
+        /// "2": Morden Testnet(deprecated)
+        /// "3": Ropsten Testnet
+        /// "4": Rinkeby Testnet
+        /// "42": Kovan Testnet
+        /// </returns>
+        public async Task<string> Version()
+        {
+            
+            var request = new JsonRpcRequest("net_version");
+            var (error, result) = await InvokeRpcMethod(request);
+            return result.Value<string>();
+        }
+
+        /// <summary>
+        /// eth_protocolVersion - Returns the current ethereum protocol version
+        /// </summary>
+        /// <returns>String - The current ethereum protocol version</returns>
+        public async Task<string> ProtocolVersion()
+        {
+            var request = new JsonRpcRequest("eth_protocolVersion");
+            var (error, result) = await InvokeRpcMethod(request);
+            return result.Value<string>();
+        }
+
+        /// <summary>
         /// evm_mine - 
         /// Special non-standard ganache client methods (not included within the original RPC specification).
         /// Force a block to be mined. Takes no parameters. Mines a block independent of whether or not mining is started or stopped.
@@ -71,7 +101,7 @@ namespace SolCodeGen.JsonRpc
             
             var request = new JsonRpcRequest("eth_getBalance", methodParams);
             var (error, result) = await InvokeRpcMethod(request);
-            return HexConverter.HexToInteger<long>(result.Value<string>());
+            return HexConverter.HexToInteger<UInt256>(result.Value<string>());
         }
 
         /// <summary>
@@ -91,7 +121,9 @@ namespace SolCodeGen.JsonRpc
         /// <see href="https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbyhash"/>
         /// </summary>
         /// <param name="hash">32 Bytes - Hash of a block</param>
-        /// <param name="getFullTransactionObjects">If true it returns the full transaction objects, if false only the hashes of the transactions.</param>
+        /// <param name="getFullTransactionObjects">
+        /// If true it returns the full transaction objects, if false only the hashes of the transactions.
+        /// </param>
         /// <returns>A block object, or null when no block was found</returns>
         public async Task<Block> GetBlockByHash(Hash hash, bool getFullTransactionObjects = false)
         {
@@ -105,7 +137,9 @@ namespace SolCodeGen.JsonRpc
         /// Returns information about a block by block number
         /// <see href="https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber"/>
         /// </summary>
-        /// <param name="getFullTransactionObjects">If true it returns the full transaction objects, if false only the hashes of the transactions.</param>
+        /// <param name="getFullTransactionObjects">
+        /// If true it returns the full transaction objects, if false only the hashes of the transactions.
+        /// </param>
         /// <param name="blockTag">Defaults to "latest" block</param>
         /// <param name="blockNumber">integer block number (only if blockTag is not specified)</param>
         public async Task<Block> GetBlockByNumber(bool getFullTransactionObjects = false, BlockTagParameter ? blockTag = null, long? blockNumber = null)
@@ -141,7 +175,10 @@ namespace SolCodeGen.JsonRpc
         /// Creates new message call transaction or a contract creation, if the data field contains code
         /// <see href="https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction"/>
         /// </summary>
-        /// <param name="encodedHexParams">Hex string of the compiled code of a contract OR hash of the invoked method signature and encoded parameters</param>
+        /// <param name="encodedHexParams">
+        /// Hex string of the compiled code of a contract OR hash of the invoked 
+        /// method signature and encoded parameters
+        /// </param>
         /// <returns>The transaction hash</returns>
         public async Task<Hash> SendTransaction(string encodedHexParams, SendParams sendParams = null)
         {
