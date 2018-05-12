@@ -131,6 +131,31 @@ namespace SolCodeGen
             return GetHexFromBytes(span, hexPrefix);
         }
 
+
+        public static string GetHexFromBytes(bool hexPrefix = false, params ReadOnlyMemory<byte>[] bytes)
+        {
+            var byteLen = 0;
+            foreach(var mem in bytes)
+            {
+                byteLen += mem.Length;
+            }
+            Span<char> charArr = stackalloc char[(byteLen * 2) + (hexPrefix ? 2 : 0)];
+            Span<char> c = charArr;
+            if (hexPrefix)
+            {
+                c[0] = '0';
+                c[1] = 'x';
+                c = c.Slice(2);
+            }
+            foreach(var mem in bytes)
+            {
+                var span = mem.Span;
+                WriteBytesIntoHexString(span, c);
+                c = c.Slice(span.Length * 2);
+            }
+            return charArr.ToString();
+        }
+
         public static string GetHexFromBytes(this Span<byte> bytes, bool hexPrefix = false)
         {
             if (hexPrefix && bytes.Length == 0)
@@ -145,15 +170,23 @@ namespace SolCodeGen
                 c[1] = 'x';
                 c = c.Slice(2);
             }
+            WriteBytesIntoHexString(bytes, c);
+            return charArr.ToString();
+        }
 
+        /// <summary>
+        /// Expects target Span<char> to already be allocated to correct size
+        /// </summary>
+        /// <param name="bytes">Bytes to read</param>
+        /// <param name="str">An already allocated char buffer to write hex into</param>
+        static void WriteBytesIntoHexString(ReadOnlySpan<byte> bytes, Span<char> c)
+        {
             for (int i = 0; i < bytes.Length; ++i)
             {
-                ref byte index = ref bytes[i];
+                byte index = bytes[i];
                 c[i * 2] = GetHexCharFromByte((byte)(index >> 4));
                 c[i * 2 + 1] = GetHexCharFromByte((byte)(index & 0xF));
             }
-
-            return charArr.ToString();
         }
 
         /// <summary>

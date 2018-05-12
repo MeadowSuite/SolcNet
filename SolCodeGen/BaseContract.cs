@@ -3,6 +3,13 @@ using SolCodeGen.JsonRpc;
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Buffers.Binary;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Numerics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace SolCodeGen
 {
@@ -64,19 +71,31 @@ namespace SolCodeGen
         /// Deploys a contract that has no constructor arguments
         /// </summary>
         /// <param name="abiEncodedConstructorParams">ABI encoded function selector and constructor parameters</param>
-        protected void Deploy(ReadOnlySpan<byte> abiEncodedConstructorArgs, SendParams sendParams = null)
-        {
-            throw new NotImplementedException();
+        protected async Task Deploy(ReadOnlyMemory<byte> abiEncodedConstructorArgs, SendParams sendParams = null)
+        { 
+            var deploymentHex = HexConverter.GetHexFromBytes(hexPrefix: true, Bytecode, abiEncodedConstructorArgs);
+            var transHash = await JsonRpcClient.SendTransaction(deploymentHex, sendParams: sendParams);
+            var receipt = await JsonRpcClient.GetTransactionReceipt(transHash);
+
+            //ContractAddress = receipt....
         }
 
         /// <summary>
         /// Deploys a contract that has no constructor arguments
         /// </summary>
-        protected void Deploy()
+        protected async Task Deploy(SendParams sendParams = null)
         {
+            var deploymentHex = HexConverter.GetHexFromBytes(hexPrefix: true, Bytecode);
+            var transHash = await JsonRpcClient.SendTransaction(deploymentHex, sendParams: sendParams);
+            var receipt = await JsonRpcClient.GetTransactionReceipt(transHash);
             throw new NotImplementedException();
         }
 
+        protected async Task SetFromAddress(Address addr)
+        {
+            //ContractAddress =  addr;
+            throw new NotImplementedException();
+        }
     }
 
     public class ContractConstructParams
