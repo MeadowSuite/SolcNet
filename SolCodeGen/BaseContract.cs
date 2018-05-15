@@ -66,12 +66,6 @@ namespace SolCodeGen
             JsonRpcClient = rpcClient;
         }
 
-        protected async Task SetFromAddress(Address addr)
-        {
-            //ContractAddress =  addr;
-            throw new NotImplementedException();
-        }
-
         protected SendParams GetSendParams(SendParams optional)
         {
             return new SendParams
@@ -84,6 +78,13 @@ namespace SolCodeGen
             };
         }
 
+        protected string GetCallData(string funcSignature, params IAbiTypeEncoder[] encoders)
+        {
+            var funcHash = MethodID.GetMethodID(funcSignature);
+            var paramBytes = EncoderUtil.GetBytes(encoders);
+            var dataHex = HexConverter.GetHexFromBytes(hexPrefix: true, funcHash, paramBytes);
+            return dataHex;
+        }
     }
 
     public class ContractConstructParams

@@ -13,7 +13,7 @@ namespace SolCodeGen.Tests
         [Fact]
         public void FunctionSelector()
         {
-            var result = MethodID.GetMethodID("baz(uint32,bool)", hexPrefix: true);
+            var result = MethodID.GetMethodIDHex("baz(uint32,bool)", hexPrefix: true);
             Assert.Equal("0xcdcd77c0", result);
         }
 

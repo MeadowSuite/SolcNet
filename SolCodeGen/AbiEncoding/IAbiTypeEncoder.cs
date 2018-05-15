@@ -46,7 +46,7 @@ namespace SolCodeGen.AbiEncoding
 
         protected int PadLength(int len, int multiple)
         {
-            return (len + multiple - 1) / multiple * multiple;
+            return ((len - 1) / multiple + 1) * multiple;
         }
     }
 

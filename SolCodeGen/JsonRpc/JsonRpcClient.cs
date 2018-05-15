@@ -228,7 +228,7 @@ namespace SolCodeGen.JsonRpc
                 To = sendParams.To,
                 Data = encodedHexParams,
                 Value = sendParams.Value,
-                Gas = sendParams.Gas,
+                Gas = sendParams.Gas ?? 2_000_000,
                 GasPrice = sendParams.GasPrice
             };
 

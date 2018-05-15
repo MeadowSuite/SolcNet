@@ -20,7 +20,7 @@ namespace SolCodeGen.AbiEncoding
         /// <param name="functionSignature">Function signature, ex: "baz(uint32,bool)"</param>
         /// <param name="hexPrefix">True to prepend the hex string with "0x"</param>
         /// <returns>8 character lowercase hex string (from first 4 bytes of the sha3 hash of utf8 encoded function signature)</returns>
-        public static string GetMethodID(string functionSignature, bool hexPrefix = false)
+        public static string GetMethodIDHex(string functionSignature, bool hexPrefix = false)
         {
             var bytes = Encoding.UTF8.GetBytes(functionSignature);
             var hash = Keccak.ComputeHash(bytes).Slice(0, 4);
@@ -28,7 +28,7 @@ namespace SolCodeGen.AbiEncoding
             return funcSignature;
         }
 
-        public static ReadOnlyMemory<byte> GetMethodIDBytes(string functionSignature, bool hexPrefix = false)
+        public static ReadOnlyMemory<byte> GetMethodID(string functionSignature, bool hexPrefix = false)
         {
             var bytes = Encoding.UTF8.GetBytes(functionSignature);
             var mem = new Memory<byte>(new byte[4]);

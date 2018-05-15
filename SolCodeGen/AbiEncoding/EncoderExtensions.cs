@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SolCodeGen.AbiEncoding
 {
-    public static class EncoderExtensions
+    public static class EncoderUtil
     {
         public static ReadOnlyMemory<byte> GetBytes(params IAbiTypeEncoder[] encoders)
         {
@@ -60,7 +60,9 @@ namespace SolCodeGen.AbiEncoding
             Span<byte> cursor = buff;
             foreach (var encoder in encoders)
             {
+                var start = cursor;
                 cursor = encoder.Encode(cursor);
+                var hex = start.Slice(0, start.Length - cursor.Length).ToHexString(hexPrefix: false);
             }
         }
     }

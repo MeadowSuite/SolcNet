@@ -13,16 +13,18 @@ namespace SolCodeGen.AbiEncoding.Encoders
         {
             var len = Encoding.UTF8.GetByteCount(_val);
             int padded = PadLength(len, 32);
-            return 32 + padded;
+            return 32 * 2 + padded;
         }
 
         public override Span<byte> Encode(Span<byte> buffer)
         {
             Span<byte> utf8 = Encoding.UTF8.GetBytes(_val);
-            int len = utf8.Length;
-            buffer = UInt256Encoder.EncodeUnchecked(buffer, len);
+            var start = buffer;
+            buffer = UInt256Encoder.EncodeUnchecked(buffer, 32);
+            buffer = UInt256Encoder.EncodeUnchecked(buffer, utf8.Length);
+            var testHex = start.Slice(0, start.Length - buffer.Length).ToHexString(hexPrefix: false);
             utf8.CopyTo(buffer);
-            int padded = PadLength(len, 32);
+            int padded = PadLength(utf8.Length, 32);
             return buffer.Slice(padded);
         }
     }
