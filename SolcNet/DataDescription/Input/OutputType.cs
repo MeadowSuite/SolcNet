@@ -3,91 +3,185 @@ using Newtonsoft.Json;
 using System.Reflection;
 using System.Linq;
 using SolcNet.DataDescription.Parsing;
+using System.Runtime.Serialization;
+using Newtonsoft.Json.Converters;
+using System.Collections.Generic;
+using System.Threading;
+using System.ComponentModel;
 
 namespace SolcNet.DataDescription.Input
 {
-    [JsonConverter(typeof(NamedStringTokenConverter<OutputType>))]
-    public class OutputType : NamedStringToken
+    [JsonConverter(typeof(OutputTypes.JsonEnumConverter))]
+    [Flags]
+    public enum OutputType : long
     {
-        public static implicit operator OutputType(string value) => new OutputType { Value = value };
-        public static implicit operator string(OutputType o) => o.Value;
-
-        public static bool operator ==(OutputType a, OutputType b) => a?.Value == b?.Value;
-        public static bool operator !=(OutputType a, OutputType b) => !(a == b);
-        public override int GetHashCode() => Value.GetHashCode();
-        public override bool Equals(object obj) => obj is OutputType a ? a == this : false;
-
-        public static OutputType[] All => _all.Value;
-        static Lazy<OutputType[]> _all = new Lazy<OutputType[]>(() =>
-        {
-            var props = typeof(OutputType).GetFields(BindingFlags.Public | BindingFlags.Static);
-            var vals = props.Select(p => p.GetValue(null)).OfType<OutputType>();
-            return vals.ToArray();
-        });
-
         /// <summary>ABI</summary>
-        public static readonly OutputType Abi = "abi";
+        [EnumMember(Value = "abi")]
+        Abi = 1L << 0,
 
         /// <summary>AST of all source files</summary>
-        public static readonly OutputType Ast = "ast";
+        [EnumMember(Value = "ast")]
+        Ast = 1L << 1,
 
         /// <summary>legacy AST of all source files</summary>
-        public static readonly OutputType LegacyAst = "legacyAST";
+        [EnumMember(Value = "legacyAST")]
+        LegacyAst = 1L << 2,
 
         /// <summary>Developer documentation (natspec)</summary>
-        public static readonly OutputType DevDoc = "devdoc";
+        [EnumMember(Value = "devdoc")]
+        DevDoc = 1L << 3,
 
         /// <summary>User documentation (natspec)</summary>
-        public static readonly OutputType UserDoc = "userdoc";
+        [EnumMember(Value = "userdoc")]
+        UserDoc = 1L << 4,
 
         /// <summary>Metadata</summary>
-        public static readonly OutputType Metadata = "metadata";
+        [EnumMember(Value = "metadata")]
+        Metadata = 1L << 5,
 
         /// <summary>New assembly format before desugaring</summary>
-        public static readonly OutputType IR = "ir";
+        [EnumMember(Value = "ir")]
+        IR = 1L << 6,
 
         /// <summary>All evm related targets</summary>
-        public static readonly OutputType Evm = "evm";
+        [EnumMember(Value = "evm")]
+        Evm = 1L << 7,
 
         /// <summary>New assembly format after desugaring</summary>
-        public static readonly OutputType EvmAssembly = "evm.assembly";
+        [EnumMember(Value = "evm.assembly")]
+        EvmAssembly = 1L << 8,
 
         /// <summary>Old-style assembly format in JSON</summary>
-        public static readonly OutputType EvmLegacyAssembly = "evm.legacyAssembly";
+        [EnumMember(Value = "evm.legacyAssembly")]
+        EvmLegacyAssembly = 1L << 9,
 
         /// <summary>All bytecode related targets</summary>
-        public static readonly OutputType EvmBytecode = "evm.bytecode";
+        [EnumMember(Value = "evm.bytecode")]
+        EvmBytecode = 1L << 10,
 
         /// <summary>Bytecode object</summary>
-        public static readonly OutputType EvmBytecodeObject = "evm.bytecode.object";
+        [EnumMember(Value = "evm.bytecode.object")]
+        EvmBytecodeObject = 1L << 11,
 
         /// <summary>Opcodes list</summary>
-        public static readonly OutputType EvmBytecodeOpcodes = "evm.bytecode.opcodes";
+        [EnumMember(Value = "evm.bytecode.opcodes")]
+        EvmBytecodeOpcodes = 1L << 12,
 
         /// <summary>Source mapping (useful for debugging)</summary>
-        public static readonly OutputType EvmBytecodeSourceMap = "evm.bytecode.sourceMap";
+        [EnumMember(Value = "evm.bytecode.sourceMap")]
+        EvmBytecodeSourceMap = 1L << 13,
 
         /// <summary>Link references (if unlinked object)</summary>
-        public static readonly OutputType EvmBytecodeLinkReferences = "evm.bytecode.linkReferences";
+        [EnumMember(Value = "evm.bytecode.linkReferences")]
+        EvmBytecodeLinkReferences = 1L << 14,
 
         /// <summary>Deployed bytecode (has the same options as evm.bytecode)</summary>
-        public static readonly OutputType EvmDeployedBytecode = "evm.deployedBytecode*";
+        [EnumMember(Value = "evm.deployedBytecode")]
+        EvmDeployedBytecode = 1L << 15,
 
         /// <summary>The list of function hashes</summary>
-        public static readonly OutputType EvmMethodIdentifiers = "evm.methodIdentifiers";
+        [EnumMember(Value = "evm.methodIdentifiers")]
+        EvmMethodIdentifiers = 1L << 16,
 
         /// <summary>Function gas estimates</summary>
-        public static readonly OutputType EvmGasEstimates = "evm.gasEstimates";
+        [EnumMember(Value = "evm.gasEstimates")]
+        EvmGasEstimates = 1L << 17,
 
         /// <summary>All eWASM related targets</summary>
-        public static readonly OutputType Ewasm = "ewasm";
+        [EnumMember(Value = "ewasm")]
+        Ewasm = 1L << 18,
 
         /// <summary>eWASM S-expressions format (not supported atm)</summary>
-        public static readonly OutputType EwasmWast = "ewasm.wast";
+        [EnumMember(Value = "ewasm.wast")]
+        EwasmWast = 1L << 19,
 
         /// <summary>eWASM binary format (not supported atm)</summary>
-        public static readonly OutputType EwasmWasm = "ewasm.wasm";
+        [EnumMember(Value = "ewasm.wasm")]
+        EwasmWasm = 1L << 20
     }
+
+    public static class OutputTypes
+    {
+        public static readonly OutputType[] All;
+
+        public static readonly Dictionary<OutputType, string> CustomTypes = new Dictionary<OutputType, string>();
+        static int NEXT_ID;
+
+        static OutputTypes()
+        {
+            All = Enum.GetValues(typeof(OutputType)).Cast<OutputType>().ToArray();
+            long maxEnum = All.Cast<long>().Max();
+            while ((1L << NEXT_ID) <= maxEnum)
+            {
+                NEXT_ID++;
+            }
+        }
+
+        public static OutputType[] GetItems(OutputType outputType)
+        {
+            List<OutputType> types = new List<OutputType>();
+
+            foreach(var ot in All)
+            {
+                if ((outputType & ot) == ot)
+                {
+                    types.Add(ot);
+                }
+            }
+            foreach(var item in CustomTypes)
+            {
+                if ((outputType & item.Key) == item.Key)
+                {
+                    types.Add(item.Key);
+                }
+            }
+            return types.ToArray();
+        }
+
+        public static OutputType FromString(string str)
+        {
+            foreach(var item in CustomTypes)
+            {
+                if (item.Value == str)
+                {
+                    return item.Key;
+                }
+            }
+            var enumID = Interlocked.Increment(ref NEXT_ID);
+            OutputType enumVal = (OutputType)(1L << enumID);
+            CustomTypes.Add(enumVal, str);
+            return enumVal;
+        }
+
+        public class JsonEnumConverter : JsonConverter<OutputType>
+        {
+            public override OutputType ReadJson(JsonReader reader, Type objectType, OutputType existingValue, bool hasExistingValue, JsonSerializer serializer)
+            {
+                var str = reader.Value.ToString();
+                if (Enum.TryParse<OutputType>(str, ignoreCase: true, out var result))
+                {
+                    return result;
+                }
+                return FromString(str);
+            }
+
+            public override void WriteJson(JsonWriter writer, OutputType value, JsonSerializer serializer)
+            {
+                string enumStrVal;
+                if (Enum.IsDefined(typeof(OutputType), value))
+                {
+                    var type = value.GetType();
+                    enumStrVal = type.GetField(Enum.GetName(type, value)).GetCustomAttribute<EnumMemberAttribute>().Value;
+                }
+                else
+                {
+                    enumStrVal = CustomTypes[value];
+                }
+                writer.WriteToken(JsonToken.String, enumStrVal);
+            }
+        }
+    }
+    
 
 
 

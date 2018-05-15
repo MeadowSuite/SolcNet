@@ -67,9 +67,10 @@ namespace SolcNet
             return CompileInputDescriptionJson(jsonStr, errorHandling);
         }
 
+
         /// <param name="outputSelection">Defaults to all output types if not specified</param>
         public OutputDescription Compile(string contractFilePaths,
-            OutputType[] outputSelection = null,
+            OutputType? outputSelection = null,
             CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError)
         {
             return Compile(new[] { contractFilePaths }, outputSelection, errorHandling);
@@ -77,15 +78,21 @@ namespace SolcNet
 
         /// <param name="outputSelection">Defaults to all output types if not specified</param>
         public OutputDescription Compile(string[] contractFilePaths,
-            OutputType[] outputSelection = null, 
+            OutputType? outputSelection = null,
             CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError)
         {
-            outputSelection = outputSelection ?? OutputType.All;
+            var outputs = outputSelection == null ? OutputTypes.All : OutputTypes.GetItems(outputSelection.Value);
+            return Compile(contractFilePaths, outputs, errorHandling);
+        }
 
+        public OutputDescription Compile(string[] contractFilePaths,
+            OutputType[] outputSelection, 
+            CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError)
+        {
             var inputDesc = new InputDescription();
-            inputDesc.Settings.OutputSelection["*"] = new Dictionary<string, List<OutputType>>
+            inputDesc.Settings.OutputSelection["*"] = new Dictionary<string, OutputType[]>
             {
-                ["*"] = new List<OutputType>(outputSelection)
+                ["*"] = outputSelection.ToArray()
             };
 
             foreach (var filePath in contractFilePaths)

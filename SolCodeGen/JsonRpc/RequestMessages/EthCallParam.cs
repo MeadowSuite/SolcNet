@@ -38,7 +38,7 @@ namespace SolCodeGen.JsonRpc.RequestMessages
         /// <summary>
         /// Hex string of the compiled code of a contract OR hash of the invoked method signature and encoded parameters
         /// </summary>
-        [JsonProperty("data", Required = Required.Always)]
+        [JsonProperty("data")]
         public string Data { get; set; }
     }
 }

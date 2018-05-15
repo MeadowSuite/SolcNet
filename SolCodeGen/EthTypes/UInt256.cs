@@ -115,6 +115,7 @@ namespace System
         public static explicit operator byte(UInt256 value) => (byte)value.ToBigInteger();
 
         public static implicit operator BigInteger(UInt256 value) => value.ToBigInteger();
+        public static implicit operator UInt256(BigInteger value) => new UInt256(value);
         public static implicit operator UInt256(byte value) => new UInt256(value);
         public static implicit operator UInt256(int value) => new UInt256(value);
         public static implicit operator UInt256(long value) => new UInt256(value);

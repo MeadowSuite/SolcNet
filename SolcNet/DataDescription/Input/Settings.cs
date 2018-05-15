@@ -48,7 +48,7 @@ namespace SolcNet.DataDescription.Input
         /// target part of that output. Additionally, `*` can be used as a wildcard to request everything.
         /// </summary>
         [JsonProperty("outputSelection", NullValueHandling = NullValueHandling.Ignore)]
-        public Dictionary<string, Dictionary<string, List<OutputType>>> OutputSelection { get; set; } = new Dictionary<string, Dictionary<string, List<OutputType>>>();
+        public Dictionary<string, Dictionary<string, OutputType[]>> OutputSelection { get; set; } = new Dictionary<string, Dictionary<string, OutputType[]>>();
     }
 
     /// <summary>

@@ -10,6 +10,7 @@ using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using SolCodeGen.AbiEncoding;
 
 namespace SolCodeGen
 {
@@ -18,7 +19,13 @@ namespace SolCodeGen
     {
         public Address? From { get; set; }
         public Address? To { get; set; }
+        /// <summary>
+        /// Value in wei
+        /// </summary>
         public UInt256? Value { get; set; }
+
+        public UInt256? Gas { get; set; }
+        public UInt256? GasPrice { get; set; }
     }
 
     public enum CallType
@@ -35,60 +42,28 @@ namespace SolCodeGen
 
     public abstract class BaseContract
     {
-        public readonly Uri Server;
         public readonly Address ContractAddress;
         public readonly Address DefaultFromAccount;
 
-        public abstract string BytecodeHex { get; }
-        public abstract string AbiJson { get; }
-        public abstract string DevDocJson { get; }
-        public abstract string UserDocJson { get; }
-
-
-        protected Abi _abi;
-        public Abi Abi => _abi ?? (_abi = AbiJson);
-
-        protected Doc _devDoc;
-        public Doc DevDoc => _devDoc ?? (_devDoc = DevDocJson);
-
-        protected Doc _userDoc;
-        public Doc UserDoc => _userDoc ?? (_userDoc = UserDocJson);
-
-        protected ReadOnlyMemory<byte>? _bytecode;
-        public ReadOnlyMemory<byte> Bytecode => (_bytecode ?? (_bytecode = BytecodeHex.HexToReadOnlyMemory())).Value;
+        public abstract Abi Abi { get; }
+        public abstract Doc DevDoc { get; }
+        public abstract Doc UserDoc { get; }
+        public abstract ReadOnlyMemory<byte> Bytecode { get; }
 
         public JsonRpcClient JsonRpcClient { get; protected set; }
 
         public BaseContract(Uri server, Address contractAddress, Address defaultFromAccount)
         {
-            Server = server;
             ContractAddress = contractAddress;
             DefaultFromAccount = defaultFromAccount;
-            JsonRpcClient = new JsonRpcClient(Server, ContractAddress, DefaultFromAccount);
+            JsonRpcClient = new JsonRpcClient(server);
         }
 
-        /// <summary>
-        /// Deploys a contract that has no constructor arguments
-        /// </summary>
-        /// <param name="abiEncodedConstructorParams">ABI encoded function selector and constructor parameters</param>
-        protected async Task Deploy(ReadOnlyMemory<byte> abiEncodedConstructorArgs, SendParams sendParams = null)
-        { 
-            var deploymentHex = HexConverter.GetHexFromBytes(hexPrefix: true, Bytecode, abiEncodedConstructorArgs);
-            var transHash = await JsonRpcClient.SendTransaction(deploymentHex, sendParams: sendParams);
-            var receipt = await JsonRpcClient.GetTransactionReceipt(transHash);
-
-            //ContractAddress = receipt....
-        }
-
-        /// <summary>
-        /// Deploys a contract that has no constructor arguments
-        /// </summary>
-        protected async Task Deploy(SendParams sendParams = null)
+        public BaseContract(JsonRpcClient rpcClient, Address contractAddress, Address defaultFromAccount)
         {
-            var deploymentHex = HexConverter.GetHexFromBytes(hexPrefix: true, Bytecode);
-            var transHash = await JsonRpcClient.SendTransaction(deploymentHex, sendParams: sendParams);
-            var receipt = await JsonRpcClient.GetTransactionReceipt(transHash);
-            throw new NotImplementedException();
+            ContractAddress = contractAddress;
+            DefaultFromAccount = defaultFromAccount;
+            JsonRpcClient = rpcClient;
         }
 
         protected async Task SetFromAddress(Address addr)
@@ -96,6 +71,19 @@ namespace SolCodeGen
             //ContractAddress =  addr;
             throw new NotImplementedException();
         }
+
+        protected SendParams GetSendParams(SendParams optional)
+        {
+            return new SendParams
+            {
+                From = optional?.From ?? DefaultFromAccount,
+                To = optional?.To ?? ContractAddress,
+                Value = optional?.Value,
+                Gas = optional?.Gas,
+                GasPrice = optional?.GasPrice
+            };
+        }
+
     }
 
     public class ContractConstructParams

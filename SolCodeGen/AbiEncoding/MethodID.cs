@@ -27,5 +27,13 @@ namespace SolCodeGen.AbiEncoding
             string funcSignature = HexConverter.GetHexFromBytes(hash, hexPrefix: hexPrefix);
             return funcSignature;
         }
+
+        public static ReadOnlyMemory<byte> GetMethodIDBytes(string functionSignature, bool hexPrefix = false)
+        {
+            var bytes = Encoding.UTF8.GetBytes(functionSignature);
+            var mem = new Memory<byte>(new byte[4]);
+            Keccak.ComputeHash(bytes).Slice(0, 4).CopyTo(mem.Span);
+            return mem;
+        }
     }
 }

@@ -13,12 +13,6 @@ contract ExampleContract {
     /// @notice A test event
     event TestEvent(address indexed _addr, uint64 indexed _id, uint _val);
 
-    bool[] public typeArrayDynamic;
-    bool[10] public typeArrayFixed;
-    bool[2][5] public typeArray2DimFixed;
-    byte[] public typeByteArrayDynamic;
-	bytes22 public typeByteArrayFixed;
-
     string public typeString;
     bytes public typeBytes;
     address public typeAddress;
@@ -33,10 +27,15 @@ contract ExampleContract {
     uint8 public typeUInt8;
     uint256 public typeUInt256;
 
-    /// @notice The constructor
-    /// @param _name Name param
-    constructor(string _name, bytes _data) public {
+	uint256 public givenName;
+	bool public enabledThing;
+	uint256 public last;
 
+    /// @notice The constructor
+    constructor(uint256 _name, bool _enableThing, uint256 _last) public {
+		givenName = _name;
+		enabledThing = _enableThing;
+		last = _last;
     }
 
 	function dynamicArrayInputFunc(int[] dynArr) public returns (bool) {
@@ -62,7 +61,7 @@ contract ExampleContract {
     /// @dev Hi dev
     /// @param _num What number
     /// @return true if _num is 9
-    function myFunc(int256 _num) external pure returns (bool isNine) {
+    function myFunc(uint256 _num) external pure returns (bool isNine) {
         return _num == 9;
     }
 

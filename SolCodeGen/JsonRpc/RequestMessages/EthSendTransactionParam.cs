@@ -14,7 +14,7 @@ namespace SolCodeGen.JsonRpc.RequestMessages
         /// <summary>
         /// DATA, 20 Bytes - (optional when creating new contract) The address the transaction is directed to.
         /// </summary>
-        [JsonProperty("to", Required = Required.Always, ItemConverterType = typeof(JsonRpcHexConverter))]
+        [JsonProperty("to", ItemConverterType = typeof(JsonRpcHexConverter))]
         public Address? To { get; set; }
 
         /// <summary>

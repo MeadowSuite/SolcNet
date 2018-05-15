@@ -33,4 +33,8 @@
     <ProjectReference Include="..\SolCodeGen\SolCodeGen.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="GeneratedContracts\" />
+  </ItemGroup>
+
 </Project>

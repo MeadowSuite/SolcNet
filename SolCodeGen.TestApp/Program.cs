@@ -2,6 +2,7 @@
 using SolcNet;
 using SolcNet.DataDescription.Input;
 using SolcNet.DataDescription.Output;
+using SolCodeGen.JsonRpc;
 using System;
 using System.IO;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace SolCodeGen.TestApp
         static async Task Rpc()
         {
             Uri server = new Uri("http://127.0.0.1:7545");
-            var rpcClient = new JsonRpc.JsonRpcClient(server, "0x0", "0x0");
+            var rpcClient = new JsonRpc.JsonRpcClient(server);
             var ver = await rpcClient.Version();
             var protoVer = await rpcClient.ProtocolVersion();
 
@@ -28,17 +29,34 @@ namespace SolCodeGen.TestApp
 
         static async Task Main(string[] args)
         {
+            var compiledExample = new SolcLib("TestData").Compile("ExampleContract.sol", 
+                OutputType.Abi | OutputType.EvmBytecodeObject | OutputType.DevDoc | OutputType.UserDoc);
 
-            
-
-            await Rpc();
-
-            var compiledExample = new SolcLib("TestData").Compile("ExampleContract.sol");
+            var bytecode = compiledExample.Contracts.Values.First().Values.First().Evm.Bytecode.Object.ToHexString();
             var abi = compiledExample.Contracts.Values.First().Values.First().Abi;
-            var abiJson = JsonConvert.SerializeObject(abi, Formatting.Indented);
+            var abiJson = JsonConvert.SerializeObject(abi, Formatting.None);
 
-            //var ex = await ExampleGeneratedContract.New("My Token", 8);
-            //var transferResult = await ex.Transfer.Send(("0x1234", 1000));
+            ExampleGeneratedContract.ABI_JSON = abiJson;
+            ExampleGeneratedContract.BYTECODE_HEX = bytecode;
+
+            Uri server = new Uri("http://127.0.0.1:7545");
+            var rpcClient = new JsonRpcClient(server);
+            var accounts = await rpcClient.Accounts();
+            var exContract = await ExampleGeneratedContract.New(rpcClient, (99999999999999, true, 22222), new SendParams
+            {
+                From = accounts[2],
+                Gas = 5_000_000,
+            }, accounts[3]);
+
+            var (_, _, givenNameNum) = await exContract.givenName(callType: CallType.Call);
+            
+            var (_, _, isNine) = await exContract.myFunc(9, callType: CallType.Call);
+
+            var (_, _, isNine2) = await exContract.myFunc(8, callType: CallType.Call);
+
+            return;
+
+            //await Rpc();
 
             const string OPEN_ZEP_DIR = "OpenZeppelin";
             var solcLib = SolcLib.Create(OPEN_ZEP_DIR);

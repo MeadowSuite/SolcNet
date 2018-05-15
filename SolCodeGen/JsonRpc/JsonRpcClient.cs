@@ -16,17 +16,10 @@ namespace SolCodeGen.JsonRpc
         private static readonly HttpClient _httpClient = new HttpClient();
 
         readonly Uri _server;
-        readonly Address _contractAddress;
-        readonly Address _defaultFrom;
 
-        public JsonRpcClient(
-            Uri server, 
-            Address contractAddress,
-            Address defaultFrom)
+        public JsonRpcClient(Uri server)
         {
             _server = server;
-            _contractAddress = contractAddress;
-            _defaultFrom = defaultFrom;
         }
 
         /// <summary>
@@ -42,7 +35,6 @@ namespace SolCodeGen.JsonRpc
         /// </returns>
         public async Task<string> Version()
         {
-            
             var request = new JsonRpcRequest("net_version");
             var (error, result) = await InvokeRpcMethod(request);
             return result.Value<string>();
@@ -80,6 +72,16 @@ namespace SolCodeGen.JsonRpc
             var request = new JsonRpcRequest("eth_accounts");
             var (error, result) = await InvokeRpcMethod(request);
             return result.ToObject<Address[]>();
+        }
+
+        /// <summary>
+        /// Returns the current price per gas in wei.
+        /// </summary>
+        public async Task<UInt256> GasPrice()
+        {
+            var request = new JsonRpcRequest("eth_gasPrice");
+            var (error, result) = await InvokeRpcMethod(request);
+            return HexConverter.HexToInteger<UInt256>(result.Value<string>());
         }
 
         /// <summary>
@@ -142,7 +144,7 @@ namespace SolCodeGen.JsonRpc
         /// </param>
         /// <param name="blockTag">Defaults to "latest" block</param>
         /// <param name="blockNumber">integer block number (only if blockTag is not specified)</param>
-        public async Task<Block> GetBlockByNumber(bool getFullTransactionObjects = false, BlockTagParameter ? blockTag = null, long? blockNumber = null)
+        public async Task<Block> GetBlockByNumber(bool getFullTransactionObjects = false, BlockTagParameter? blockTag = null, long? blockNumber = null)
         {
             var blockTagParam = GetBlockTagParams(blockTag, blockNumber);
             var methodParams = new object[]
@@ -179,15 +181,23 @@ namespace SolCodeGen.JsonRpc
         /// Hex string of the compiled code of a contract OR hash of the invoked 
         /// method signature and encoded parameters
         /// </param>
+        /// <param name="gas">Gas provided for the transaction execution</param>
+        /// <param name="gasPrice">Integer of the gasPrice used for each paid gas</param>
+        /// <param name="nonce">This allows to overwrite your own pending transactions that use the same nonce</param>
         /// <returns>The transaction hash</returns>
-        public async Task<Hash> SendTransaction(string encodedHexParams, SendParams sendParams = null)
+        public async Task<Hash> SendTransaction(string encodedHexParams, 
+            SendParams sendParams, 
+            long? nonce = null)
         {
             var requestData = new EthSendTransactionParam
             {
-                From = sendParams?.From ?? _defaultFrom,
-                To = sendParams?.To ?? _contractAddress,
-                Value = sendParams?.Value ?? 0,
-                Data = encodedHexParams
+                From = sendParams.From,
+                To = sendParams.To,
+                Data = encodedHexParams,
+                Value = sendParams.Value,
+                Gas = sendParams.Gas,
+                GasPrice = sendParams.GasPrice,
+                Nonce = nonce
             };
             var request = new JsonRpcRequest("eth_sendTransaction", requestData);
 
@@ -208,16 +218,18 @@ namespace SolCodeGen.JsonRpc
         /// <param name="blockTag">Defaults to "latest" block</param>
         /// <param name="blockNumber">integer block number (only if blockTag is not specified)</param>
         /// <returns>the return value of executed contract</returns>
-        public async Task<string> Call(string encodedHexParams, SendParams sendParams = null, BlockTagParameter? blockTag = null, long? blockNumber = null)
+        public async Task<string> Call(string encodedHexParams, SendParams sendParams, BlockTagParameter? blockTag = null, long? blockNumber = null)
         {
             var blockTagParam = GetBlockTagParams(blockTag, blockNumber);
 
             var requestData = new EthCallParam
             {
-                From = sendParams?.From ?? _defaultFrom,
-                To = sendParams?.To ?? _contractAddress,
-                Value = sendParams?.Value ?? 0,
-                Data = encodedHexParams
+                From = sendParams.From,
+                To = sendParams.To,
+                Data = encodedHexParams,
+                Value = sendParams.Value,
+                Gas = sendParams.Gas,
+                GasPrice = sendParams.GasPrice
             };
 
             var request = new JsonRpcRequest("eth_call", requestData, blockTagParam);
