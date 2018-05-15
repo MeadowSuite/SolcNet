@@ -38,7 +38,7 @@ namespace SolCodeGen.AbiEncoding.Encoders
             if (_info.Category == SolidityTypeCategory.DynamicArray)
             {
                 // write length prefix
-                buffer = UInt256Encoder.EncodeUnchecked(buffer, _val.Count());
+                buffer = UInt256Encoder.Encode(buffer, _val.Count());
             }
             else if (_info.Category == SolidityTypeCategory.FixedArray)
             {
@@ -60,7 +60,12 @@ namespace SolCodeGen.AbiEncoding.Encoders
             }
 
             return buffer;
+        }
 
+        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out IEnumerable<TItem> val)
+        {
+            // TODO: ArrayEncoder.Decode
+            throw new NotImplementedException();
         }
 
     }

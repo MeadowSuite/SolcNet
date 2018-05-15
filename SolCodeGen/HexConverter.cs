@@ -156,7 +156,7 @@ namespace SolCodeGen
             return charArr.ToString();
         }
 
-        public static string GetHexFromBytes(this Span<byte> bytes, bool hexPrefix = false)
+        public static string GetHexFromBytes(ReadOnlySpan<byte> bytes, bool hexPrefix = false)
         {
             if (hexPrefix && bytes.Length == 0)
             {

@@ -35,6 +35,8 @@ namespace SolCodeGen.AbiEncoding
             _val = val;
         }
 
+        public abstract ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out TVal val);
+
         public abstract Span<byte> Encode(Span<byte> buffer);
         public virtual int GetEncodedSize() => 32;
 

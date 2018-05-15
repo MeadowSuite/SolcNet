@@ -82,6 +82,12 @@ namespace SolCodeGen.AbiEncoding.Encoders
         {
             return new OverflowException($"Min value for type '{_info}' is {MinValue}, was given {_val}");
         }
+
+        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out TInt val)
+        {
+            // TODO: NumberEncoder.Decode()
+            throw new NotImplementedException();
+        }
     }
 
 
@@ -92,6 +98,12 @@ namespace SolCodeGen.AbiEncoding.Encoders
             buffer[31] = unchecked((byte)_val);
             return buffer.Slice(32);
         }
+
+        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out sbyte val)
+        {
+            // TODO: Int8Encoder.Decode()
+            throw new NotImplementedException();
+        }
     }
 
     public class UInt8Encoder : AbiTypeEncoder<byte>
@@ -100,6 +112,12 @@ namespace SolCodeGen.AbiEncoding.Encoders
         {
             buffer[31] = _val;
             return buffer.Slice(32);
+        }
+
+        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out byte val)
+        {
+            // TODO: UInt8Encoder.Decode()
+            throw new NotImplementedException();
         }
     }
 
@@ -180,11 +198,17 @@ namespace SolCodeGen.AbiEncoding.Encoders
         /// <summary>
         /// Encodes a solidity 'uint256' (with no overflow checks since its the max value)
         /// </summary>
-        public static Span<byte> EncodeUnchecked(Span<byte> buffer, in UInt256 val)
+        public static Span<byte> Encode(Span<byte> buffer, in UInt256 val)
         {
             var encoder = UncheckedInstance.Value;
             encoder._val = val;
             return encoder.Encode(buffer);
+        }
+
+        public static new ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out UInt256 val)
+        {
+            UInt256.FromByteArray(buffer, out val);
+            return buffer.Slice(32);
         }
     }
 

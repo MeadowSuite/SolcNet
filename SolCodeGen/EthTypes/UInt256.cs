@@ -270,6 +270,11 @@ namespace System
             return new BigInteger(buffer);
         }
 
+        public static void FromByteArray(ReadOnlySpan<byte> buffer, out UInt256 num)
+        {
+            num = MemoryMarshal.Read<UInt256>(buffer);
+        }
+
         public static void FromByteArray(Span<byte> buffer, ref int position, ref UInt256 num)
         {
             if (buffer.Length - position < 32)

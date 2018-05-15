@@ -31,7 +31,7 @@ namespace SolCodeGen.AbiEncoding.Encoders
                 // number of zero-bytes such that len(enc(X)) is a multiple of 32.
                 // write length prefix
                 int len = _val.Count();
-                buffer = UInt256Encoder.EncodeUnchecked(buffer, len);
+                buffer = UInt256Encoder.Encode(buffer, len);
                 int i = 0;
                 foreach (byte b in _val)
                 {
@@ -54,6 +54,12 @@ namespace SolCodeGen.AbiEncoding.Encoders
 
             throw UnsupportedTypeException();
 
+        }
+
+        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out IEnumerable<byte> val)
+        {
+            // TODO: ByteArrayEncoder.Decode
+            throw new NotImplementedException();
         }
 
     }

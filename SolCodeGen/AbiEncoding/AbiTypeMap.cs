@@ -83,7 +83,6 @@ namespace SolCodeGen.AbiEncoding
             return info.ClrTypeName;
         }
 
-        // TODO: return array size data from here...
         public static AbiTypeInfo GetSolidityTypeInfo(string name)
         {
             var arrayBracket = name.IndexOf('[');
