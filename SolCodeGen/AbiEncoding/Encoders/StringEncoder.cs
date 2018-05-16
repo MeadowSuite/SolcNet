@@ -35,11 +35,27 @@ namespace SolCodeGen.AbiEncoding.Encoders
             {
                 throw new ArgumentException("String input data should start with the number 32 encoded as a uint256");
             }
+
             buffer = UInt256Encoder.Decode(buffer, out var strLen);
+            if (strLen > int.MaxValue)
+            {
+                throw new ArgumentException($"String input data is invalid: the byte length prefix is {strLen} which is unlikely to be intended");
+            }
+
             var bytes = new byte[(int)strLen];
             buffer.Slice(0, bytes.Length).CopyTo(bytes);
             val = Encoding.UTF8.GetString(bytes);
             int bodyLen = PadLength(bytes.Length, 32);
+
+            // data validity check: should be right-padded with zero bytes
+            for (var i = bytes.Length; i < bodyLen; i++)
+            {
+                if (buffer[i] != 0)
+                {
+                    throw new ArgumentException($"Invalid string input data; should be {bytes.Length} followed by {bodyLen - bytes.Length} zero-bytes");
+                }
+            }
+
             return buffer.Slice(bodyLen);
         }
     }

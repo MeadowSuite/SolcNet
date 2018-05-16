@@ -17,11 +17,18 @@ namespace SolCodeGen.AbiEncoding
         public static IAbiTypeEncoder<IEnumerable<TItem>> LoadEncoder<TItem>(string solidityType, in IEnumerable<TItem> val, IAbiTypeEncoder<TItem> itemEncoder)
         {
             var info = AbiTypeMap.GetSolidityTypeInfo(solidityType);
-            if (info.Category != SolidityTypeCategory.FixedArray && info.Category != SolidityTypeCategory.DynamicArray)
+            IAbiTypeEncoder<IEnumerable<TItem>> encoder;
+            switch(info.Category)
             {
-                throw new ArgumentException($"Encoder factory for array types was called with a type '{info.Category}'");
+                case SolidityTypeCategory.FixedArray:
+                    encoder = new FixedArrayEncoder<TItem>(itemEncoder);
+                    break;
+                case SolidityTypeCategory.DynamicArray:
+                    encoder = new DynamicArrayEncoder<TItem>(itemEncoder);
+                    break;
+                default:
+                    throw new ArgumentException($"Encoder factory for array types was called with a type '{info.Category}'");
             }
-            var encoder = new ArrayEncoder<TItem>(itemEncoder);
             encoder.SetTypeInfo(info);
             encoder.SetValue(val);
             return encoder;
@@ -33,9 +40,15 @@ namespace SolCodeGen.AbiEncoding
             switch(into.Category)
             {
                 case SolidityTypeCategory.Bytes:
+                    {
+                        var encoder = new BytesEncoder();
+                        encoder.SetTypeInfo(into);
+                        encoder.SetValue(val);
+                        return encoder;
+                    }
                 case SolidityTypeCategory.BytesM:
                     {
-                        var encoder = new ByteArrayEncoder();
+                        var encoder = new BytesMEncoder();
                         encoder.SetTypeInfo(into);
                         encoder.SetValue(val);
                         return encoder;
@@ -43,7 +56,7 @@ namespace SolCodeGen.AbiEncoding
                 case SolidityTypeCategory.DynamicArray:
                 case SolidityTypeCategory.FixedArray:
                     {
-                        var encoder = new ArrayEncoder<byte>(new UInt8Encoder());
+                        var encoder = new FixedArrayEncoder<byte>(new UInt8Encoder());
                         encoder.SetTypeInfo(into);
                         encoder.SetValue(val);
                         return encoder;

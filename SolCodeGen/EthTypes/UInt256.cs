@@ -136,90 +136,24 @@ namespace System
         public static UInt256 operator ~(UInt256 value) => new UInt256(~value.Part1, ~value.Part2, ~value.Part3, ~value.Part4);
         public static UInt256 operator >>(UInt256 value, int shift) => new UInt256(value.ToBigInteger() >> shift);
 
-        public static Boolean operator <(UInt256 left, UInt256 right)
-        {
-            if (left.Part1 < right.Part1)
-            {
-                return true;
-            }
-            if ((left.Part1 == right.Part1) && (left.Part2 < right.Part2))
-            {
-                return true;
-            }
-            if ((left.Part1 == right.Part1) && (left.Part2 == right.Part2) && (left.Part3 < right.Part3))
-            {
-                return true;
-            }
-            if ((left.Part1 == right.Part1) && (left.Part2 == right.Part2) && (left.Part3 == right.Part3) && (left.Part4 < right.Part4))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public static Boolean operator <=(UInt256 left, UInt256 right)
-        {
-            if (left.Part1 < right.Part1)
-            {
-                return true;
-            }
-            if ((left.Part1 == right.Part1) && (left.Part2 < right.Part2))
-            {
-                return true;
-            }
-            if ((left.Part1 == right.Part1) && (left.Part2 == right.Part2) && (left.Part3 < right.Part3))
-            {
-                return true;
-            }
-            if ((left.Part1 == right.Part1) && (left.Part2 == right.Part2) && (left.Part3 == right.Part3) && (left.Part4 < right.Part4))
-            {
-                return true;
-            }
-            return left == right;
-        }
-
         public static Boolean operator >(UInt256 left, UInt256 right)
         {
-            if (left.Part1 > right.Part1)
-            {
-                return true;
-            }
-            if ((left.Part1 == right.Part1) && (left.Part2 > right.Part2))
-            {
-                return true;
-            }
-            if ((left.Part1 == right.Part1) && (left.Part2 == right.Part2) && (left.Part3 > right.Part3))
-            {
-                return true;
-            }
-            if ((left.Part1 == right.Part1) && (left.Part2 == right.Part2) && (left.Part3 == right.Part3) && (left.Part4 > right.Part4))
-            {
-                return true;
-            }
-
-            return false;
+            return left.ToBigInteger() > right.ToBigInteger();
         }
 
         public static Boolean operator >=(UInt256 left, UInt256 right)
         {
-            if (left.Part1 > right.Part1)
-            {
-                return true;
-            }
-            if ((left.Part1 == right.Part1) && (left.Part2 > right.Part2))
-            {
-                return true;
-            }
-            if ((left.Part1 == right.Part1) && (left.Part2 == right.Part2) && (left.Part3 > right.Part3))
-            {
-                return true;
-            }
-            if ((left.Part1 == right.Part1) && (left.Part2 == right.Part2) && (left.Part3 == right.Part3) && (left.Part4 > right.Part4))
-            {
-                return true;
-            }
+            return left.ToBigInteger() >= right.ToBigInteger();
+        }
 
-            return left == right;
+        public static Boolean operator <(UInt256 left, UInt256 right)
+        {
+            return left.ToBigInteger() < right.ToBigInteger();
+        }
+
+        public static Boolean operator <=(UInt256 left, UInt256 right)
+        {
+            return left.ToBigInteger() <= right.ToBigInteger();
         }
 
 

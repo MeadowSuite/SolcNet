@@ -85,14 +85,46 @@ namespace SolCodeGen.AbiEncoding.Encoders
 
         public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out TInt val)
         {
-            // TODO: NumberEncoder.Decode()
-            throw new NotImplementedException();
+            Span<TInt> num = new TInt[1];
+            Span<byte> byteView = MemoryMarshal.Cast<TInt, byte>(num);
+
+            var byteSize = _info.BaseTypeByteSize;
+            var padSize = 32 - byteSize;
+            if (BitConverter.IsLittleEndian)
+            {
+                for (var i = 0; i < byteSize; i++)
+                {
+                    byteView[byteSize - i - 1] = buffer[i + padSize];
+                }
+            }
+            else
+            {
+                for (var i = 0; i < byteSize; i++)
+                {
+                    byteView[i] = buffer[i + padSize];
+                }
+            }
+
+            // data validity check: should be padded with zero-bytes
+            for (var i = 0; i < padSize; i++)
+            {
+                if (buffer[i] != 0)
+                {
+                    throw new ArgumentException($"Invalid {_info.SolidityName} input data; should be {byteSize} bytes, left-padded with {32 - byteSize} zero-bytes; received: " + buffer.Slice(0, 32).ToHexString());
+                }
+            }
+
+            val = num[0];
+
+            return buffer.Slice(32);
         }
     }
 
 
     public class Int8Encoder : AbiTypeEncoder<sbyte>
     {
+        static readonly byte[] ZEROx31 = Enumerable.Repeat((byte)0, 31).ToArray();
+
         public override Span<byte> Encode(Span<byte> buffer)
         {
             buffer[31] = unchecked((byte)_val);
@@ -101,13 +133,19 @@ namespace SolCodeGen.AbiEncoding.Encoders
 
         public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out sbyte val)
         {
-            // TODO: Int8Encoder.Decode()
-            throw new NotImplementedException();
+            if (!buffer.Slice(0, 31).SequenceEqual(ZEROx31))
+            {
+                throw new ArgumentException("Invalid int8 input data; should be 31 zeros followed by a int8/byte; received: " + buffer.Slice(0, 32).ToHexString());
+            }
+            val = unchecked((sbyte)buffer[31]);
+            return buffer.Slice(32);
         }
     }
 
     public class UInt8Encoder : AbiTypeEncoder<byte>
     {
+        static readonly byte[] ZEROx31 = Enumerable.Repeat((byte)0, 31).ToArray();
+
         public override Span<byte> Encode(Span<byte> buffer)
         {
             buffer[31] = _val;
@@ -116,8 +154,12 @@ namespace SolCodeGen.AbiEncoding.Encoders
 
         public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out byte val)
         {
-            // TODO: UInt8Encoder.Decode()
-            throw new NotImplementedException();
+            if (!buffer.Slice(0, 31).SequenceEqual(ZEROx31))
+            {
+                throw new ArgumentException("Invalid uint8 input data; should be 31 zeros followed by a uint8/byte; received: " + buffer.Slice(0, 32).ToHexString());
+            }
+            val = buffer[31];
+            return buffer.Slice(32);
         }
     }
 
@@ -207,8 +249,8 @@ namespace SolCodeGen.AbiEncoding.Encoders
 
         public static new ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out UInt256 val)
         {
-            UInt256.FromByteArray(buffer, out val);
-            return buffer.Slice(32);
+            NumberEncoder<UInt256> encoder = UncheckedInstance.Value;
+            return encoder.Decode(buffer, out val);
         }
     }
 

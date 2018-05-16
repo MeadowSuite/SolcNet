@@ -6,7 +6,7 @@ using System.Numerics;
 using System.Text;
 using Xunit;
 
-namespace SolCodeGen.Tests
+namespace SolCodeGen.Tests.Abi
 {
     public class AbiEncoding
     {
@@ -52,6 +52,22 @@ namespace SolCodeGen.Tests
         {
             uint num = 16777217;
             Assert.Throws<OverflowException>(() => EncoderFactory.LoadEncoder("uint24", num));
+        }
+
+
+        [Fact]
+        public void UInt24_3()
+        {
+            uint num = 23456;
+            var encoder = EncoderFactory.LoadEncoder("uint24", num);
+            Assert.IsType<UInt32Encoder>(encoder);
+            var encodedSize = encoder.GetEncodedSize();
+            Assert.Equal(32, encodedSize);
+            Span<byte> buffer = new byte[encodedSize];
+            var bufferCursor = encoder.Encode(buffer);
+            Assert.Equal(0, bufferCursor.Length);
+            var result = HexConverter.GetHexFromBytes(buffer, hexPrefix: false);
+            Assert.Equal("0000000000000000000000000000000000000000000000000000000000005ba0", result);
         }
 
         [Fact]
@@ -169,7 +185,7 @@ namespace SolCodeGen.Tests
         {
             IEnumerable<bool> arr = new[] { true, true, false, true, };
             var encoder = EncoderFactory.LoadEncoder("bool[4]", arr, EncoderFactory.LoadEncoder("bool", default(bool)));
-            Assert.IsType<ArrayEncoder<bool>>(encoder);
+            Assert.IsType<FixedArrayEncoder<bool>>(encoder);
             var encodedSize = encoder.GetEncodedSize();
             Assert.True(encodedSize % 32 == 0);
             Assert.Equal(128, encodedSize);
@@ -185,7 +201,7 @@ namespace SolCodeGen.Tests
         {
             IEnumerable<bool> arr = new[] { true, true, false, true, };
             var encoder = EncoderFactory.LoadEncoder("bool[]", arr, EncoderFactory.LoadEncoder("bool", default(bool)));
-            Assert.IsType<ArrayEncoder<bool>>(encoder);
+            Assert.IsType<DynamicArrayEncoder<bool>>(encoder);
             var encodedSize = encoder.GetEncodedSize();
             Assert.True(encodedSize % 32 == 0);
             Assert.Equal(160, encodedSize);
@@ -233,15 +249,15 @@ namespace SolCodeGen.Tests
         {
             byte[] bytes = HexConverter.HexToBytes("207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970");
             var encoder = EncoderFactory.LoadEncoder("bytes", bytes);
-            Assert.IsType<ByteArrayEncoder>(encoder);
+            Assert.IsType<BytesEncoder>(encoder);
             var encodedSize = encoder.GetEncodedSize();
             Assert.True(encodedSize % 32 == 0);
-            Assert.Equal(96, encodedSize);
+            Assert.Equal(128, encodedSize);
             Span<byte> buffer = new byte[encodedSize];
             var bufferCursor = encoder.Encode(buffer);
             Assert.Equal(0, bufferCursor.Length);
             var result = HexConverter.GetHexFromBytes(buffer);
-            Assert.Equal("000000000000000000000000000000000000000000000000000000000000003d207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970000000", result);
+            Assert.Equal("0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003d207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970000000", result);
         }
 
         [Fact]
@@ -249,7 +265,7 @@ namespace SolCodeGen.Tests
         {
             byte[] bytes = HexConverter.HexToBytes("072696e74657220746f6f6b20612067616c6c6579206");
             var encoder = EncoderFactory.LoadEncoder("bytes22", bytes);
-            Assert.IsType<ByteArrayEncoder>(encoder);
+            Assert.IsType<BytesMEncoder>(encoder);
             var encodedSize = encoder.GetEncodedSize();
             Assert.True(encodedSize % 32 == 0);
             Assert.Equal(32, encodedSize);
@@ -265,7 +281,7 @@ namespace SolCodeGen.Tests
         {
             byte[] bytes = HexConverter.HexToBytes("072696e746");
             var encoder = EncoderFactory.LoadEncoder("uint8[5]", bytes, EncoderFactory.LoadEncoder("uint8", default(byte)));
-            Assert.IsType<ArrayEncoder<byte>>(encoder);
+            Assert.IsType<FixedArrayEncoder<byte>>(encoder);
             var encodedSize = encoder.GetEncodedSize();
             Assert.True(encodedSize % 32 == 0);
             Assert.Equal(160, encodedSize);
@@ -281,7 +297,7 @@ namespace SolCodeGen.Tests
         {
             long[] bytes = new long[] { 1, 4546, long.MaxValue, 0, long.MaxValue };
             var encoder = EncoderFactory.LoadEncoder("int64[]", bytes, EncoderFactory.LoadEncoder("int64", default(long)));
-            Assert.IsType<ArrayEncoder<long>>(encoder);
+            Assert.IsType<DynamicArrayEncoder<long>>(encoder);
             var encodedSize = encoder.GetEncodedSize();
             Assert.True(encodedSize % 32 == 0);
             Assert.Equal(192, encodedSize);
@@ -290,6 +306,22 @@ namespace SolCodeGen.Tests
             Assert.Equal(0, bufferCursor.Length);
             var result = HexConverter.GetHexFromBytes(buffer);
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000011c20000000000000000000000000000000000000000000000007fffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007fffffffffffffff", result);
+        }
+
+        [Fact]
+        public void Int64FixedArray()
+        {
+            long[] bytes = new long[] { 1, 4546, long.MaxValue, 0, long.MaxValue };
+            var encoder = EncoderFactory.LoadEncoder("int64[5]", bytes, EncoderFactory.LoadEncoder("int64", default(long)));
+            Assert.IsType<FixedArrayEncoder<long>>(encoder);
+            var encodedSize = encoder.GetEncodedSize();
+            Assert.True(encodedSize % 32 == 0);
+            Assert.Equal(160, encodedSize);
+            Span<byte> buffer = new byte[encodedSize];
+            var bufferCursor = encoder.Encode(buffer);
+            Assert.Equal(0, bufferCursor.Length);
+            var result = HexConverter.GetHexFromBytes(buffer);
+            Assert.Equal("000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000011c20000000000000000000000000000000000000000000000007fffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007fffffffffffffff", result);
         }
 
 

@@ -18,6 +18,7 @@ namespace SolCodeGen.AbiEncoding
     {
         void SetValue(in TVal val);
         void SetTypeInfo(AbiTypeInfo info);
+        ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out TVal val);
     }
 
     public abstract class AbiTypeEncoder<TVal> : IAbiTypeEncoder<TVal>
