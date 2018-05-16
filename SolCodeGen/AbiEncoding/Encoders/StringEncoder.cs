@@ -19,10 +19,8 @@ namespace SolCodeGen.AbiEncoding.Encoders
         public override Span<byte> Encode(Span<byte> buffer)
         {
             Span<byte> utf8 = Encoding.UTF8.GetBytes(_val);
-            var start = buffer;
             buffer = UInt256Encoder.Encode(buffer, 32);
             buffer = UInt256Encoder.Encode(buffer, utf8.Length);
-            var testHex = start.Slice(0, start.Length - buffer.Length).ToHexString(hexPrefix: false);
             utf8.CopyTo(buffer);
             int padded = PadLength(utf8.Length, 32);
             return buffer.Slice(padded);
@@ -31,7 +29,9 @@ namespace SolCodeGen.AbiEncoding.Encoders
         public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out string val)
         {
             buffer = UInt256Encoder.Decode(buffer, out var lenPrefix);
-            if (lenPrefix != 32)
+            // TODO: something is wrong here..
+            if (lenPrefix % 32 != 0)
+            //if (lenPrefix != 32)
             {
                 throw new ArgumentException("String input data should start with the number 32 encoded as a uint256");
             }

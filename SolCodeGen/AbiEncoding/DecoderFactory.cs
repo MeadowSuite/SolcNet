@@ -163,7 +163,8 @@ namespace SolCodeGen.AbiEncoding
             return encoder.Decode(buffer, out val);
         }
 
-        public delegate ReadOnlySpan<byte> DecodeDelegate<TOut>(ReadOnlySpan<byte> buffer, out TOut result);
-
     }
+
+    public delegate ReadOnlySpan<byte> DecodeDelegate<TOut>(string solidityType, ReadOnlySpan<byte> buffer, out TOut result);
+
 }

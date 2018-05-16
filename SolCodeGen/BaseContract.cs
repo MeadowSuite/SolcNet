@@ -85,6 +85,73 @@ namespace SolCodeGen
             var dataHex = HexConverter.GetHexFromBytes(hexPrefix: true, funcHash, paramBytes);
             return dataHex;
         }
+
+
+        protected T1 Decode<T1>(ReadOnlyMemory<byte> data,
+            string n1, DecodeDelegate<T1> d1)
+        {
+            var buffer = data.Span;
+            buffer = d1(n1, buffer, out var i1);
+            return i1;
+        }
+
+        protected ValueTuple<T1, T2> Decode<T1, T2>(ReadOnlyMemory<byte> data,
+            string n1, DecodeDelegate<T1> d1,
+            string n2, DecodeDelegate<T2> d2)
+        {
+            var buffer = data.Span;
+            return (
+                DecodeWithDelegate(n1, d1, ref buffer),
+                DecodeWithDelegate(n2, d2, ref buffer));
+        }
+
+        protected ValueTuple<T1, T2, T3> Decode<T1, T2, T3>(ReadOnlyMemory<byte> data,
+            string n1, DecodeDelegate<T1> d1,
+            string n2, DecodeDelegate<T2> d2,
+            string n3, DecodeDelegate<T3> d3)
+        {
+            var buffer = data.Span;
+            return (
+                DecodeWithDelegate(n1, d1, ref buffer),
+                DecodeWithDelegate(n2, d2, ref buffer),
+                DecodeWithDelegate(n3, d3, ref buffer));
+        }
+
+        protected ValueTuple<T1, T2, T3, T4> Decode<T1, T2, T3, T4>(ReadOnlyMemory<byte> data,
+            string n1, DecodeDelegate<T1> d1,
+            string n2, DecodeDelegate<T2> d2,
+            string n3, DecodeDelegate<T3> d3,
+            string n4, DecodeDelegate<T4> d4)
+        {
+            var buffer = data.Span;
+            return (
+                DecodeWithDelegate(n1, d1, ref buffer),
+                DecodeWithDelegate(n2, d2, ref buffer),
+                DecodeWithDelegate(n3, d3, ref buffer),
+                DecodeWithDelegate(n4, d4, ref buffer));
+        }
+
+        protected ValueTuple<T1, T2, T3, T4, T5> Decode<T1, T2, T3, T4, T5>(ReadOnlyMemory<byte> data,
+            string n1, DecodeDelegate<T1> d1,
+            string n2, DecodeDelegate<T2> d2,
+            string n3, DecodeDelegate<T3> d3,
+            string n4, DecodeDelegate<T4> d4,
+            string n5, DecodeDelegate<T5> d5)
+        {
+            var buffer = data.Span;
+            return (
+                DecodeWithDelegate(n1, d1, ref buffer),
+                DecodeWithDelegate(n2, d2, ref buffer),
+                DecodeWithDelegate(n3, d3, ref buffer),
+                DecodeWithDelegate(n4, d4, ref buffer),
+                DecodeWithDelegate(n5, d5, ref buffer));
+        }
+
+        protected T DecodeWithDelegate<T>(string solType, DecodeDelegate<T> del, ref ReadOnlySpan<byte> buffer)
+        {
+            buffer = del(solType, buffer, out T val);
+            return val;
+        }
     }
 
     public class ContractConstructParams

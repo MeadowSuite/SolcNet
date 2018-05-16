@@ -12,6 +12,10 @@ namespace SolCodeGen.JsonRpc
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            if (reader.Value == null)
+            {
+                return null;
+            }
             if (reader.Value is string hex)
             {
                 if (objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(Nullable<>))

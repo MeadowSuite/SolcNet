@@ -11,15 +11,6 @@ namespace SolCodeGen
 {
     public class ExampleGeneratedContract : BaseContract
     {
-        public class TransferEvent : EventLog<(Address from, Address to, UInt256 value)>
-        {
-            public TransferEvent((Address from, Address to, UInt256 value) logData, EventLog eventLog) 
-                : base(logData, eventLog)
-            {
-
-            }
-        }
-
         private ExampleGeneratedContract(Uri server, Address address, Address defaultFromAccount) 
             : base(server, address, defaultFromAccount)
         {
@@ -100,8 +91,8 @@ namespace SolCodeGen
                 async (sendParams) =>
                 {
                     var callResult = await JsonRpcClient.Call(callData, GetSendParams(sendParams));
-                    // TODO: decode
-                    throw new NotImplementedException();
+                    var data = HexConverter.HexToBytes(callResult);
+                    return Decode<string>(data, "string", DecoderFactory.Decode);
                 },
                 async (sendParams) =>
                 {
@@ -122,8 +113,11 @@ namespace SolCodeGen
                 async (sendParams) =>
                 {
                     var callResult = await JsonRpcClient.Call(callData, GetSendParams(sendParams));
-                    // TODO: decode
-                    throw new NotImplementedException();
+                    var data = HexConverter.HexToBytes(callResult);
+                    return Decode<Address, UInt256, string>(data, 
+                        "address", DecoderFactory.Decode, 
+                        "uint256", DecoderFactory.Decode, 
+                        "string", DecoderFactory.Decode);
                 },
                 async (sendParams) =>
                 {

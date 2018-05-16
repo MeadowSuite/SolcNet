@@ -48,17 +48,9 @@ namespace SolCodeGen.TestApp
                 Gas = 5_000_000,
             }, accounts[3]);
 
-            //var (_, _, givenNameNum) = await exContract.givenName(callType: CallType.Call);
+            var echoStringResult = await exContract.echoString("hello world").Call();
 
-            //var (_, _, isNine) = await exContract.myFunc(9, callType: CallType.Call);
-
-            //var (_, _, isNine2) = await exContract.myFunc(8, callType: CallType.Call);
-
-            //var invoker = await exContract.echoMany(accounts[8], 123456, "hello world").Call();
-
-            var invoker = await exContract.echoString("hello world").Call();
-
-            var testReceipt = await exContract.echoMany(accounts[9], 12345, "asdf");
+            var echoManyResult = await exContract.echoMany(accounts[9], 12345, "asdf").Call();
 
             return;
 
