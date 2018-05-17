@@ -20,7 +20,7 @@ namespace SolCodeGen.AbiEncoding.Encoders
                 throw UnsupportedTypeException();
             }
             int len = _itemEncoder.GetEncodedSize() * _val.Count();
-            return 32 + len;
+            return (32 * 2) + len;
         }
 
         public override Span<byte> Encode(Span<byte> buffer)
@@ -29,6 +29,9 @@ namespace SolCodeGen.AbiEncoding.Encoders
             {
                 throw UnsupportedTypeException();
             }
+
+            // starting position (immediately after this 32-byte pointer)
+            buffer = UInt256Encoder.Encode(buffer, 32); 
 
             // write length prefix
             buffer = UInt256Encoder.Encode(buffer, _val.Count());
@@ -44,7 +47,18 @@ namespace SolCodeGen.AbiEncoding.Encoders
 
         public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out IEnumerable<TItem> val)
         {
+            // Obtain our starting position for our data.
+            buffer = UInt256Encoder.Decode(buffer, out var startingPosition);
+
+            // We advanced our pointer 32-bytes already, so we account for that
+            startingPosition -= 32;
+
+            // We advance the pointer to our starting position
+            buffer = buffer.Slice((int)startingPosition);
+
+            // Decode our buffer length
             buffer = UInt256Encoder.Decode(buffer, out var len);
+
             if (len > int.MaxValue)
             {
                 throw new ArgumentException($"Array input data is invalid: the byte length prefix is {len} which is unlikely to be intended");

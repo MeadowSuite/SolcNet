@@ -39,6 +39,8 @@ namespace SolCodeGen.AbiEncoding.Encoders
                 bytes[i] = buffer[i];
             }
             // data validity check: all bytes after the fixed M amount should be zero
+            // Disabled - ganache liters this padding with garbage bytes
+            /*
             for (var i = bytes.Length; i < 32; i++)
             {
                 if (buffer[i] != 0)
@@ -46,6 +48,7 @@ namespace SolCodeGen.AbiEncoding.Encoders
                     throw new ArgumentException($"Invalid {_info.SolidityName} input data; should be {_info.ArrayLength} bytes padded {32 - _info.ArrayLength} zero-bytes; received: " + buffer.Slice(0, 32).ToHexString());
                 }
             }
+            */
             val = bytes;
             return buffer.Slice(32);
         }

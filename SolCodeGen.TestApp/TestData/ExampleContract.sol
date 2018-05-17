@@ -46,7 +46,7 @@ contract ExampleContract {
 		return true;
 	}
 
-	function getArray() public returns (int16[4]){
+	function getArrayStatic() public returns (int16[4]){
 		
 		int16[4] arr;
 		arr[0] = 1;
@@ -55,6 +55,24 @@ contract ExampleContract {
 		arr[3] = 399;
 		return arr;
 	}
+
+	function getArrayDynamic() public returns (int16[]){
+		int16[] arr;
+        arr.length = 4;
+		arr[0] = 1;
+		arr[1] = -2;
+		arr[2] = 29;
+		arr[3] = 399;
+		return arr;
+	}
+
+    function echoArrayDynamic(uint24[] input) returns (uint24[] result) {
+        return input;
+    }
+
+    function echoArrayStatic(uint24[5] input) returns (uint24[5] result) {
+        return input;
+    }
 
     /// @author Unknown author
     /// @notice This is a test function

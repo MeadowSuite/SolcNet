@@ -9,14 +9,22 @@ namespace SolCodeGen.AbiEncoding
 {
     public static class DecoderFactory
     {
-        public static ReadOnlySpan<byte> Decode<TItem>(string solidityType, ReadOnlySpan<byte> buffer, out TItem[] val, IAbiTypeEncoder<TItem> itemEncoder)
+        public static DecodeDelegate<TItem[]> GetArrayDecoder<TItem>(IAbiTypeEncoder<TItem> itemEncoder)
         {
-            var buff = Decode(solidityType, buffer, out IEnumerable<TItem> items, itemEncoder);
-            val = items is TItem[] arr ? arr : items.ToArray();
-            return buff;
+            void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out TItem[] val)
+            {
+                DecoderFactory.Decode(solidityType, ref buffer, out val, itemEncoder);
+            }
+            return Decode;
         }
 
-        public static ReadOnlySpan<byte> Decode<TItem>(string solidityType, ReadOnlySpan<byte> buffer, out IEnumerable<TItem> val, IAbiTypeEncoder<TItem> itemEncoder)
+        public static void Decode<TItem>(string solidityType, ref ReadOnlySpan<byte> buffer, out TItem[] val, IAbiTypeEncoder<TItem> itemEncoder)
+        {
+            Decode(solidityType, ref buffer, out IEnumerable<TItem> items, itemEncoder);
+            val = items is TItem[] arr ? arr : items.ToArray();
+        }
+
+        public static void Decode<TItem>(string solidityType, ref ReadOnlySpan<byte> buffer, out IEnumerable<TItem> val, IAbiTypeEncoder<TItem> itemEncoder)
         {
             var info = AbiTypeMap.GetSolidityTypeInfo(solidityType);
             AbiTypeEncoder<IEnumerable<TItem>> encoder;
@@ -33,17 +41,16 @@ namespace SolCodeGen.AbiEncoding
 
             }
             encoder.SetTypeInfo(info);
-            return encoder.Decode(buffer, out val);
+            buffer = encoder.Decode(buffer, out val);
         }
 
-        public static ReadOnlySpan<byte> Decode(string solidityType, ReadOnlySpan<byte> buffer, out byte[] val)
+        public static void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out byte[] val)
         {
-            var buff = Decode(solidityType, buffer, out IEnumerable<byte> bytes);
+            Decode(solidityType, ref buffer, out IEnumerable<byte> bytes);
             val = bytes is byte[] arr ? arr : bytes.ToArray();
-            return buff;
         }
 
-        public static ReadOnlySpan<byte> Decode(string solidityType, ReadOnlySpan<byte> buffer, out IEnumerable<byte> val)
+        public static void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out IEnumerable<byte> val)
         {
             var into = AbiTypeMap.GetSolidityTypeInfo(solidityType);
             switch (into.Category)
@@ -52,119 +59,123 @@ namespace SolCodeGen.AbiEncoding
                     {
                         var encoder = new BytesEncoder();
                         encoder.SetTypeInfo(into);
-                        return encoder.Decode(buffer, out val);
+                        buffer = encoder.Decode(buffer, out val);
+                        break;
                     }
                 case SolidityTypeCategory.BytesM:
                     {
                         var encoder = new BytesMEncoder();
                         encoder.SetTypeInfo(into);
-                        return encoder.Decode(buffer, out val);
+                        buffer = encoder.Decode(buffer, out val);
+                        break;
                     }
                 case SolidityTypeCategory.DynamicArray:
                     {
                         var encoder = new DynamicArrayEncoder<byte>(new UInt8Encoder());
                         encoder.SetTypeInfo(into);
-                        return encoder.Decode(buffer, out val);
+                        buffer = encoder.Decode(buffer, out val);
+                        break;
                     }
                 case SolidityTypeCategory.FixedArray:
                     {
                         var encoder = new FixedArrayEncoder<byte>(new UInt8Encoder());
                         encoder.SetTypeInfo(into);
-                        return encoder.Decode(buffer, out val);
+                        buffer = encoder.Decode(buffer, out val);
+                        break;
                     }
                 default:
                     throw new ArgumentException($"Encoder factor method for byte arrays called with type '{into.Category}'");
             }
         }
 
-        public static ReadOnlySpan<byte> Decode(string solidityType, ReadOnlySpan<byte> buffer, out string val)
+        public static void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out string val)
         {
             var encoder = new StringEncoder();
-            return encoder.Decode(buffer, out val);
+            buffer = encoder.Decode(buffer, out val);
         }
 
-        public static ReadOnlySpan<byte> Decode(string solidityType, ReadOnlySpan<byte> buffer, out Address val)
+        public static void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out Address val)
         {
             var encoder = new AddressEncoder();
-            return encoder.Decode(buffer, out val);
+            buffer = encoder.Decode(buffer, out val);
         }
 
-        public static ReadOnlySpan<byte> Decode(string solidityType, ReadOnlySpan<byte> buffer, out bool val)
+        public static void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out bool val)
         {
             var encoder = new BoolEncoder();
-            return encoder.Decode(buffer, out val);
+            buffer = encoder.Decode(buffer, out val);
         }
 
-        public static ReadOnlySpan<byte> Decode(string solidityType, ReadOnlySpan<byte> buffer, out sbyte val)
+        public static void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out sbyte val)
         {
             var encoder = new Int8Encoder();
-            return encoder.Decode(buffer, out val);
+            buffer = encoder.Decode(buffer, out val);
         }
 
-        public static ReadOnlySpan<byte> Decode(string solidityType, ReadOnlySpan<byte> buffer, out byte val)
+        public static void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out byte val)
         {
             var encoder = new UInt8Encoder();
-            return encoder.Decode(buffer, out val);
+            buffer = encoder.Decode(buffer, out val);
         }
 
-        public static ReadOnlySpan<byte> Decode(string solidityType, ReadOnlySpan<byte> buffer, out short val)
+        public static void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out short val)
         {
             var encoder = new Int16Encoder();
             encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
-            return encoder.Decode(buffer, out val);
+            buffer = encoder.Decode(buffer, out val);
         }
 
-        public static ReadOnlySpan<byte> Decode(string solidityType, ReadOnlySpan<byte> buffer, out ushort val)
+        public static void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out ushort val)
         {
             var encoder = new UInt16Encoder();
             encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
-            return encoder.Decode(buffer, out val);
+            buffer = encoder.Decode(buffer, out val);
         }
 
-        public static ReadOnlySpan<byte> Decode(string solidityType, ReadOnlySpan<byte> buffer, out int val)
+        public static void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out int val)
         {
             var encoder = new Int32Encoder();
             encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
-            return encoder.Decode(buffer, out val);
+            buffer = encoder.Decode(buffer, out val);
         }
 
-        public static ReadOnlySpan<byte> Decode(string solidityType, ReadOnlySpan<byte> buffer, out uint val)
+        public static void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out uint val)
         {
             var encoder = new UInt32Encoder();
             encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
-            return encoder.Decode(buffer, out val);
+            buffer = encoder.Decode(buffer, out val);
         }
 
-        public static ReadOnlySpan<byte> Decode(string solidityType, ReadOnlySpan<byte> buffer, out long val)
+        public static void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out long val)
         {
             var encoder = new Int64Encoder();
             encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
-            return encoder.Decode(buffer, out val);
+            buffer = encoder.Decode(buffer, out val);
         }
 
-        public static ReadOnlySpan<byte> Decode(string solidityType, ReadOnlySpan<byte> buffer, out ulong val)
+        public static void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out ulong val)
         {
             var encoder = new UInt64Encoder();
             encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
-            return encoder.Decode(buffer, out val);
+            buffer = encoder.Decode(buffer, out val);
         }
 
-        public static ReadOnlySpan<byte> Decode(string solidityType, ReadOnlySpan<byte> buffer, out BigInteger val)
+        public static void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out BigInteger val)
         {
             var encoder = new Int256Encoder();
             encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
-            return encoder.Decode(buffer, out val);
+            buffer = encoder.Decode(buffer, out val);
         }
 
-        public static ReadOnlySpan<byte> Decode(string solidityType, ReadOnlySpan<byte> buffer, out UInt256 val)
+        public static void Decode(string solidityType, ref ReadOnlySpan<byte> buffer, out UInt256 val)
         {
             NumberEncoder<UInt256> encoder = new UInt256Encoder();
             encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
-            return encoder.Decode(buffer, out val);
+            buffer = encoder.Decode(buffer, out val);
         }
 
     }
 
-    public delegate ReadOnlySpan<byte> DecodeDelegate<TOut>(string solidityType, ReadOnlySpan<byte> buffer, out TOut result);
+    public delegate void DecodeDelegate<TOut>(string solidityType, ref ReadOnlySpan<byte> buffer, out TOut result);
 
 }

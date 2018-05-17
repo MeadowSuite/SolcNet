@@ -56,6 +56,14 @@ namespace SolCodeGen.TestApp
 
             var echoTransaction = await exContract.givenName();
 
+            var getArrStatic = await exContract.getArrayStatic().Call();
+
+            var getArrDynamic = await exContract.getArrayDynamic().Call();
+
+            var echoArrayStatc = await exContract.echoArrayStatic(new uint[] { 123, 0, 99999, 3333333, 16777215 }).Call();
+
+            var echoArrayDynamic = await exContract.echoArrayDynamic(new uint[] { 123, 0, 99999, 3333333, 16777215 }).Call();
+
             return;
 
             //await Rpc();

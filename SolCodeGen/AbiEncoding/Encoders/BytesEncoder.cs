@@ -66,6 +66,8 @@ namespace SolCodeGen.AbiEncoding.Encoders
             int bodyLen = PadLength(bytes.Length, 32);
 
             // data validity check: should be right-padded with zero bytes
+            // Disabled - ganache liters this padding with garbage bytes
+            /*
             for (var i = bytes.Length; i < bodyLen; i++)
             {
                 if (buffer[i] != 0)
@@ -73,6 +75,7 @@ namespace SolCodeGen.AbiEncoding.Encoders
                     throw new ArgumentException($"Invalid bytes input data; should be {bytes.Length} followed by {bodyLen - bytes.Length} zero-bytes");
                 }
             }
+            */
 
             return buffer.Slice(bodyLen);
         }

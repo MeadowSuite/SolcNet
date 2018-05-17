@@ -33,10 +33,13 @@ namespace SolCodeGen.AbiEncoding.Encoders
 
             // Input data validity check: all but the last byte should be zero.
             // Span<byte>.SequenceEquals should use the fast native memory slab comparer.
+            // Disabled - ganache liters this padding with garbage bytes
+            /*
             if (!buffer.Slice(0, 31).SequenceEqual(ZEROx31))
             {
                 throw Error(buffer);
             }
+            */
 
             return buffer.Slice(32);
 

@@ -105,6 +105,7 @@ namespace SolCodeGen.AbiEncoding
         public static IAbiTypeEncoder<short> LoadEncoder(string solidityType, in short val)
         {
             var encoder = new Int16Encoder();
+            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
             encoder.SetValue(val);
             return encoder;
         }

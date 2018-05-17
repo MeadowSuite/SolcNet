@@ -18,10 +18,13 @@ namespace SolCodeGen.AbiEncoding.Encoders
         public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out Address val)
         {
             // data validity check: 20 address bytes should be left-padded with 12 zero-bytes
+            // Disabled - ganache liters this padding with garbage bytes
+            /*
             if (!buffer.Slice(0, 12).SequenceEqual(ZEROx12))
             {
                 throw new ArgumentException("Invalid address input data; should be 20 address bytes, left-padded with 12 zero-bytes; received: " + buffer.Slice(0, 32).ToHexString());
             }
+            */
             val = MemoryMarshal.Read<Address>(buffer.Slice(12));
             return buffer.Slice(32);
         }

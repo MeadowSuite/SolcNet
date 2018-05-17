@@ -1,5 +1,6 @@
 ﻿using SolcNet.DataDescription.Output;
 using SolCodeGen.AbiEncoding;
+using SolCodeGen.AbiEncoding.Encoders;
 using SolCodeGen.JsonRpc;
 using System;
 using System.Collections.Generic;
@@ -57,8 +58,7 @@ namespace SolCodeGen
         {
             var callData = GetCallData("givenName()");
 
-            return new EthFunc<string>(this, callData,
-                data => Decode<string>(data, "string", DecoderFactory.Decode));
+            return EthFunc<string>.Create<string>(this, callData, "string", DecoderFactory.Decode);
         }
 
         public EthFunc<string> echoString(string str)
@@ -66,8 +66,7 @@ namespace SolCodeGen
             var callData = GetCallData("echoString(string)",
                 EncoderFactory.LoadEncoder("string", str));
 
-            return new EthFunc<string>(this, callData,
-                data => Decode<string>(data, "string", DecoderFactory.Decode));
+            return EthFunc<string>.Create<string>(this, callData, "string", DecoderFactory.Decode);
         }
 
         public EthFunc<(Address addr, UInt256 num, string str)> echoMany(Address addr, UInt256 num, string str)
@@ -77,11 +76,44 @@ namespace SolCodeGen
                 EncoderFactory.LoadEncoder("uint256", num),
                 EncoderFactory.LoadEncoder("string", str));
 
-            return new EthFunc<(Address addr, UInt256 num, string str)>(this, callData,
-                data => Decode<Address, UInt256, string>(data, 
-                        "address", DecoderFactory.Decode, 
-                        "uint256", DecoderFactory.Decode, 
-                        "string", DecoderFactory.Decode));
+            return EthFunc<(Address, UInt256, string)>.Create<Address, UInt256, string>(this, callData, 
+                "address", DecoderFactory.Decode, 
+                "uint256", DecoderFactory.Decode, 
+                "string", DecoderFactory.Decode);
+        }
+
+        public EthFunc<short[]> getArrayStatic()
+        {
+            var callData = GetCallData("getArrayStatic()");
+
+            return EthFunc<short[]>.Create<short[]>(this, callData, 
+                "int16[4]", DecoderFactory.GetArrayDecoder(EncoderFactory.LoadEncoder("int16", default(short))));
+        }
+
+        public EthFunc<short[]> getArrayDynamic()
+        {
+            var callData = GetCallData("getArrayDynamic()");
+
+            return EthFunc<short[]>.Create<short[]>(this, callData,
+                "int16[]", DecoderFactory.GetArrayDecoder(EncoderFactory.LoadEncoder("int16", default(short))));
+        }
+
+        public EthFunc<uint[]> echoArrayStatic(uint[] input)
+        {
+            var callData = GetCallData("echoArrayStatic(uint24[5])",
+                EncoderFactory.LoadEncoder("uint24[5]", input, EncoderFactory.LoadEncoder("uint24", default(uint))));
+
+            return EthFunc<uint[]>.Create<uint[]>(this, callData,
+                "uint24[5]", DecoderFactory.GetArrayDecoder(EncoderFactory.LoadEncoder("uint24", default(uint))));
+        }
+
+        public EthFunc<uint[]> echoArrayDynamic(uint[] input)
+        {
+            var callData = GetCallData("echoArrayDynamic(uint24[])",
+                EncoderFactory.LoadEncoder("uint24[]", input, EncoderFactory.LoadEncoder("uint24", default(uint))));
+
+            return EthFunc<uint[]>.Create<uint[]>(this, callData,
+                "uint24[]", DecoderFactory.GetArrayDecoder(EncoderFactory.LoadEncoder("uint24", default(uint))));
         }
 
         public override ReadOnlyMemory<byte> Bytecode => BYTECODE.Value;

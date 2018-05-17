@@ -62,7 +62,6 @@ namespace SolCodeGen.AbiEncoding
             {
                 var start = cursor;
                 cursor = encoder.Encode(cursor);
-                var hex = start.Slice(0, start.Length - cursor.Length).ToHexString(hexPrefix: false);
             }
         }
     }
