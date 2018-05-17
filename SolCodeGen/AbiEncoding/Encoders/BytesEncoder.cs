@@ -31,7 +31,7 @@ namespace SolCodeGen.AbiEncoding.Encoders
             // number of zero-bytes such that len(enc(X)) is a multiple of 32.
             // write length prefix
             int len = _val.Count();
-            buffer = UInt256Encoder.Encode(buffer, 32);
+            buffer = UInt256Encoder.Encode(buffer, 32); // starting position (immediately after this 32-byte pointer)
             buffer = UInt256Encoder.Encode(buffer, len);
             int i = 0;
             foreach (byte b in _val)
@@ -44,12 +44,16 @@ namespace SolCodeGen.AbiEncoding.Encoders
 
         public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out IEnumerable<byte> val)
         {
-            buffer = UInt256Encoder.Decode(buffer, out var lenPrefix);
-            if (lenPrefix != 32)
-            {
-                throw new ArgumentException("Bytes input data should start with the number 32 encoded as a uint256");
-            }
+            // Obtain our starting position for our data.
+            buffer = UInt256Encoder.Decode(buffer, out var startingPosition);
 
+            // We advanced our pointer 32-bytes already, so we account for that
+            startingPosition -= 32;
+
+            // We advance the pointer to our starting position
+            buffer = buffer.Slice((int)startingPosition);
+
+            // Decode our buffer length
             buffer = UInt256Encoder.Decode(buffer, out var len);
             if (len > int.MaxValue)
             {

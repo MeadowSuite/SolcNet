@@ -50,9 +50,11 @@ namespace SolCodeGen.TestApp
 
             var echoStringResult = await exContract.echoString("hello world").Call();
 
-            var echoManyResult = await exContract.echoMany(accounts[9], 12345, "asdf").Call();
+            var echoManyResult = await exContract.echoMany(accounts[9], 12345, "sdkfjsdlkfjsdofjdslkfjksdlkfldlskjfklsdjdlkfskldkfldkskfmfklsmkldfmskdlfmklsdmfklsdlmldklfskflksdmfksdklfsldflksdmflksmklfmdkmfdmfklsmdlkfmlsdmfklsdmflksmdlkfsdklfkllfslkdfksmkldfmklsdmklfdlkfmskldmkl").Call();
 
             var givenNameResult = await exContract.givenName().Call();
+
+            var echoTransaction = await exContract.givenName();
 
             return;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 
 namespace SolCodeGen.AbiEncoding.Encoders
@@ -19,7 +20,7 @@ namespace SolCodeGen.AbiEncoding.Encoders
         public override Span<byte> Encode(Span<byte> buffer)
         {
             Span<byte> utf8 = Encoding.UTF8.GetBytes(_val);
-            buffer = UInt256Encoder.Encode(buffer, 32);
+            buffer = UInt256Encoder.Encode(buffer, 32); // encode starting position (immediately after this 32-byte pointer)
             buffer = UInt256Encoder.Encode(buffer, utf8.Length);
             utf8.CopyTo(buffer);
             int padded = PadLength(utf8.Length, 32);
@@ -28,19 +29,22 @@ namespace SolCodeGen.AbiEncoding.Encoders
 
         public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out string val)
         {
-            buffer = UInt256Encoder.Decode(buffer, out var lenPrefix);
-            // TODO: something is wrong here..
-            if (lenPrefix % 32 != 0)
-            //if (lenPrefix != 32)
-            {
-                throw new ArgumentException("String input data should start with the number 32 encoded as a uint256");
-            }
+            // Obtain our starting position for our data.
+            buffer = UInt256Encoder.Decode(buffer, out var startingPosition);
 
+            // We advanced our pointer 32-bytes already, so we account for that
+            startingPosition -= 32;
+
+            // We advance the pointer to our starting position
+            buffer = buffer.Slice((int)startingPosition);
+
+            // Decode our string length.
             buffer = UInt256Encoder.Decode(buffer, out var strLen);
             if (strLen > int.MaxValue)
             {
                 throw new ArgumentException($"String input data is invalid: the byte length prefix is {strLen} which is unlikely to be intended");
             }
+
 
             var bytes = new byte[(int)strLen];
             buffer.Slice(0, bytes.Length).CopyTo(bytes);
