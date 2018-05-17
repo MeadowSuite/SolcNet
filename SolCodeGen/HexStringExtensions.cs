@@ -18,6 +18,16 @@ namespace System
             return HexConverter.HexToBytes(hexString);
         }
 
+        public static Span<byte> HexToSpan(this string hexString)
+        {
+            return HexConverter.HexToBytes(hexString);
+        }
+
+        public static ReadOnlySpan<byte> HexToReadOnlySpan(this string hexString)
+        {
+            return HexConverter.HexToBytes(hexString);
+        }
+
         public static string ToHexString(this ReadOnlySpan<byte> bytes, bool hexPrefix = true)
         {
             return HexConverter.GetHexFromBytes(bytes, hexPrefix: hexPrefix);
