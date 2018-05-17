@@ -27,12 +27,12 @@ contract ExampleContract {
     uint8 public typeUInt8;
     uint256 public typeUInt256;
 
-	uint256 public givenName;
+	string public givenName;
 	bool public enabledThing;
 	uint256 public last;
 
     /// @notice The constructor
-    constructor(uint256 _name, bool _enableThing, uint256 _last) public {
+    constructor(string _name, bool _enableThing, uint256 _last) public {
 		givenName = _name;
 		enabledThing = _enableThing;
 		last = _last;

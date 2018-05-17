@@ -66,7 +66,7 @@ namespace SolCodeGen
             JsonRpcClient = rpcClient;
         }
 
-        protected SendParams GetSendParams(SendParams optional)
+        public SendParams GetSendParams(SendParams optional)
         {
             return new SendParams
             {

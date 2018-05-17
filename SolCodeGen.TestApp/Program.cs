@@ -42,7 +42,7 @@ namespace SolCodeGen.TestApp
             Uri server = new Uri("http://127.0.0.1:7545");
             var rpcClient = new JsonRpcClient(server);
             var accounts = await rpcClient.Accounts();
-            var exContract = await ExampleGeneratedContract.New(rpcClient, (99999999999999, true, 22222), new SendParams
+            var exContract = await ExampleGeneratedContract.New(rpcClient, ("test name", true, 22222), new SendParams
             {
                 From = accounts[2],
                 Gas = 5_000_000,
@@ -51,6 +51,8 @@ namespace SolCodeGen.TestApp
             var echoStringResult = await exContract.echoString("hello world").Call();
 
             var echoManyResult = await exContract.echoMany(accounts[9], 12345, "asdf").Call();
+
+            var givenNameResult = await exContract.givenName().Call();
 
             return;
 

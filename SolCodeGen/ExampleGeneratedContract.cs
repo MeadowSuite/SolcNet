@@ -4,12 +4,11 @@ using SolCodeGen.JsonRpc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace SolCodeGen
 {
-    public class ExampleGeneratedContract : BaseContract
+    public partial class ExampleGeneratedContract : BaseContract
     {
         private ExampleGeneratedContract(Uri server, Address address, Address defaultFromAccount) 
             : base(server, address, defaultFromAccount)
@@ -30,12 +29,12 @@ namespace SolCodeGen
 
         public static async Task<ExampleGeneratedContract> New(
             JsonRpcClient rpcClient, 
-            (UInt256 _name, bool _enableThing, UInt256 _last) args,
+            (string _name, bool _enableThing, UInt256 _last) args,
             SendParams sendParams,
             Address defaultFromAccount)
         {
             var encodedParams = EncoderUtil.GetBytes(
-                EncoderFactory.LoadEncoder("uint256", args._name),
+                EncoderFactory.LoadEncoder("string", args._name),
                 EncoderFactory.LoadEncoder("bool", args._enableThing),
                 EncoderFactory.LoadEncoder("uint256", args._last)
             );
@@ -53,33 +52,13 @@ namespace SolCodeGen
             return new ExampleGeneratedContract(rpcClient, contractAddr, defaultFromAccount);
         }
 
-        public async Task<(TransactionReceipt Receipt, FilterLogObject[] EventLogs, UInt256? result)> givenName(
+        public EthFunc<string> givenName(
             SendParams sendParams = null, CallType callType = CallType.Transaction)
         {
-            var funcHash = MethodID.GetMethodID("givenName()");
-            var dataHex = HexConverter.GetHexFromBytes(hexPrefix: true, funcHash);
-            var resultData = await JsonRpcClient.Call(dataHex, GetSendParams(sendParams));
-            return (null, null, HexConverter.HexToInteger<UInt256>(resultData));
-        }
+            var callData = GetCallData("givenName()");
 
-        public class EthFunc<TReturn> 
-        {
-            private Func<SendParams, Task<TReturn>> _call;
-            public Task<TReturn> Call(SendParams sendParam = null) => _call(sendParam);
-
-            private Func<SendParams, Task<TransactionReceipt>> _sendTransaction;
-            public Task<TransactionReceipt> SendTransaction(SendParams sendParam = null) => _sendTransaction(sendParam);
-
-            public EthFunc(Func<SendParams, Task<TReturn>> call, Func<SendParams, Task<TransactionReceipt>> sendTransaction)
-            {
-                _call = call;
-                _sendTransaction = sendTransaction;
-            }
-
-            public TaskAwaiter<TransactionReceipt> GetAwaiter()
-            {
-                return _sendTransaction(null).GetAwaiter();
-            }
+            return new EthFunc<string>(this, callData,
+                data => Decode<string>(data, "string", DecoderFactory.Decode));
         }
 
         public EthFunc<string> echoString(string str)
@@ -87,19 +66,8 @@ namespace SolCodeGen
             var callData = GetCallData("echoString(string)",
                 EncoderFactory.LoadEncoder("string", str));
 
-            return new EthFunc<string>(
-                async (sendParams) =>
-                {
-                    var callResult = await JsonRpcClient.Call(callData, GetSendParams(sendParams));
-                    var data = HexConverter.HexToBytes(callResult);
-                    return Decode<string>(data, "string", DecoderFactory.Decode);
-                },
-                async (sendParams) =>
-                {
-                    var transactionHash = await JsonRpcClient.SendTransaction(callData, GetSendParams(sendParams));
-                    var receipt = await JsonRpcClient.GetTransactionReceipt(transactionHash);
-                    return receipt;
-                });
+            return new EthFunc<string>(this, callData,
+                data => Decode<string>(data, "string", DecoderFactory.Decode));
         }
 
         public EthFunc<(Address addr, UInt256 num, string str)> echoMany(Address addr, UInt256 num, string str)
@@ -109,86 +77,11 @@ namespace SolCodeGen
                 EncoderFactory.LoadEncoder("uint256", num),
                 EncoderFactory.LoadEncoder("string", str));
 
-            return new EthFunc<(Address addr, UInt256 num, string str)>(
-                async (sendParams) =>
-                {
-                    var callResult = await JsonRpcClient.Call(callData, GetSendParams(sendParams));
-                    var data = HexConverter.HexToBytes(callResult);
-                    return Decode<Address, UInt256, string>(data, 
+            return new EthFunc<(Address addr, UInt256 num, string str)>(this, callData,
+                data => Decode<Address, UInt256, string>(data, 
                         "address", DecoderFactory.Decode, 
                         "uint256", DecoderFactory.Decode, 
-                        "string", DecoderFactory.Decode);
-                },
-                async (sendParams) =>
-                {
-                    var transactionHash = await JsonRpcClient.SendTransaction(callData, GetSendParams(sendParams));
-                    var receipt = await JsonRpcClient.GetTransactionReceipt(transactionHash);
-                    return receipt;
-                });
-        }
-
-
-        public async Task<(TransactionReceipt Receipt, FilterLogObject[] EventLogs, bool? isNine)> myFunc(
-            UInt256 _num, SendParams sendParams = null, CallType callType = CallType.Transaction)
-        {
-            var callData = GetCallData("myFunc(uint256)",
-                EncoderFactory.LoadEncoder("uint256", _num));
-
-            // rpc eth_sendTransaction
-            if (callType == CallType.Transaction)
-            {
-                var transactionHash = await JsonRpcClient.SendTransaction(callData, GetSendParams(sendParams));
-                // rpc eth_getTransactionReceipt
-                var receipt = await JsonRpcClient.GetTransactionReceipt(transactionHash);
-                // TODO: ...
-                // parse log data into C# objects...
-                return (receipt, receipt.Logs, null);
-            }
-            else if (callType == CallType.Call)
-            {
-                var resultData = await JsonRpcClient.Call(callData, GetSendParams(sendParams));
-                // TODO: ...
-                // parse return values
-                return (null, null, HexConverter.HexToInteger<UInt256>(resultData) == 1);
-            }
-            else
-            {
-                throw new ArgumentException($"Unsupported call type: {callType}");
-            }
-        }
-
-        public async Task<(TransactionReceipt Receipt, FilterLogObject[] EventLogs, bool? _result)> ExampleFunction(
-            Address _to, UInt256 _amount, IEnumerable<ulong> _extraVals, IEnumerable<byte> _rawData,
-            SendParams sendParams = null, CallType callType = CallType.Transaction)
-        {
-            var callData = GetCallData("transfer(address,uint256,uint64[])",
-                EncoderFactory.LoadEncoder("address", _to),
-                EncoderFactory.LoadEncoder("uint256", _amount),
-                EncoderFactory.LoadEncoder("uint64[]", _extraVals, EncoderFactory.LoadEncoder("uint64", default(ulong))),
-                EncoderFactory.LoadEncoder("bytes", _rawData));
-
-            // rpc eth_sendTransaction
-            if (callType == CallType.Transaction)
-            {
-                var transactionHash = await JsonRpcClient.SendTransaction(callData, GetSendParams(sendParams));
-                // rpc eth_getTransactionReceipt
-                var receipt = await JsonRpcClient.GetTransactionReceipt(transactionHash);
-                // TODO: ...
-                // parse log data into C# objects...
-                return (receipt, receipt.Logs, null);
-            }
-            else if (callType == CallType.Call)
-            {
-                var resultData = await JsonRpcClient.Call(callData, GetSendParams(sendParams));
-                // TODO: ...
-                // parse return values
-                return (null, null, null);
-            }
-            else
-            {
-                throw new ArgumentException($"Unsupported call type: {callType}");
-            }
-
+                        "string", DecoderFactory.Decode));
         }
 
         public override ReadOnlyMemory<byte> Bytecode => BYTECODE.Value;
