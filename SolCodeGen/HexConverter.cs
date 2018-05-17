@@ -120,7 +120,7 @@ namespace SolCodeGen
 
         public static string GetHex<T>(in T s, bool hexPrefix = false) where T : struct
         {
-            Span<byte> bytes = stackalloc byte[Marshal.SizeOf<T>()];
+            Span<byte> bytes = stackalloc byte[Unsafe.SizeOf<T>()];
             MemoryMarshal.Write(bytes, ref Unsafe.AsRef(s));
             return GetHexFromBytes(bytes, hexPrefix: hexPrefix);
         }
@@ -299,7 +299,7 @@ namespace SolCodeGen
             StripHexPrefix(ref str);
 
             var byteLen = str.Length / 2;
-            var tSize = Marshal.SizeOf<T>();
+            var tSize = Unsafe.SizeOf<T>();
             if (byteLen > tSize)
             {
                 var overSize = (byteLen - tSize) * 2;
@@ -314,7 +314,7 @@ namespace SolCodeGen
                 var underSize = (tSize - byteLen) * 2;
                 str = new string('0', underSize) + str;
             }
-            Span<byte> resultBytes = stackalloc byte[Marshal.SizeOf<T>()];
+            Span<byte> resultBytes = stackalloc byte[Unsafe.SizeOf<T>()];
             //bool endianSwap = _bigEndianCheckTypes.Contains(typeof(T)) && BitConverter.IsLittleEndian;
             for (int i = 0; i < resultBytes.Length; i++)
             {

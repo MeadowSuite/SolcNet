@@ -50,7 +50,7 @@ namespace SolCodeGen.AbiEncoding.Encoders
         public override Span<byte> Encode(Span<byte> buffer)
         {
             var byteSize = _info.BaseTypeByteSize;
-            Span<byte> valBytes = stackalloc byte[Marshal.SizeOf<TInt>()];
+            Span<byte> valBytes = stackalloc byte[Unsafe.SizeOf<TInt>()];
             MemoryMarshal.Write(valBytes, ref _val);
 
             //Span<byte> valBytes = MemoryMarshal.Cast<TInt, byte>(new[] { _val });
