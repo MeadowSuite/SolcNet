@@ -33,6 +33,28 @@ namespace SolCodeGen.Tests.Abi
         }
 
         [Fact]
+        public void FunctionData_MixedParamTypes()
+        {
+            var p1 = true;
+            var p2 = "my string";
+            var p3 = (long)-11118;
+            var p4 = new Address[] { "0x98E4625b2d7424C403B46366150AB28Df4063408", "0x40515114eEa1497D753659DFF85910F838c6B234", "0xDf0270A6BFf43e7A3Fd92372DfB549292D683D22" };
+            var p5 = (byte)99;
+            var p6 = new ulong[] { 9, 0, ulong.MaxValue };
+            var callData = BaseContract.GetCallData(
+                "boat(bool,string,int56,address[],uint8,uint64[3])",
+                EncoderFactory.LoadEncoder("bool", p1),
+                EncoderFactory.LoadEncoder("string", p2),
+                EncoderFactory.LoadEncoder("int56", p3),
+                EncoderFactory.LoadEncoder("address[]", p4, EncoderFactory.LoadEncoder("address", default(Address))),
+                EncoderFactory.LoadEncoder("uint8", p5),
+                EncoderFactory.LoadEncoder("uint64[3]", p6, EncoderFactory.LoadEncoder("uint64", default(ulong))));
+
+            var expected = "0x7a4a328f0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000ffffffffffd4920000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000006300000000000000000000000000000000000000000000000000000000000000090000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ffffffffffffffff00000000000000000000000000000000000000000000000000000000000000096d7920737472696e670000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000300000000000000000000000098e4625b2d7424c403b46366150ab28df406340800000000000000000000000040515114eea1497d753659dff85910f838c6b234000000000000000000000000df0270a6bff43e7a3fd92372dfb549292d683d22";
+            Assert.Equal(expected, callData);
+        }
+
+        [Fact]
         public void Address()
         {
             Address myAddr = "0x11f4d0A3c12e86B4b5F39B213F7E19D048276DAe";
@@ -91,20 +113,6 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void Int24_1()
         {
-            int num = -8388609;
-            Assert.Throws<OverflowException>(() => EncoderFactory.LoadEncoder("int24", num));
-        }
-
-        [Fact]
-        public void Int24_2()
-        {
-            int num = 8388610;
-            Assert.Throws<OverflowException>(() => EncoderFactory.LoadEncoder("int24", num));
-        }
-
-        [Fact]
-        public void Int24_3()
-        {
             int num = 77216;
             var encoder = EncoderFactory.LoadEncoder("int24", num);
             Assert.IsType<Int32Encoder>(encoder);
@@ -116,6 +124,53 @@ namespace SolCodeGen.Tests.Abi
             Assert.Equal(0, buff.HeadCursor.Length);
             var result = HexConverter.GetHexFromBytes(data, hexPrefix: false);
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000012da0", result);
+        }
+
+        [Fact]
+        public void Int24_2()
+        {
+            int num = -77216;
+            var encoder = EncoderFactory.LoadEncoder("int24", num);
+            Assert.IsType<Int32Encoder>(encoder);
+            var encodedSize = encoder.GetEncodedSize();
+            Assert.Equal(32, encodedSize);
+            Span<byte> data = new byte[encodedSize];
+            var buff = new AbiEncodeBuffer(data, "int24");
+            encoder.Encode(ref buff);
+            Assert.Equal(0, buff.HeadCursor.Length);
+            var result = HexConverter.GetHexFromBytes(data, hexPrefix: false);
+            Assert.Equal("0000000000000000000000000000000000000000000000000000000000fed260", result);
+        }
+
+        [Fact]
+        public void Int24_3()
+        {
+            int num = 8388610;
+            Assert.Throws<OverflowException>(() => EncoderFactory.LoadEncoder("int24", num));
+        }
+
+        [Fact]
+        public void Int24_4()
+        {
+            int num = -8388609;
+            Assert.Throws<OverflowException>(() => EncoderFactory.LoadEncoder("int24", num));
+        }
+
+        [Fact]
+        public void Int56()
+        {
+            var num = (long)-11118;
+            var encoder = EncoderFactory.LoadEncoder("int56", num);
+            Assert.IsType<Int64Encoder>(encoder);
+            var encodedSize = encoder.GetEncodedSize();
+            Assert.Equal(32, encodedSize);
+            Span<byte> data = new byte[encodedSize];
+            var buff = new AbiEncodeBuffer(data, "int56");
+            encoder.Encode(ref buff);
+            Assert.Equal(0, buff.HeadCursor.Length);
+            var result = HexConverter.GetHexFromBytes(data, hexPrefix: false);
+            Assert.Equal("00000000000000000000000000000000000000000000000000ffffffffffd492", result);
+
         }
 
         [Fact]

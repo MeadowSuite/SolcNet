@@ -116,6 +116,14 @@ namespace SolCodeGen.AbiEncoding.Encoders
                 }
             }
 
+            if (Signed)
+            {
+                for (var i = byteSize; i < byteView.Length; i++)
+                {
+                    byteView[i] = 0xFF;
+                }
+            }
+
 #if ZERO_BYTE_CHECKS
             // data validity check: should be padded with zero-bytes
             for (var i = 0; i < padSize; i++)

@@ -29,7 +29,13 @@ namespace SolCodeGen
         public async Task<TReturn> Call(SendParams sendParams = null)
         {
             var callResult = await _contract.JsonRpcClient.Call(_callData, _contract.GetSendParams(sendParams));
-            var bytes = HexConverter.HexToBytes(callResult);
+            var result = ParseReturnData(callResult);
+            return result;
+        }
+
+        public TReturn ParseReturnData(string hexData)
+        {
+            var bytes = HexConverter.HexToBytes(hexData);
             var result = _parseResponse(bytes);
             return result;
         }

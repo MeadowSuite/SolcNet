@@ -81,10 +81,13 @@ contract ExampleContract {
 		return val;
 	}
 
-	function echoMany(address addr, uint256 num, string str) public returns (address, uint256, string)
-	{
+	function echoMany(address addr, uint256 num, string str) public returns (address, uint256, string) {
 		return (addr, num, str);
 	}
+
+    function echoInt24(int24 _num) public returns (int24 _result) {
+        return _num;
+    }
 
     /// @notice The fallback function
     function() public {
