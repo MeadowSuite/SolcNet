@@ -38,17 +38,18 @@ namespace SolCodeGen.AbiEncoding.Encoders
             {
                 bytes[i] = buff.HeadCursor[i];
             }
+
+#if ZERO_BYTE_CHECKS
             // data validity check: all bytes after the fixed M amount should be zero
-            // Disabled - ganache liters this padding with garbage bytes
-            /*
             for (var i = bytes.Length; i < UInt256.SIZE; i++)
             {
-                if (buffer[i] != 0)
+                if (buff.HeadCursor[i] != 0)
                 {
-                    throw new ArgumentException($"Invalid {_info.SolidityName} input data; should be {_info.ArrayLength} bytes padded {UInt256.SIZE - _info.ArrayLength} zero-bytes; received: " + buffer.Slice(0, 32).ToHexString());
+                    throw new ArgumentException($"Invalid {_info.SolidityName} input data; should be {_info.ArrayLength} bytes padded {UInt256.SIZE - _info.ArrayLength} zero-bytes; received: " + buff.HeadCursor.Slice(0, 32).ToHexString());
                 }
             }
-            */
+#endif
+
             val = bytes;
             buff.IncrementHeadCursor(UInt256.SIZE);
         }

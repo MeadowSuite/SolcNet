@@ -17,14 +17,14 @@ namespace SolCodeGen.AbiEncoding.Encoders
 
         public override void Decode(ref AbiDecodeBuffer buff, out Address val)
         {
+
+#if ZERO_BYTE_CHECKS
             // data validity check: 20 address bytes should be left-padded with 12 zero-bytes
-            // Disabled - ganache liters this padding with garbage bytes
-            /*
-            if (!buffer.Slice(0, 12).SequenceEqual(ZEROx12))
+            if (!buff.HeadCursor.Slice(0, 12).SequenceEqual(ZEROx12))
             {
-                throw new ArgumentException("Invalid address input data; should be 20 address bytes, left-padded with 12 zero-bytes; received: " + buffer.Slice(0, UInt256.SIZE).ToHexString());
+                throw new ArgumentException("Invalid address input data; should be 20 address bytes, left-padded with 12 zero-bytes; received: " + buff.HeadCursor.Slice(0, UInt256.SIZE).ToHexString());
             }
-            */
+#endif
             val = MemoryMarshal.Read<Address>(buff.HeadCursor.Slice(12));
             buff.IncrementHeadCursor(UInt256.SIZE);
         }

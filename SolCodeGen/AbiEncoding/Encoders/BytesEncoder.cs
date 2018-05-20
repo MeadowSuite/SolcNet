@@ -64,22 +64,22 @@ namespace SolCodeGen.AbiEncoding.Encoders
             UInt256Encoder.Instance.Decode(encodedLength, out int byteLen);
 
             // Read the actual payload from the data area
-            var payload = buff.Buffer.Slice(startingPosition + UInt256.SIZE, byteLen);
+            var payloadOffset = startingPosition + UInt256.SIZE;
+            var payload = buff.Buffer.Slice(payloadOffset, byteLen);
             var bytes = payload.ToArray();
             int bodyLen = PadLength(bytes.Length, UInt256.SIZE);
             val = bytes;
-
+            
+#if ZERO_BYTE_CHECKS
             // data validity check: should be right-padded with zero bytes
-            // Disabled - ganache liters this padding with garbage bytes
-            /*
-            for (var i = bytes.Length; i < bodyLen; i++)
+            for (var i = payloadOffset + byteLen; i < payloadOffset + bodyLen; i++)
             {
-                if (buffer[i] != 0)
+                if (buff.Buffer[i] != 0)
                 {
                     throw new ArgumentException($"Invalid string input data; should be {bytes.Length} followed by {bodyLen - bytes.Length} zero-bytes");
                 }
             }
-            */
+#endif
 
             buff.IncrementHeadCursor(UInt256.SIZE);
         }

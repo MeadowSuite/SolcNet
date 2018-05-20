@@ -116,17 +116,16 @@ namespace SolCodeGen.AbiEncoding.Encoders
                 }
             }
 
+#if ZERO_BYTE_CHECKS
             // data validity check: should be padded with zero-bytes
-            // Disabled - ganache liters this padding with garbage bytes
-            /*
             for (var i = 0; i < padSize; i++)
             {
-                if (buffer[i] != 0)
+                if (buffer[i] != 0 && buffer[i] != 0xFF)
                 {
                     throw new ArgumentException($"Invalid {_info.SolidityName} input data; should be {byteSize} bytes, left-padded with {UInt256.SIZE - byteSize} zero-bytes; received: " + buffer.Slice(0, 32).ToHexString());
                 }
             }
-            */
+#endif
 
             val = num[0];
         }

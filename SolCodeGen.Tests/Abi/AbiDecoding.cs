@@ -161,6 +161,7 @@ namespace SolCodeGen.Tests.Abi
                 throw null;
             }
             catch (ArgumentException) { }
+            catch (OverflowException) { }
         }
 
         [Fact]
@@ -174,6 +175,7 @@ namespace SolCodeGen.Tests.Abi
                 throw null;
             }
             catch (ArgumentException) { }
+            catch (OverflowException) { }
         }
 
         [Fact]
@@ -222,6 +224,7 @@ namespace SolCodeGen.Tests.Abi
                 throw null;
             }
             catch (ArgumentException) { }
+            catch (OverflowException) { }
         }
 
         [Fact]
@@ -235,6 +238,7 @@ namespace SolCodeGen.Tests.Abi
                 throw null;
             }
             catch (ArgumentException) { }
+            catch (OverflowException) { }
         }
 
         [Fact]
