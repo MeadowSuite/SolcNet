@@ -70,6 +70,7 @@ namespace SolCodeGen.AbiEncoding
         public static IAbiTypeEncoder<string> LoadEncoder(string solidityType, in string val)
         {
             var encoder = new StringEncoder();
+            encoder.SetTypeInfo(solidityType);
             encoder.SetValue(val);
             return encoder;
         }
@@ -77,6 +78,7 @@ namespace SolCodeGen.AbiEncoding
         public static IAbiTypeEncoder<Address> LoadEncoder(string solidityType, in Address val)
         {
             var encoder = new AddressEncoder();
+            encoder.SetTypeInfo(solidityType);
             encoder.SetValue(val);
             return encoder;
         }
@@ -84,6 +86,7 @@ namespace SolCodeGen.AbiEncoding
         public static IAbiTypeEncoder<bool> LoadEncoder(string solidityType, in bool val)
         {
             var encoder = new BoolEncoder();
+            encoder.SetTypeInfo(solidityType);
             encoder.SetValue(val);
             return encoder;
         }
@@ -91,6 +94,7 @@ namespace SolCodeGen.AbiEncoding
         public static IAbiTypeEncoder<sbyte> LoadEncoder(string solidityType, in sbyte val)
         {
             var encoder = new Int8Encoder();
+            encoder.SetTypeInfo(solidityType);
             encoder.SetValue(val);
             return encoder;
         }
@@ -98,6 +102,7 @@ namespace SolCodeGen.AbiEncoding
         public static IAbiTypeEncoder<byte> LoadEncoder(string solidityType, in byte val)
         {
             var encoder = new UInt8Encoder();
+            encoder.SetTypeInfo(solidityType);
             encoder.SetValue(val);
             return encoder;
         }
@@ -105,7 +110,7 @@ namespace SolCodeGen.AbiEncoding
         public static IAbiTypeEncoder<short> LoadEncoder(string solidityType, in short val)
         {
             var encoder = new Int16Encoder();
-            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(solidityType);
             encoder.SetValue(val);
             return encoder;
         }
@@ -113,7 +118,7 @@ namespace SolCodeGen.AbiEncoding
         public static IAbiTypeEncoder<ushort> LoadEncoder(string solidityType, in ushort val)
         {
             var encoder = new UInt16Encoder();
-            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(solidityType);
             encoder.SetValue(val);
             return encoder;
         }
@@ -121,7 +126,7 @@ namespace SolCodeGen.AbiEncoding
         public static IAbiTypeEncoder<int> LoadEncoder(string solidityType, in int val)
         {
             var encoder = new Int32Encoder();
-            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(solidityType);
             encoder.SetValue(val);
             return encoder;
         }
@@ -129,7 +134,7 @@ namespace SolCodeGen.AbiEncoding
         public static IAbiTypeEncoder<uint> LoadEncoder(string solidityType, in uint val)
         {
             var encoder = new UInt32Encoder();
-            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(solidityType);
             encoder.SetValue(val);
             return encoder;
         }
@@ -137,7 +142,7 @@ namespace SolCodeGen.AbiEncoding
         public static IAbiTypeEncoder<long> LoadEncoder(string solidityType, in long val)
         {
             var encoder = new Int64Encoder();
-            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(solidityType);
             encoder.SetValue(val);
             return encoder;
         }
@@ -145,7 +150,7 @@ namespace SolCodeGen.AbiEncoding
         public static IAbiTypeEncoder<ulong> LoadEncoder(string solidityType, in ulong val)
         {
             var encoder = new UInt64Encoder();
-            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(solidityType);
             encoder.SetValue(val);
             return encoder;
         }
@@ -153,7 +158,7 @@ namespace SolCodeGen.AbiEncoding
         public static IAbiTypeEncoder<BigInteger> LoadEncoder(string solidityType, in BigInteger val)
         {
             var encoder = new Int256Encoder();
-            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(solidityType);
             encoder.SetValue(val);
             return encoder;
         }
@@ -161,7 +166,7 @@ namespace SolCodeGen.AbiEncoding
         public static IAbiTypeEncoder<UInt256> LoadEncoder(string solidityType, in UInt256 val)
         {
             var encoder = new UInt256Encoder();
-            encoder.SetTypeInfo(AbiTypeMap.GetSolidityTypeInfo(solidityType));
+            encoder.SetTypeInfo(solidityType);
             encoder.SetValue(val);
             return encoder;
         }

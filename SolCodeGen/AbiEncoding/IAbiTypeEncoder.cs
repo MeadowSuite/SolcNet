@@ -2,8 +2,13 @@
 
 namespace SolCodeGen.AbiEncoding
 {
+
     public interface IAbiTypeEncoder
     {
+        AbiTypeInfo TypeInfo { get; }
+
+        void SetTypeInfo(AbiTypeInfo info);
+
         int GetEncodedSize();
 
         /// <summary>
@@ -11,18 +16,19 @@ namespace SolCodeGen.AbiEncoding
         /// with this position/cursor incremented to where the next writer should
         /// start at.
         /// </summary>
-        Span<byte> Encode(Span<byte> buffer);
+        void Encode(ref AbiEncodeBuffer buffer);
     }
 
     public interface IAbiTypeEncoder<TVal> : IAbiTypeEncoder
     {
         void SetValue(in TVal val);
-        void SetTypeInfo(AbiTypeInfo info);
-        ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out TVal val);
+        void Decode(ref AbiDecodeBuffer buff, out TVal val);
     }
 
     public abstract class AbiTypeEncoder<TVal> : IAbiTypeEncoder<TVal>
     {
+        public AbiTypeInfo TypeInfo => _info;
+
         protected AbiTypeInfo _info;
         protected TVal _val;
 
@@ -36,11 +42,10 @@ namespace SolCodeGen.AbiEncoding
             _val = val;
         }
 
-        public abstract ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out TVal val);
+        public abstract void Decode(ref AbiDecodeBuffer buff, out TVal val);
+        public abstract void Encode(ref AbiEncodeBuffer buff);
 
-        public abstract Span<byte> Encode(Span<byte> buffer);
-        public virtual int GetEncodedSize() => 32;
-
+        public virtual int GetEncodedSize() => UInt256.SIZE;
 
         protected Exception UnsupportedTypeException()
         {

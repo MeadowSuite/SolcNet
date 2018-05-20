@@ -11,14 +11,14 @@ namespace SolCodeGen.AbiEncoding.Encoders
     public abstract class NumberEncoder<TInt> : AbiTypeEncoder<TInt> where TInt : struct
     {
         protected static Dictionary<string, (int ByteSize, BigInteger MaxValue)> _unsignedTypeSizes
-            = new Dictionary<string, (int ByteSize, BigInteger MaxValue)>(32);
+            = new Dictionary<string, (int ByteSize, BigInteger MaxValue)>(UInt256.SIZE);
 
         protected static Dictionary<string, (int ByteSize, BigInteger MaxValue, BigInteger MinValue)> _signedTypeSizes
-            = new Dictionary<string, (int ByteSize, BigInteger MaxValue, BigInteger MinValue)>(32);
+            = new Dictionary<string, (int ByteSize, BigInteger MaxValue, BigInteger MinValue)>(UInt256.SIZE);
 
         static NumberEncoder()
         {
-            for (var i = 1; i <= 32; i++)
+            for (var i = 1; i <= UInt256.SIZE; i++)
             {
                 var bitSize = i * 8;
                 var maxIntValue = BigInteger.Pow(2, bitSize);
@@ -47,9 +47,15 @@ namespace SolCodeGen.AbiEncoding.Encoders
             }
         }
 
-        public override Span<byte> Encode(Span<byte> buffer)
+        public override void Encode(ref AbiEncodeBuffer buff)
         {
-            var byteSize = _info.BaseTypeByteSize;
+            Encode(buff.HeadCursor);
+            buff.IncrementHeadCursor(UInt256.SIZE);
+        }
+
+        public void Encode(Span<byte> buff)
+        {
+            var byteSize = _info.PrimitiveTypeByteSize;
             Span<byte> valBytes = stackalloc byte[Unsafe.SizeOf<TInt>()];
             MemoryMarshal.Write(valBytes, ref _val);
 
@@ -60,17 +66,16 @@ namespace SolCodeGen.AbiEncoding.Encoders
             {
                 for (var i = 0; i < byteSize; i++)
                 {
-                    buffer[31 - i] = valBytes[i];
+                    buff[31 - i] = valBytes[i];
                 }
             }
             else
             {
                 for (var i = 0; i < byteSize; i++)
                 {
-                    buffer[31 - byteSize + i] = valBytes[i];
+                    buff[31 - byteSize + i] = valBytes[i];
                 }
             }
-            return buffer.Slice(32);
         }
 
         protected Exception IntOverflow()
@@ -83,13 +88,19 @@ namespace SolCodeGen.AbiEncoding.Encoders
             return new OverflowException($"Min value for type '{_info}' is {MinValue}, was given {_val}");
         }
 
-        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out TInt val)
+        public override void Decode(ref AbiDecodeBuffer buff, out TInt val)
+        {
+            Decode(buff.HeadCursor, out val);
+            buff.IncrementHeadCursor(UInt256.SIZE);
+        }
+
+        public void Decode(ReadOnlySpan<byte> buffer, out TInt val)
         {
             Span<TInt> num = new TInt[1];
             Span<byte> byteView = MemoryMarshal.Cast<TInt, byte>(num);
 
-            var byteSize = _info.BaseTypeByteSize;
-            var padSize = 32 - byteSize;
+            var byteSize = _info.PrimitiveTypeByteSize;
+            var padSize = UInt256.SIZE - byteSize;
             if (BitConverter.IsLittleEndian)
             {
                 for (var i = 0; i < byteSize; i++)
@@ -112,57 +123,58 @@ namespace SolCodeGen.AbiEncoding.Encoders
             {
                 if (buffer[i] != 0)
                 {
-                    throw new ArgumentException($"Invalid {_info.SolidityName} input data; should be {byteSize} bytes, left-padded with {32 - byteSize} zero-bytes; received: " + buffer.Slice(0, 32).ToHexString());
+                    throw new ArgumentException($"Invalid {_info.SolidityName} input data; should be {byteSize} bytes, left-padded with {UInt256.SIZE - byteSize} zero-bytes; received: " + buffer.Slice(0, 32).ToHexString());
                 }
             }
             */
 
             val = num[0];
-
-            return buffer.Slice(32);
         }
     }
 
 
     public class Int8Encoder : AbiTypeEncoder<sbyte>
     {
-        static readonly byte[] ZEROx31 = Enumerable.Repeat((byte)0, 31).ToArray();
+        static readonly byte[] ZEROx31 = Enumerable.Repeat((byte)0, UInt256.SIZE - 1).ToArray();
 
-        public override Span<byte> Encode(Span<byte> buffer)
+        public override void Encode(ref AbiEncodeBuffer buff)
         {
-            buffer[31] = unchecked((byte)_val);
-            return buffer.Slice(32);
+            buff.HeadCursor[UInt256.SIZE - 1] = unchecked((byte)_val);
+            buff.IncrementHeadCursor(UInt256.SIZE);
         }
 
-        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out sbyte val)
+        public override void Decode(ref AbiDecodeBuffer buff, out sbyte val)
         {
-            if (!buffer.Slice(0, 31).SequenceEqual(ZEROx31))
+            if (!buff.HeadCursor.Slice(0, UInt256.SIZE - 1).SequenceEqual(ZEROx31))
             {
-                throw new ArgumentException("Invalid int8 input data; should be 31 zeros followed by a int8/byte; received: " + buffer.Slice(0, 32).ToHexString());
+                throw new ArgumentException("Invalid int8 input data; should be 31 zeros followed by a int8/byte; received: " + buff.HeadCursor.Slice(0, UInt256.SIZE).ToHexString());
             }
-            val = unchecked((sbyte)buffer[31]);
-            return buffer.Slice(32);
+            val = unchecked((sbyte)buff.HeadCursor[UInt256.SIZE - 1]);
+            buff.IncrementHeadCursor(UInt256.SIZE);
         }
     }
 
     public class UInt8Encoder : AbiTypeEncoder<byte>
     {
-        static readonly byte[] ZEROx31 = Enumerable.Repeat((byte)0, 31).ToArray();
+        static readonly byte[] ZEROx31 = Enumerable.Repeat((byte)0, UInt256.SIZE - 1).ToArray();
 
-        public override Span<byte> Encode(Span<byte> buffer)
+        public override void Encode(ref AbiEncodeBuffer buff)
         {
-            buffer[31] = _val;
-            return buffer.Slice(32);
+            buff.HeadCursor[UInt256.SIZE - 1] = _val;
+            buff.IncrementHeadCursor(UInt256.SIZE);
         }
 
-        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out byte val)
+        public override void Decode(ref AbiDecodeBuffer buff, out byte val)
         {
+            // Disabled from ganache memory litering
+            /*
             if (!buffer.Slice(0, 31).SequenceEqual(ZEROx31))
             {
-                throw new ArgumentException("Invalid uint8 input data; should be 31 zeros followed by a uint8/byte; received: " + buffer.Slice(0, 32).ToHexString());
+                throw new ArgumentException("Invalid uint8 input data; should be 31 zeros followed by a uint8/byte; received: " + buffer.Slice(0, UInt256.SIZE).ToHexString());
             }
-            val = buffer[31];
-            return buffer.Slice(32);
+            */
+            val = buff.HeadCursor[UInt256.SIZE - 1];
+            buff.IncrementHeadCursor(UInt256.SIZE);
         }
     }
 
@@ -206,11 +218,11 @@ namespace SolCodeGen.AbiEncoding.Encoders
     {
         protected override bool Signed => true;
         protected override BigInteger AsBigInteger => _val;
-        public override Span<byte> Encode(Span<byte> buffer)
+        public override void Encode(ref AbiEncodeBuffer buff)
         {
             Span<byte> arr = _val.ToByteArray();
-            arr.CopyTo(buffer.Slice(32 - arr.Length));
-            return buffer.Slice(32);
+            arr.CopyTo(buff.HeadCursor.Slice(UInt256.SIZE - arr.Length));
+            buff.IncrementHeadCursor(UInt256.SIZE);
         }
     }
 
@@ -219,6 +231,7 @@ namespace SolCodeGen.AbiEncoding.Encoders
         protected override bool Signed => false;
         protected override BigInteger AsBigInteger => _val;
 
+        public static UInt256Encoder Instance => UncheckedInstance.Value;
         static readonly Lazy<UInt256Encoder> UncheckedInstance = new Lazy<UInt256Encoder>(() => 
         {
             var inst = new UInt256Encoder();
@@ -243,18 +256,32 @@ namespace SolCodeGen.AbiEncoding.Encoders
         /// <summary>
         /// Encodes a solidity 'uint256' (with no overflow checks since its the max value)
         /// </summary>
-        public static Span<byte> Encode(Span<byte> buffer, in UInt256 val)
+        public void Encode(ref AbiEncodeBuffer buff, in UInt256 val)
         {
             var encoder = UncheckedInstance.Value;
             encoder._val = val;
-            return encoder.Encode(buffer);
+            encoder.Encode(ref buff);
         }
 
-        public static new ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out UInt256 val)
+        public void Encode(Span<byte> data, in UInt256 val)
         {
-            NumberEncoder<UInt256> encoder = UncheckedInstance.Value;
-            return encoder.Decode(buffer, out val);
+            var encoder = UncheckedInstance.Value;
+            encoder._val = val;
+            encoder.Encode(data);
         }
+
+        public void Decode(ReadOnlySpan<byte> buffer, out int val)
+        {
+            Decode(buffer, out UInt256 num);
+            val = (int)num;
+        }
+
+        public void Decode(ref AbiDecodeBuffer buff, out int val)
+        {
+            Decode(ref buff, out UInt256 num);
+            val = (int)num;
+        }
+
     }
 
 

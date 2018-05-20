@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace SolCodeGen.AbiEncoding.Encoders
 {
+
     public class StringEncoder : AbiTypeEncoder<string>
     {
         // utf-8 encoded and this value is interpreted as of bytes type and encoded further.
@@ -13,43 +15,46 @@ namespace SolCodeGen.AbiEncoding.Encoders
         public override int GetEncodedSize()
         {
             var len = Encoding.UTF8.GetByteCount(_val);
-            int padded = PadLength(len, 32);
-            return 32 * 2 + padded;
+            int padded = PadLength(len, UInt256.SIZE);
+            return UInt256.SIZE * 2 + padded;
         }
 
-        public override Span<byte> Encode(Span<byte> buffer)
+        public override void Encode(ref AbiEncodeBuffer buff)
         {
             Span<byte> utf8 = Encoding.UTF8.GetBytes(_val);
-            buffer = UInt256Encoder.Encode(buffer, 32); // encode starting position (immediately after this 32-byte pointer)
-            buffer = UInt256Encoder.Encode(buffer, utf8.Length);
-            utf8.CopyTo(buffer);
-            int padded = PadLength(utf8.Length, 32);
-            return buffer.Slice(padded);
+
+            // write data offset position into header
+            int offset = buff.HeadLength + buff.DataAreaCursorPosition;
+            UInt256Encoder.Instance.Encode(buff.HeadCursor, offset);
+            buff.IncrementHeadCursor(UInt256.SIZE);
+
+            // write payload len into data buffer
+            int len = utf8.Length;
+            UInt256Encoder.Instance.Encode(buff.DataAreaCursor, len);
+            buff.IncrementDataCursor(UInt256.SIZE);
+
+            // write payload into data buffer
+            utf8.CopyTo(buff.DataAreaCursor);
+            int padded = PadLength(len, UInt256.SIZE);
+            buff.IncrementDataCursor(padded);
         }
 
-        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out string val)
+        public override void Decode(ref AbiDecodeBuffer buff, out string val)
         {
-            // Obtain our starting position for our data.
-            buffer = UInt256Encoder.Decode(buffer, out var startingPosition);
+            // Read the next header int which is the offset to the start of the data
+            // in the data payload area.
+            UInt256Encoder.Instance.Decode(buff.HeadCursor, out int startingPosition);
 
-            // We advanced our pointer 32-bytes already, so we account for that
-            startingPosition -= 32;
+            // The first int in our offset of data area is the length of the rest of the payload.
+            var encodedLength = buff.Buffer.Slice(startingPosition, UInt256.SIZE);
+            UInt256Encoder.Instance.Decode(encodedLength, out int byteLen);
 
-            // We advance the pointer to our starting position
-            buffer = buffer.Slice((int)startingPosition);
-
-            // Decode our string length.
-            buffer = UInt256Encoder.Decode(buffer, out var strLen);
-            if (strLen > int.MaxValue)
-            {
-                throw new ArgumentException($"String input data is invalid: the byte length prefix is {strLen} which is unlikely to be intended");
-            }
-
-
-            var bytes = new byte[(int)strLen];
-            buffer.Slice(0, bytes.Length).CopyTo(bytes);
+            // Read the actual payload from the data area
+            var encodedString = buff.Buffer.Slice(startingPosition + UInt256.SIZE, byteLen);
+            var bytes = new byte[byteLen];
+            encodedString.CopyTo(bytes);
             val = Encoding.UTF8.GetString(bytes);
-            int bodyLen = PadLength(bytes.Length, 32);
+            int bodyLen = PadLength(bytes.Length, UInt256.SIZE);
 
             // data validity check: should be right-padded with zero bytes
             // Disabled - ganache liters this padding with garbage bytes
@@ -63,7 +68,8 @@ namespace SolCodeGen.AbiEncoding.Encoders
             }
             */
 
-            return buffer.Slice(bodyLen);
+            buff.IncrementHeadCursor(UInt256.SIZE);
+
         }
     }
 

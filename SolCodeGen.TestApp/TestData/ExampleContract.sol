@@ -13,20 +13,6 @@ contract ExampleContract {
     /// @notice A test event
     event TestEvent(address indexed _addr, uint64 indexed _id, uint _val);
 
-    string public typeString;
-    bytes public typeBytes;
-    address public typeAddress;
-
-    bool public typeBool;
-
-    int public typeInt;
-    int24 public typeInt24;
-    int256 public typeInt256;
-
-    uint public typeUInt;
-    uint8 public typeUInt8;
-    uint256 public typeUInt256;
-
 	string public givenName;
 	bool public enabledThing;
 	uint256 public last;
@@ -38,16 +24,7 @@ contract ExampleContract {
 		last = _last;
     }
 
-	function dynamicArrayInputFunc(int[] dynArr) public returns (bool) {
-		return true;
-	}
-
-	function staticArrayInputFunc(int[15] staticArr) public returns (bool) {
-		return true;
-	}
-
-	function getArrayStatic() public returns (int16[4]){
-		
+	function getArrayStatic() public returns (int16[4]) {
 		int16[4] arr;
 		arr[0] = 1;
 		arr[1] = -2;
@@ -56,7 +33,7 @@ contract ExampleContract {
 		return arr;
 	}
 
-	function getArrayDynamic() public returns (int16[]){
+	function getArrayDynamic() public returns (int16[]) {
 		int16[] arr;
         arr.length = 4;
 		arr[0] = 1;
@@ -74,6 +51,19 @@ contract ExampleContract {
         return input;
     }
 
+    function echoMultipleStatic(uint32 p1, bool p2, address p3) public returns (uint32 r1, bool r2, address r3) {
+        return (p1, p2, p3);
+    }
+
+    function echoMultipleDynamic(string p1, string p2, string p3) public returns (string r1, string r2, string r3) {
+        return (p1, p2, p3);
+    }
+
+    function boat(bool p1, string p2, int56 p3, address[] p4, uint8 p5, uint64[3] p6) public
+        returns (bool r1, string r2, int56 r3, address[] r4, uint8 r5, uint64[3] r6) {
+            return (p1, p2, p3, p4, p5, p6);
+    }
+
     /// @author Unknown author
     /// @notice This is a test function
     /// @dev Hi dev
@@ -81,26 +71,6 @@ contract ExampleContract {
     /// @return true if _num is 9
     function myFunc(uint256 _num) external pure returns (bool isNine) {
         return _num == 9;
-    }
-
-    function tupleTest() public pure returns (int p1, bool p2) {
-        return (8, false);
-    }
-
-    function overloadedFunc(string _stringParam) {
-
-    }
-
-    function overloadedFunc(int _intParam) {
-
-    }
-
-    function aPrivateFunc() private {
-
-    }
-
-    function examplePayableFunc() public payable {
-
     }
 
 	function echoString(string val) public returns (string) {

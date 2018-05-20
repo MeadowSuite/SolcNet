@@ -9,24 +9,24 @@ namespace SolCodeGen.AbiEncoding.Encoders
         static readonly byte[] ZEROx12 = Enumerable.Repeat((byte)0, 12).ToArray();
 
         // encoded the same way as an uint160
-        public override Span<byte> Encode(Span<byte> buffer)
+        public override void Encode(ref AbiEncodeBuffer buffer)
         {
-            MemoryMarshal.Write(buffer.Slice(12), ref _val);
-            return buffer.Slice(32);
+            MemoryMarshal.Write(buffer.HeadCursor.Slice(12), ref _val);
+            buffer.IncrementHeadCursor(UInt256.SIZE);
         }
 
-        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out Address val)
+        public override void Decode(ref AbiDecodeBuffer buff, out Address val)
         {
             // data validity check: 20 address bytes should be left-padded with 12 zero-bytes
             // Disabled - ganache liters this padding with garbage bytes
             /*
             if (!buffer.Slice(0, 12).SequenceEqual(ZEROx12))
             {
-                throw new ArgumentException("Invalid address input data; should be 20 address bytes, left-padded with 12 zero-bytes; received: " + buffer.Slice(0, 32).ToHexString());
+                throw new ArgumentException("Invalid address input data; should be 20 address bytes, left-padded with 12 zero-bytes; received: " + buffer.Slice(0, UInt256.SIZE).ToHexString());
             }
             */
-            val = MemoryMarshal.Read<Address>(buffer.Slice(12));
-            return buffer.Slice(32);
+            val = MemoryMarshal.Read<Address>(buff.HeadCursor.Slice(12));
+            buff.IncrementHeadCursor(UInt256.SIZE);
         }
     }
 

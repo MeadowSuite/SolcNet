@@ -20,57 +20,58 @@ namespace SolCodeGen.AbiEncoding.Encoders
                 throw UnsupportedTypeException();
             }
             int len = _itemEncoder.GetEncodedSize() * _val.Count();
-            return (32 * 2) + len;
+            return (UInt256.SIZE * 2) + len;
         }
 
-        public override Span<byte> Encode(Span<byte> buffer)
+        public override void Encode(ref AbiEncodeBuffer buff)
         {
             if (_info.Category != SolidityTypeCategory.DynamicArray)
             {
                 throw UnsupportedTypeException();
             }
 
-            // starting position (immediately after this 32-byte pointer)
-            buffer = UInt256Encoder.Encode(buffer, 32); 
 
-            // write length prefix
-            buffer = UInt256Encoder.Encode(buffer, _val.Count());
+            // write data offset position into header
+            int offset = buff.HeadLength + buff.DataAreaCursorPosition;
+            UInt256Encoder.Instance.Encode(buff.HeadCursor, offset);
+            buff.IncrementHeadCursor(UInt256.SIZE);
 
+            // write array item count into data buffer
+            int len = _val.Count();
+            UInt256Encoder.Instance.Encode(buff.DataAreaCursor, len);
+            buff.IncrementDataCursor(UInt256.SIZE);
+
+            // write payload into data buffer
+            var payloadBuffer = new AbiEncodeBuffer(buff.DataAreaCursor, Enumerable.Repeat(_info.ArrayItemInfo, len).ToArray());
             foreach (var item in _val)
             {
                 _itemEncoder.SetValue(item);
-                buffer = _itemEncoder.Encode(buffer);
+                _itemEncoder.Encode(ref payloadBuffer);
             }
-
-            return buffer;
         }
 
-        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out IEnumerable<TItem> val)
+        public override void Decode(ref AbiDecodeBuffer buff, out IEnumerable<TItem> val)
         {
-            // Obtain our starting position for our data.
-            buffer = UInt256Encoder.Decode(buffer, out var startingPosition);
+            // Read the next header int which is the offset to the start of the data
+            // in the data payload area.
+            UInt256Encoder.Instance.Decode(buff.HeadCursor, out int startingPosition);
 
-            // We advanced our pointer 32-bytes already, so we account for that
-            startingPosition -= 32;
+            // The first int in our offset of data area is the length of the rest of the payload.
+            var encodedLength = buff.Buffer.Slice(startingPosition, UInt256.SIZE);
+            UInt256Encoder.Instance.Decode(encodedLength, out int itemCount);
 
-            // We advance the pointer to our starting position
-            buffer = buffer.Slice((int)startingPosition);
-
-            // Decode our buffer length
-            buffer = UInt256Encoder.Decode(buffer, out var len);
-
-            if (len > int.MaxValue)
+            var payloadOffset = startingPosition + UInt256.SIZE;
+            var payload = buff.Buffer.Slice(payloadOffset, buff.Buffer.Length - payloadOffset);
+            var payloadBuffer = new AbiDecodeBuffer(payload, Enumerable.Repeat(_info.ArrayItemInfo, itemCount).ToArray());
+            var items = new TItem[itemCount];
+            for (var i = 0; i < itemCount; i++)
             {
-                throw new ArgumentException($"Array input data is invalid: the byte length prefix is {len} which is unlikely to be intended");
-            }
-            var items = new TItem[(int)len];
-            for (var i = 0; i < len; i++)
-            {
-                buffer = _itemEncoder.Decode(buffer, out var item);
+                _itemEncoder.Decode(ref payloadBuffer, out var item);
                 items[i] = item;
             }
             val = items;
-            return buffer;
+
+            buff.IncrementHeadCursor(UInt256.SIZE);
         }
     }
 

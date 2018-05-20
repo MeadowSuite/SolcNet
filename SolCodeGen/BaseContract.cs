@@ -78,7 +78,7 @@ namespace SolCodeGen
             };
         }
 
-        protected string GetCallData(string funcSignature, params IAbiTypeEncoder[] encoders)
+        public static string GetCallData(string funcSignature, params IAbiTypeEncoder[] encoders)
         {
             var funcHash = MethodID.GetMethodID(funcSignature);
             var paramBytes = EncoderUtil.GetBytes(encoders);

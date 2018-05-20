@@ -48,7 +48,7 @@ namespace SolCodeGen.AbiEncoding
             };
 
             // fixed sized bytes elementary types
-            for (var i = 1; i <= 32; i++)
+            for (var i = 1; i <= UInt256.SIZE; i++)
             {
                 dict["bytes" + i] = new AbiTypeInfo("bytes" + i, 
                     typeof(IEnumerable<byte>), 
@@ -69,8 +69,10 @@ namespace SolCodeGen.AbiEncoding
                 for (var i = byteStart; i <= byteEnd; i++)
                 {
                     var bits = i * 8;
-                    dict.Add("int" + bits, new AbiTypeInfo("int" + bits, typeof(TIntType), i));
-                    dict.Add("uint" + bits, new AbiTypeInfo("uint" + bits, typeof(TUIntType), i));
+                    string typeSigned = "int" + bits;
+                    string typeUnsigned = "uint" + bits;
+                    dict.Add(typeSigned, new AbiTypeInfo(typeSigned, typeof(TIntType), i));
+                    dict.Add(typeUnsigned, new AbiTypeInfo(typeUnsigned, typeof(TUIntType), i));
                 }
             }
 
@@ -109,7 +111,7 @@ namespace SolCodeGen.AbiEncoding
                 if (_finiteTypes.TryGetValue(baseName, out var baseInfo))
                 {
                     var arrayType = typeof(IEnumerable<>).MakeGenericType(baseInfo.ClrType);
-                    var info = new AbiTypeInfo(name, arrayType, baseInfo.BaseTypeByteSize, typeCategory, arraySize);
+                    var info = new AbiTypeInfo(name, arrayType, baseInfo.PrimitiveTypeByteSize, typeCategory, arraySize, baseInfo);
                     _cachedTypes[name] = info;
                     return info;
                 }

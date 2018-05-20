@@ -14,9 +14,10 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void Address()
         {
-            var encodedAddr = "00000000000000000000000011f4d0a3c12e86b4b5f39b213f7e19d048276dae".HexToReadOnlySpan();
-            DecoderFactory.Decode("address", ref encodedAddr, out Address address);
-            Assert.Equal(0, encodedAddr.Length);
+            var encodedAddr = "00000000000000000000000011f4d0a3c12e86b4b5f39b213f7e19d048276dae";
+            var buff = new AbiDecodeBuffer(encodedAddr, "address");
+            DecoderFactory.Decode("address", ref buff, out Address address);
+            Assert.Equal(0, buff.HeadCursor.Length);
             Assert.Equal("0x11f4d0A3c12e86B4b5F39B213F7E19D048276DAe".ToLowerInvariant(), address.ToString());
         }
 
@@ -26,7 +27,7 @@ namespace SolCodeGen.Tests.Abi
         public void Address_BadInput()
         {
             
-            var encodedAddr = "00000020000000000000000011f4d0a3c12e86b4b5f39b213f7e19d048276dae".HexToReadOnlySpan();
+            var encodedAddr = "00000020000000000000000011f4d0a3c12e86b4b5f39b213f7e19d048276dae";
             try
             {
                 DecoderFactory.Decode("address", ref encodedAddr, out Address addr);
@@ -35,7 +36,7 @@ namespace SolCodeGen.Tests.Abi
             catch (ArgumentException) { }
             
 
-            var encodedAddr2 = "00000000000000000000000811f4d0a3c12e86b4b5f39b213f7e19d048276dae".HexToReadOnlySpan();
+            var encodedAddr2 = "00000000000000000000000811f4d0a3c12e86b4b5f39b213f7e19d048276dae";
             try
             {
                 DecoderFactory.Decode("address", ref encodedAddr2, out Address addr);
@@ -49,34 +50,47 @@ namespace SolCodeGen.Tests.Abi
         */
 
         [Fact]
-        public void Boolean()
+        public void Boolean_True()
         {
-            var encodedTrue = "0000000000000000000000000000000000000000000000000000000000000001".HexToReadOnlySpan();
-            DecoderFactory.Decode("bool", ref encodedTrue, out bool decodedTrue);
-            Assert.Equal(0, encodedTrue.Length);
+            var encodedTrue = "0000000000000000000000000000000000000000000000000000000000000001";
+            var buff = new AbiDecodeBuffer(encodedTrue, "bool");
+            DecoderFactory.Decode("bool", ref buff, out bool decodedTrue);
+            Assert.Equal(0, buff.HeadCursor.Length);
             Assert.True(decodedTrue);
 
-            var encodedFalse = "0000000000000000000000000000000000000000000000000000000000000000".HexToReadOnlySpan();
-            DecoderFactory.Decode("bool", ref encodedFalse, out bool decodedFalse);
-            Assert.Equal(0, encodedFalse.Length);
+        }
+
+        [Fact]
+        public void Boolean_False()
+        {
+            var encodedFalse = "0000000000000000000000000000000000000000000000000000000000000000";
+            var buff = new AbiDecodeBuffer(encodedFalse, "bool");
+            DecoderFactory.Decode("bool", ref buff, out bool decodedFalse);
+            Assert.Equal(0, buff.HeadCursor.Length);
             Assert.False(decodedFalse);
         }
 
         [Fact]
-        public void Boolean_BadInput()
+        public void Boolean_BadInput_1()
         {
-            var encodedTrue = "0000000000000000000000000000000000000000000000000000000000000021".HexToReadOnlySpan();
+            var encodedTrue = "0000000000000000000000000000000000000000000000000000000000000021";
+            var buff = new AbiDecodeBuffer(encodedTrue, "bool");
             try
             {
-                DecoderFactory.Decode("bool", ref encodedTrue, out bool val);
+                DecoderFactory.Decode("bool", ref buff, out bool val);
                 throw null;
             }
             catch (ArgumentException) { }
+        }
 
-            var encodedTrue2 = "0000000000000000000000000000000000000000000000000000000000000002".HexToReadOnlySpan();
+        [Fact]
+        public void Boolean_BadInput_2()
+        {
+            var encodedTrue = "0000000000000000000000000000000000000000000000000000000000000002";
+            var buff = new AbiDecodeBuffer(encodedTrue, "bool");
             try
             {
-                DecoderFactory.Decode("bool", ref encodedTrue2, out bool val);
+                DecoderFactory.Decode("bool", ref buff, out bool val);
                 throw null;
             }
             catch (ArgumentException) { }
@@ -85,9 +99,10 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void Bytes_M()
         {
-            var encodedBytes22 = "072696e74657220746f6f6b20612067616c6c657920600000000000000000000".HexToReadOnlySpan();
-            DecoderFactory.Decode("bytes22", ref encodedBytes22, out byte[] result);
-            Assert.Equal(0, encodedBytes22.Length);
+            var encodedBytes22 = "072696e74657220746f6f6b20612067616c6c657920600000000000000000000";
+            var buff = new AbiDecodeBuffer(encodedBytes22, "bytes22");
+            DecoderFactory.Decode("bytes22", ref buff, out byte[] result);
+            Assert.Equal(0, buff.HeadCursor.Length);
 
             byte[] expected = HexConverter.HexToBytes("072696e74657220746f6f6b20612067616c6c6579206");
             Assert.Equal(expected, result);
@@ -98,7 +113,7 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void Bytes_M_BadInput()
         {
-            var encodedBytes22 = "072696e74657220746f6f6b20612067616c6c657920600000000040000000000".HexToReadOnlySpan();
+            var encodedBytes22 = "072696e74657220746f6f6b20612067616c6c657920600000000040000000000";
             try
             {
                 DecoderFactory.Decode("bytes22", ref encodedBytes22, out byte[] result);
@@ -111,11 +126,12 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void Bytes()
         {
-            var encodedBytes = "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003d207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970000000".HexToReadOnlySpan();
-            DecoderFactory.Decode("bytes", ref encodedBytes, out byte[] result);
-            Assert.Equal(0, encodedBytes.Length);
+            var encodedBytes = "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003d207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970000000";
+            var buff = new AbiDecodeBuffer(encodedBytes, "bytes");
+            DecoderFactory.Decode("bytes", ref buff, out byte[] result);
+            Assert.Equal(0, buff.HeadCursor.Length);
 
-            byte[] expected = HexConverter.HexToBytes("207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970");
+            byte[] expected = "207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970".HexToBytes();
             Assert.Equal(expected, result);
         }
 
@@ -124,7 +140,7 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void Bytes_BadInput_BadPadding()
         {
-            var encodedBytes = "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003d207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970100000".HexToReadOnlySpan();
+            var encodedBytes = "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003d207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970100000";
             try
             {
                 DecoderFactory.Decode("bytes", ref encodedBytes, out byte[] result);
@@ -137,10 +153,11 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void Bytes_BadInput_BadFixedPrefix ()
         {
-            var encodedBytes = "0000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000003d207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970000000".HexToReadOnlySpan();
+            var encodedBytes = "0000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000003d207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970000000";
+            var buff = new AbiDecodeBuffer(encodedBytes, "bytes");
             try
             {
-                DecoderFactory.Decode("bytes", ref encodedBytes, out byte[] result);
+                DecoderFactory.Decode("bytes", ref buff, out byte[] result);
                 throw null;
             }
             catch (ArgumentException) { }
@@ -149,10 +166,11 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void Bytes_BadInput_BadLengthPrefix()
         {
-            var encodedBytes = "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000010000000000000000000003d207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970000000".HexToReadOnlySpan();
+            var encodedBytes = "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000010000000000000000000003d207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970000000";
+            var buff = new AbiDecodeBuffer(encodedBytes, "bytes");
             try
             {
-                DecoderFactory.Decode("bytes", ref encodedBytes, out byte[] result);
+                DecoderFactory.Decode("bytes", ref buff, out byte[] result);
                 throw null;
             }
             catch (ArgumentException) { }
@@ -161,10 +179,21 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void String()
         {
-            var encodedStr = "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000".HexToReadOnlySpan();
-            DecoderFactory.Decode("string", ref encodedStr, out string result);
-            Assert.Equal(0, encodedStr.Length);
+            var encodedStr = "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000";
+            var buff = new AbiDecodeBuffer(encodedStr, "bool");
+            DecoderFactory.Decode("string", ref buff, out string result);
+            Assert.Equal(0, buff.HeadCursor.Length);
             Assert.Equal("Hello, world!", result);
+        }
+
+        [Fact]
+        public void StringUnicode()
+        {
+            var encodedStr = "00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000028757466383b20342062797465733a20f0a0beb43b20332062797465733a20e28fb020776f726b7321000000000000000000000000000000000000000000000000";
+            var buff = new AbiDecodeBuffer(encodedStr, "string");
+            DecoderFactory.Decode("string", ref buff, out string result);
+            Assert.Equal(0, buff.HeadCursor.Length);
+            Assert.Equal("utf8; 4 bytes: 𠾴; 3 bytes: ⏰ works!", result);
         }
 
         // Zero-bytes padding verification disabled; ganache liters padding with garbage bytes
@@ -172,7 +201,7 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void String_BadInput_BadPadding()
         {
-            var encodedBytes = "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642101000000000000000000000000000000000000".HexToReadOnlySpan();
+            var encodedBytes = "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642101000000000000000000000000000000000000";
             try
             {
                 DecoderFactory.Decode("string", ref encodedBytes, out string result);
@@ -185,10 +214,11 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void String_BadInput_BadFixedPrefix()
         {
-            var encodedBytes = "0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000".HexToReadOnlySpan();
+            var encodedBytes = "0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000";
+            var buff = new AbiDecodeBuffer(encodedBytes, "bool");
             try
             {
-                DecoderFactory.Decode("bytes", ref encodedBytes, out byte[] result);
+                DecoderFactory.Decode("bytes", ref buff, out byte[] result);
                 throw null;
             }
             catch (ArgumentException) { }
@@ -197,10 +227,11 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void String_BadInput_BadLengthPrefix()
         {
-            var encodedBytes = "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000060000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000".HexToReadOnlySpan();
+            var encodedBytes = "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000060000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000";
+            var buff = new AbiDecodeBuffer(encodedBytes, "bytes");
             try
             {
-                DecoderFactory.Decode("bytes", ref encodedBytes, out byte[] result);
+                DecoderFactory.Decode("bytes", ref buff, out byte[] result);
                 throw null;
             }
             catch (ArgumentException) { }
@@ -209,18 +240,20 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void Int24()
         {
-            var encodedNum = "0000000000000000000000000000000000000000000000000000000000012da0".HexToReadOnlySpan();
-            DecoderFactory.Decode("int24", ref encodedNum, out int result);
-            Assert.Equal(0, encodedNum.Length);
+            var encodedNum = "0000000000000000000000000000000000000000000000000000000000012da0";
+            var buff = new AbiDecodeBuffer(encodedNum, "int24");
+            DecoderFactory.Decode("int24", ref buff, out int result);
+            Assert.Equal(0, buff.HeadCursor.Length);
             Assert.Equal(77216, result);
         }
 
         [Fact]
         public void UInt24()
         {
-            var encodedNum = "0000000000000000000000000000000000000000000000000000000000005ba0".HexToReadOnlySpan();
-            DecoderFactory.Decode("uint24", ref encodedNum, out uint result);
-            Assert.Equal(0, encodedNum.Length);
+            var encodedNum = "0000000000000000000000000000000000000000000000000000000000005ba0";
+            var buff = new AbiDecodeBuffer(encodedNum, "uint24");
+            DecoderFactory.Decode("uint24", ref buff, out uint result);
+            Assert.Equal(0, buff.HeadCursor.Length);
             uint expected = 23456;
             Assert.Equal(expected, result);
         }
@@ -228,9 +261,10 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void UInt32()
         {
-            var encodedNum = "00000000000000000000000000000000000000000000000000000000ffff5544".HexToReadOnlySpan();
-            DecoderFactory.Decode("uint32", ref encodedNum, out uint result);
-            Assert.Equal(0, encodedNum.Length);
+            var encodedNum = "00000000000000000000000000000000000000000000000000000000ffff5544";
+            var buff = new AbiDecodeBuffer(encodedNum, "uint32");
+            DecoderFactory.Decode("uint32", ref buff, out uint result);
+            Assert.Equal(0, buff.HeadCursor.Length);
             uint expected = 4294923588;
             Assert.Equal(expected, result);
         }
@@ -240,7 +274,7 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void UInt32_BadInput()
         {
-            var encodedNum = "00000000030000000000000000000000000000000000000000000000ffff5544".HexToReadOnlySpan();
+            var encodedNum = "00000000030000000000000000000000000000000000000000000000ffff5544";
             try
             {
                 DecoderFactory.Decode("uint32", ref encodedNum, out uint result);
@@ -253,9 +287,10 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void Int64DynamicArray()
         {
-            var encodedArr = "00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000011c20000000000000000000000000000000000000000000000007fffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007fffffffffffffff".HexToReadOnlySpan();
-            DecoderFactory.Decode("int64[]", ref encodedArr, out long[] result, EncoderFactory.LoadEncoder("int64", default(long)));
-            Assert.Equal(0, encodedArr.Length);
+            var encodedArr = "00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000011c20000000000000000000000000000000000000000000000007fffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007fffffffffffffff";
+            var buff = new AbiDecodeBuffer(encodedArr, "int64[]");
+            DecoderFactory.Decode("int64[]", ref buff, out long[] result, EncoderFactory.LoadEncoder("int64", default(long)));
+            Assert.Equal(0, buff.HeadCursor.Length);
             long[] expected = new long[] { 1, 4546, long.MaxValue, 0, long.MaxValue };
             Assert.Equal(expected, result);
         }
@@ -264,9 +299,10 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void Int64FixedArray()
         {
-            var encodedArr = "000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000011c20000000000000000000000000000000000000000000000007fffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007fffffffffffffff".HexToReadOnlySpan();
-            DecoderFactory.Decode("int64[5]", ref encodedArr, out long[] result, EncoderFactory.LoadEncoder("int64", default(long)));
-            Assert.Equal(0, encodedArr.Length);
+            var encodedArr = "000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000011c20000000000000000000000000000000000000000000000007fffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007fffffffffffffff";
+            var buff = new AbiDecodeBuffer(encodedArr, "int64[5]");
+            DecoderFactory.Decode("int64[5]", ref buff, out long[] result, EncoderFactory.LoadEncoder("int64", default(long)));
+            Assert.Equal(0, buff.HeadCursor.Length);
             long[] expected = new long[] { 1, 4546, long.MaxValue, 0, long.MaxValue };
             Assert.Equal(expected, result);
         }
@@ -275,11 +311,34 @@ namespace SolCodeGen.Tests.Abi
         [Fact]
         public void UInt8FixedArray()
         {
-            var encodedArr = "00000000000000000000000000000000000000000000000000000000000000070000000000000000000000000000000000000000000000000000000000000026000000000000000000000000000000000000000000000000000000000000009600000000000000000000000000000000000000000000000000000000000000e70000000000000000000000000000000000000000000000000000000000000046".HexToReadOnlySpan();
-            DecoderFactory.Decode("uint8[5]", ref encodedArr, out byte[] result, EncoderFactory.LoadEncoder("uint8", default(byte)));
-            Assert.Equal(0, encodedArr.Length);
+            var encodedArr = "00000000000000000000000000000000000000000000000000000000000000070000000000000000000000000000000000000000000000000000000000000026000000000000000000000000000000000000000000000000000000000000009600000000000000000000000000000000000000000000000000000000000000e70000000000000000000000000000000000000000000000000000000000000046";
+            var buff = new AbiDecodeBuffer(encodedArr, "uint8[5]");
+            DecoderFactory.Decode("uint8[5]", ref buff, out byte[] result, EncoderFactory.LoadEncoder("uint8", default(byte)));
+            Assert.Equal(0, buff.HeadCursor.Length);
             byte[] expected = HexConverter.HexToBytes("072696e746");
             Assert.Equal(expected, result);
+        }
+
+        [Fact]
+        public void FunctionData_MultipleStringParams()
+        {
+            var strP1 = "first string";
+            var strP2 = "asdf";
+            var strP3 = "utf8; 4 bytes: 𠾴; 3 bytes: ⏰ works!";
+
+            var localEncode = "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000c666972737420737472696e67000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000004617364660000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000028757466383b20342062797465733a20f0a0beb43b20332062797465733a20e28fb020776f726b7321000000000000000000000000000000000000000000000000";
+            var wtfnoEncode = "000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000c666972737420737472696e670000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000461736466000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000028757466383b20342062797465733a20f0a0beb43b20332062797465733a20e28fb020776f726b7321000000000000000000000000000000000000000000000000";
+
+            AbiDecodeBuffer buff = new AbiDecodeBuffer(wtfnoEncode, "string", "string", "string");
+
+            DecoderFactory.Decode("string", ref buff, out string ru1);
+            Assert.Equal(strP1, ru1);
+
+            DecoderFactory.Decode("string", ref buff, out string ru2);
+            Assert.Equal(strP2, ru2);
+
+            DecoderFactory.Decode("string", ref buff, out string ru3);
+            Assert.Equal(strP3, ru3);
         }
 
 

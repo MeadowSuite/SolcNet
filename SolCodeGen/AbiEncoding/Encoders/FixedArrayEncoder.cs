@@ -23,7 +23,7 @@ namespace SolCodeGen.AbiEncoding.Encoders
             return len;
         }
 
-        public override Span<byte> Encode(Span<byte> buffer)
+        public override void Encode(ref AbiEncodeBuffer buff)
         {
             if (_info.Category != SolidityTypeCategory.FixedArray)
             {
@@ -39,22 +39,20 @@ namespace SolCodeGen.AbiEncoding.Encoders
             foreach (var item in _val)
             {
                 _itemEncoder.SetValue(item);
-                buffer = _itemEncoder.Encode(buffer);
+                _itemEncoder.Encode(ref buff);
             }
-
-            return buffer;
+            
         }
 
-        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out IEnumerable<TItem> val)
+        public override void Decode(ref AbiDecodeBuffer buff, out IEnumerable<TItem> val)
         {
             var items = new TItem[_info.ArrayLength];
             for(var i = 0; i < items.Length; i++)
             {
-                buffer = _itemEncoder.Decode(buffer, out var item);
+                _itemEncoder.Decode(ref buff, out var item);
                 items[i] = item;
             }
             val = items;
-            return buffer;
         }
 
     }

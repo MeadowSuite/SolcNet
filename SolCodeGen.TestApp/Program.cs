@@ -2,10 +2,13 @@
 using SolcNet;
 using SolcNet.DataDescription.Input;
 using SolcNet.DataDescription.Output;
+using SolCodeGen.AbiEncoding;
 using SolCodeGen.JsonRpc;
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace SolCodeGen.TestApp
@@ -48,6 +51,7 @@ namespace SolCodeGen.TestApp
                 Gas = 5_000_000,
             }, accounts[3]);
 
+            
             var echoStringResult = await exContract.echoString("hello world").Call();
 
             var echoManyResult = await exContract.echoMany(accounts[9], 12345, "sdkfjsdlkfjsdofjdslkfjksdlkfldlskjfklsdjdlkfskldkfldkskfmfklsmkldfmskdlfmklsdmfklsdlmldklfskflksdmfksdklfsldflksdmflksmklfmdkmfdmfklsmdlkfmlsdmfklsdmflksmdlkfsdklfkllfslkdfksmkldfmklsdmklfdlkfmskldmkl").Call();
@@ -63,6 +67,14 @@ namespace SolCodeGen.TestApp
             var echoArrayStatc = await exContract.echoArrayStatic(new uint[] { 123, 0, 99999, 3333333, 16777215 }).Call();
 
             var echoArrayDynamic = await exContract.echoArrayDynamic(new uint[] { 123, 0, 99999, 3333333, 16777215 }).Call();
+
+            var echoMultipleStatic = await exContract.echoMultipleStatic(1234, true, "0x40515114eEa1497D753659DFF85910F838c6B234").Call();
+
+            var echoMultipleDynamic = await exContract.echoMultipleDynamic("first string", "asdf", "utf8; 4 bytes: 𠾴; 3 bytes: ⏰ works!").Call();
+
+            var boat = await exContract.boat(true, "my string", -11118,
+                new Address[] { "0x98E4625b2d7424C403B46366150AB28Df4063408", "0x40515114eEa1497D753659DFF85910F838c6B234", "0xDf0270A6BFf43e7A3Fd92372DfB549292D683D22" },
+                99, new ulong[] { 9, 0, ulong.MaxValue }).Call();
 
             return;
 

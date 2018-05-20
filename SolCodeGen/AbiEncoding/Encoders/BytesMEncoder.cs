@@ -11,10 +11,10 @@ namespace SolCodeGen.AbiEncoding.Encoders
             {
                 throw UnsupportedTypeException();
             }
-            return 32;
+            return UInt256.SIZE;
         }
 
-        public override Span<byte> Encode(Span<byte> buffer)
+        public override void Encode(ref AbiEncodeBuffer buff)
         {
             if (_info.Category != SolidityTypeCategory.BytesM)
             {
@@ -26,31 +26,31 @@ namespace SolCodeGen.AbiEncoding.Encoders
             int i = 0;
             foreach (byte b in _val)
             {
-                buffer[i++] = b;
+                buff.HeadCursor[i++] = b;
             }
-            return buffer.Slice(32);
+            buff.IncrementHeadCursor(UInt256.SIZE);
         }
 
-        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out IEnumerable<byte> val)
+        public override void Decode(ref AbiDecodeBuffer buff, out IEnumerable<byte> val)
         {
             var bytes = new byte[_info.ArrayLength];
             for (var i = 0; i < bytes.Length; i++)
             {
-                bytes[i] = buffer[i];
+                bytes[i] = buff.HeadCursor[i];
             }
             // data validity check: all bytes after the fixed M amount should be zero
             // Disabled - ganache liters this padding with garbage bytes
             /*
-            for (var i = bytes.Length; i < 32; i++)
+            for (var i = bytes.Length; i < UInt256.SIZE; i++)
             {
                 if (buffer[i] != 0)
                 {
-                    throw new ArgumentException($"Invalid {_info.SolidityName} input data; should be {_info.ArrayLength} bytes padded {32 - _info.ArrayLength} zero-bytes; received: " + buffer.Slice(0, 32).ToHexString());
+                    throw new ArgumentException($"Invalid {_info.SolidityName} input data; should be {_info.ArrayLength} bytes padded {UInt256.SIZE - _info.ArrayLength} zero-bytes; received: " + buffer.Slice(0, 32).ToHexString());
                 }
             }
             */
             val = bytes;
-            return buffer.Slice(32);
+            buff.IncrementHeadCursor(UInt256.SIZE);
         }
 
     }

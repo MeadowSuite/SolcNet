@@ -16,54 +16,58 @@ namespace SolCodeGen.AbiEncoding.Encoders
 
             // 32 byte length prefix + byte array length + 32 byte remainder padding
             var len = _val.Count();
-            return (32 * 2) + PadLength(len, 32);
+            return (UInt256.SIZE * 2) + PadLength(len, UInt256.SIZE);
         }
 
-        public override Span<byte> Encode(Span<byte> buffer)
+        public override void Encode(ref AbiEncodeBuffer buff)
         {
             if (_info.Category != SolidityTypeCategory.Bytes)
             {
                 throw UnsupportedTypeException();
             }
+
             // bytes, of length k(which is assumed to be of type uint256):
             // enc(X) = enc(k) pad_right(X), i.e.the number of bytes is encoded as a uint256 
             // followed by the actual value of X as a byte sequence, followed  by the minimum
             // number of zero-bytes such that len(enc(X)) is a multiple of 32.
             // write length prefix
+
+
+            // write data offset position into header
+            int offset = buff.HeadLength + buff.DataAreaCursorPosition;
+            UInt256Encoder.Instance.Encode(buff.HeadCursor, offset);
+            buff.IncrementHeadCursor(UInt256.SIZE);
+
+            // write payload len into data buffer          
             int len = _val.Count();
-            buffer = UInt256Encoder.Encode(buffer, 32); // starting position (immediately after this 32-byte pointer)
-            buffer = UInt256Encoder.Encode(buffer, len);
+            UInt256Encoder.Instance.Encode(buff.DataAreaCursor, len);
+            buff.IncrementDataCursor(UInt256.SIZE);
+
+            // write payload into data buffer
             int i = 0;
             foreach (byte b in _val)
             {
-                buffer[i++] = b;
+                buff.DataAreaCursor[i++] = b;
             }
-            int padded = PadLength(len, 32);
-            return buffer.Slice(padded);
+            int padded = PadLength(len, UInt256.SIZE);
+            buff.IncrementDataCursor(padded);
         }
 
-        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<byte> buffer, out IEnumerable<byte> val)
+        public override void Decode(ref AbiDecodeBuffer buff, out IEnumerable<byte> val)
         {
-            // Obtain our starting position for our data.
-            buffer = UInt256Encoder.Decode(buffer, out var startingPosition);
+            // Read the next header int which is the offset to the start of the data
+            // in the data payload area.
+            UInt256Encoder.Instance.Decode(buff.HeadCursor, out int startingPosition);
 
-            // We advanced our pointer 32-bytes already, so we account for that
-            startingPosition -= 32;
+            // The first int in our offset of data area is the length of the rest of the payload.
+            var encodedLength = buff.Buffer.Slice(startingPosition, UInt256.SIZE);
+            UInt256Encoder.Instance.Decode(encodedLength, out int byteLen);
 
-            // We advance the pointer to our starting position
-            buffer = buffer.Slice((int)startingPosition);
-
-            // Decode our buffer length
-            buffer = UInt256Encoder.Decode(buffer, out var len);
-            if (len > int.MaxValue)
-            {
-                throw new ArgumentException($"Bytes input data is invalid: the byte length prefix is {len} which is unlikely to be intended");
-            }
-
-            var bytes = new byte[(int)len];
-            buffer.Slice(0, bytes.Length).CopyTo(bytes);
+            // Read the actual payload from the data area
+            var payload = buff.Buffer.Slice(startingPosition + UInt256.SIZE, byteLen);
+            var bytes = payload.ToArray();
+            int bodyLen = PadLength(bytes.Length, UInt256.SIZE);
             val = bytes;
-            int bodyLen = PadLength(bytes.Length, 32);
 
             // data validity check: should be right-padded with zero bytes
             // Disabled - ganache liters this padding with garbage bytes
@@ -72,12 +76,12 @@ namespace SolCodeGen.AbiEncoding.Encoders
             {
                 if (buffer[i] != 0)
                 {
-                    throw new ArgumentException($"Invalid bytes input data; should be {bytes.Length} followed by {bodyLen - bytes.Length} zero-bytes");
+                    throw new ArgumentException($"Invalid string input data; should be {bytes.Length} followed by {bodyLen - bytes.Length} zero-bytes");
                 }
             }
             */
 
-            return buffer.Slice(bodyLen);
+            buff.IncrementHeadCursor(UInt256.SIZE);
         }
 
     }

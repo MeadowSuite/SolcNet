@@ -25,7 +25,7 @@ namespace SolCodeGen.AbiEncoding
         /// The solidity types 'string' and 'bytes' are considered dynamic arrays
         /// of bytes where this base size is 1.
         /// </summary>
-        public readonly int BaseTypeByteSize;
+        public readonly int PrimitiveTypeByteSize;
 
         /// <summary>
         /// The length of static sized array types, for dynamic arrays this is zero.
@@ -48,7 +48,7 @@ namespace SolCodeGen.AbiEncoding
             SolidityName = solidityName;
             ClrType = clrType;
             ClrTypeName = ClrType.FullName;
-            BaseTypeByteSize = baseTypeByteSize;
+            PrimitiveTypeByteSize = baseTypeByteSize;
             Category = category;
             ArrayLength = arrayTypeLength;
             ArrayItemInfo = arrayItemInfo;
@@ -72,6 +72,11 @@ namespace SolCodeGen.AbiEncoding
         public override string ToString()
         {
             return SolidityName;
+        }
+
+        public static implicit operator AbiTypeInfo(string solidityType)
+        {
+            return AbiTypeMap.GetSolidityTypeInfo(solidityType);
         }
     }
 
