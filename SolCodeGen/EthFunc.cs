@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SolCodeGen
 {
+
     public class EthFunc<TReturn>
     {
         protected BaseContract _contract;
@@ -26,6 +27,9 @@ namespace SolCodeGen
             return SendTransaction(null).GetAwaiter();
         }
 
+        /// <summary>
+        /// Executes a new message call immediately without creating a transaction on the block chain.
+        /// </summary>
         public async Task<TReturn> Call(SendParams sendParams = null)
         {
             var callResult = await _contract.JsonRpcClient.Call(_callData, _contract.GetSendParams(sendParams));
@@ -40,12 +44,16 @@ namespace SolCodeGen
             return result;
         }
 
-        public async Task<TransactionReceipt> SendTransaction(SendParams sendParams = null)
+        /// <summary>
+        /// Creates new message call transaction on the block chain.
+        /// </summary>
+        public async virtual Task<TransactionReceipt> SendTransaction(SendParams sendParams = null)
         {
             var transactionHash = await _contract.JsonRpcClient.SendTransaction(_callData, _contract.GetSendParams(sendParams));
             var receipt = await _contract.JsonRpcClient.GetTransactionReceipt(transactionHash);
             return receipt;
         }
+
     }
 
 
@@ -63,8 +71,28 @@ namespace SolCodeGen
      *  https://referencesource.microsoft.com/#mscorlib/system/action.cs,29
      */
 
-    public static class EthFunc
+    public class EthFunc : EthFunc<object>
     {
+        public EthFunc(BaseContract contract, string callData, ParseResponseDelegate parseResponse) 
+            : base(contract, callData, parseResponse)
+        {
+        }
+
+        public new Task Call(SendParams sendParams = null)
+        {
+            return base.Call(sendParams);
+        }
+
+        public new Task<TransactionReceipt> SendTransaction(SendParams sendParams = null)
+        {
+            return base.SendTransaction(sendParams);
+        }
+
+        public static EthFunc Create(
+            BaseContract contract, string callData)
+        {
+            return new EthFunc(contract, callData, _ => null);
+        }
 
         public static EthFunc<T1> Create<T1>(
             BaseContract contract, string callData,

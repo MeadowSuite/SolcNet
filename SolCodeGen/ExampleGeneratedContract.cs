@@ -9,23 +9,17 @@ using System.Threading.Tasks;
 
 namespace SolCodeGen
 {
-    public partial class ExampleGeneratedContract : BaseContract
+    public class ExampleGeneratedContract : BaseContract
     {
-        private ExampleGeneratedContract(Uri server, Address address, Address defaultFromAccount) 
-            : base(server, address, defaultFromAccount)
-        {
-
-        }
-
         private ExampleGeneratedContract(JsonRpcClient rpcClient, Address address, Address defaultFromAccount)
             : base(rpcClient, address, defaultFromAccount)
         {
 
         }
 
-        public static ExampleGeneratedContract At(Uri server, Address address, Address defaultFromAccount)
+        public static ExampleGeneratedContract At(JsonRpcClient rpcClient, Address address, Address defaultFromAccount)
         {
-            return new ExampleGeneratedContract(server, address, defaultFromAccount);
+            return new ExampleGeneratedContract(rpcClient, address, defaultFromAccount);
         }
 
         public static async Task<ExampleGeneratedContract> New(
@@ -40,7 +34,7 @@ namespace SolCodeGen
                 EncoderFactory.LoadEncoder("uint256", args._last)
             );
 
-            var contractAddr = await ContractFactory.Deploy(rpcClient, BYTECODE.Value, encodedParams, sendParams);
+            var contractAddr = await ContractFactory.Deploy(rpcClient, BYTECODE_HEX.HexToReadOnlyMemory(), encodedParams, sendParams);
             return new ExampleGeneratedContract(rpcClient, contractAddr, defaultFromAccount);
         }
 
@@ -49,12 +43,11 @@ namespace SolCodeGen
             SendParams sendParams,
             Address defaultFromAccount)
         {
-            var contractAddr = await ContractFactory.Deploy(rpcClient, BYTECODE.Value, sendParams);
+            var contractAddr = await ContractFactory.Deploy(rpcClient, BYTECODE_HEX.HexToReadOnlyMemory(), sendParams);
             return new ExampleGeneratedContract(rpcClient, contractAddr, defaultFromAccount);
         }
 
-        public EthFunc<string> givenName(
-            SendParams sendParams = null, CallType callType = CallType.Transaction)
+        public EthFunc<string> givenName()
         {
             var callData = GetCallData("givenName()");
 
@@ -164,15 +157,16 @@ namespace SolCodeGen
                 "string", DecoderFactory.Decode);
         }
 
-        public override ReadOnlyMemory<byte> Bytecode => BYTECODE.Value;
-        public override Abi Abi => ABI.Value;
-        public override Doc DevDoc => DEV_DOC.Value;
-        public override Doc UserDoc => USER_DOC.Value;
+        public EthFunc noopFunc()
+        {
+            var callData = GetCallData("noopFunc()");
+            return EthFunc.Create(this, callData);
+        }
 
-        public static readonly Lazy<ReadOnlyMemory<byte>> BYTECODE = new Lazy<ReadOnlyMemory<byte>>(() => BYTECODE_HEX.HexToReadOnlyMemory());
-        public static readonly Lazy<Abi> ABI = new Lazy<Abi>(() => ABI_JSON);
-        public static readonly Lazy<Doc> DEV_DOC = new Lazy<Doc>(() => DEV_DOC_JSON);
-        public static readonly Lazy<Doc> USER_DOC = new Lazy<Doc>(() => USER_DOC_JSON);
+        public override Lazy<ReadOnlyMemory<byte>> Bytecode { get; } = new Lazy<ReadOnlyMemory<byte>>(() => BYTECODE_HEX.HexToReadOnlyMemory());
+        public override Lazy<Abi> Abi { get; } = new Lazy<Abi>(() => ABI_JSON);
+        public override Lazy<Doc> DevDoc { get; } = new Lazy<Doc>(() => DEV_DOC_JSON);
+        public override Lazy<Doc> UserDoc { get; } = new Lazy<Doc>(() => USER_DOC_JSON);
 
         public static /*readonly*/ string BYTECODE_HEX = "TODO...";
         public static /*readonly*/ string ABI_JSON = "TODO";

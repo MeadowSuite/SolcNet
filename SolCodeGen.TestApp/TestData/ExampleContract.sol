@@ -89,6 +89,10 @@ contract ExampleContract {
         return _num;
     }
 
+    function noopFunc() public {
+        
+    }
+
     /// @notice The fallback function
     function() public {
 

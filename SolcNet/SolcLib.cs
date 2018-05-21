@@ -67,6 +67,13 @@ namespace SolcNet
             return CompileInputDescriptionJson(jsonStr, errorHandling);
         }
 
+        /// <param name="outputSelection">Defaults to all output types if not specified</param>
+        public OutputDescription Compile(string contractFilePaths,
+            OutputType[] outputSelection,
+            CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError)
+        {
+            return Compile(new[] { contractFilePaths }, outputSelection ?? OutputTypes.All, errorHandling);
+        }
 
         /// <param name="outputSelection">Defaults to all output types if not specified</param>
         public OutputDescription Compile(string contractFilePaths,

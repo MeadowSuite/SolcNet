@@ -28,27 +28,15 @@ namespace SolCodeGen
         public UInt256? GasPrice { get; set; }
     }
 
-    public enum CallType
-    {
-        /// <summary>
-        /// Creates new message call transaction on the block chain.
-        /// </summary>
-        Transaction,
-        /// <summary>
-        /// Executes a new message call immediately without creating a transaction on the block chain.
-        /// </summary>
-        Call
-    }
-
     public abstract class BaseContract
     {
         public readonly Address ContractAddress;
         public readonly Address DefaultFromAccount;
 
-        public abstract Abi Abi { get; }
-        public abstract Doc DevDoc { get; }
-        public abstract Doc UserDoc { get; }
-        public abstract ReadOnlyMemory<byte> Bytecode { get; }
+        public abstract Lazy<Abi> Abi { get; }
+        public abstract Lazy<Doc> DevDoc { get; }
+        public abstract Lazy<Doc> UserDoc { get; }
+        public abstract Lazy<ReadOnlyMemory<byte>> Bytecode { get; }
 
         public JsonRpcClient JsonRpcClient { get; protected set; }
 

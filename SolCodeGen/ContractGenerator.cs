@@ -42,14 +42,15 @@ namespace SolCodeGen
         string GenerateNamespaceContainer()
         {
             return $@"
+                using SolcNet.DataDescription.Output;
+                using SolCodeGen;
+                using SolCodeGen.AbiEncoding;
+                using SolCodeGen.AbiEncoding.Encoders;
+                using SolCodeGen.JsonRpc;
                 using System;
                 using System.Collections.Generic;
-                using System.Globalization;
                 using System.Linq;
-                using System.Numerics;
-                using System.Text;
                 using System.Threading.Tasks;
-                using SolCodeGen;
 
                 namespace GeneratedContracts
                 {{
@@ -63,6 +64,21 @@ namespace SolCodeGen
             return $@"
                 public class {_name} : BaseContract
                 {{
+
+                    public override Lazy<ReadOnlyMemory<byte>> Bytecode {{ get; }} = new Lazy<ReadOnlyMemory<byte>>(() => BYTECODE_HEX.HexToReadOnlyMemory());
+                    public override Lazy<Abi> Abi {{ get; }} = new Lazy<Abi>(() => ABI_JSON);
+                    public override Lazy<Doc> DevDoc {{ get; }} = new Lazy<Doc>(() => DEV_DOC_JSON);
+                    public override Lazy<Doc> UserDoc {{ get; }} = new Lazy<Doc>(() => USER_DOC_JSON);
+
+                    public const string BYTECODE_HEX = ""{_contract.Evm.Bytecode.Object.ToHexString()}"";
+                    public const string ABI_JSON = """";
+                    public const string DEV_DOC_JSON = """";
+                    public const string USER_DOC_JSON = """";
+
+                    private {_name}(JsonRpcClient rpcClient, Address address, Address defaultFromAccount)
+                        : base(rpcClient, address, defaultFromAccount)
+                    {{  }}
+
                     {GenerateClassMembers()}
                 }}
             ";
@@ -92,24 +108,133 @@ namespace SolCodeGen
 
         string GenerateConstructor(Abi constructorAbi)
         {
-            return $@"
-                public {_name}({GenerateParameters(constructorAbi.Inputs)})
-                {{
-                    
+            string inputConstructorArg = string.Empty;
+            string inputEncoders = string.Empty;
+            bool hasInputs = constructorAbi.Inputs.Length > 0;
+            if (hasInputs)
+            {
+                var inputs = GenerateInputs(constructorAbi.Inputs);
+                if (inputs.Length == 1)
+                {
+                    inputConstructorArg = GenerateInputString(inputs) + ", ";
+                }
+                else if (inputs.Length > 1)
+                {
+                    inputConstructorArg = "(" + GenerateInputString(inputs) + ") args, ";
+                }
 
+                var encoderLines = new string[inputs.Length];
+                if (inputs.Length > 1)
+                {
+                    for (var i = 0; i < inputs.Length; i++)
+                    {
+                        encoderLines[i] = $"EncoderFactory.LoadEncoder(\"{constructorAbi.Inputs[i].Type}\", args.{inputs[i].Name})";
+                    }
+                    inputEncoders = string.Join(", ", encoderLines);
+                }
+                else
+                {
+                    inputEncoders = $"EncoderFactory.LoadEncoder(\"{constructorAbi.Inputs[0].Type}\", {inputs[0].Name})";
+                }
+            }
+
+            return $@"
+                public static {_name} At(JsonRpcClient rpcClient, Address address, Address defaultFromAccount)
+                {{
+                    return new {_name}(rpcClient, address, defaultFromAccount);
+                }}
+
+                public static async Task<{_name}> New(
+                    JsonRpcClient rpcClient, 
+                    {inputConstructorArg}
+                    SendParams sendParams,
+                    Address defaultFromAccount)
+                {{
+                    var encodedParams = EncoderUtil.GetBytes(
+                        {inputEncoders}
+                    );
+
+                    var contractAddr = await ContractFactory.Deploy(rpcClient, BYTECODE_HEX.HexToReadOnlyMemory(), encodedParams, sendParams);
+                    return new {_name}(rpcClient, contractAddr, defaultFromAccount);
                 }}
             ";
         }
 
         string GenerateFunction(Abi methodAbi)
         {
-            var returnType = methodAbi.Outputs.Any() ? $"Task<({GenerateOutputType(methodAbi.Outputs)})>" : "Task";
+            var callDataParams = new List<string>();
+         
+            string functionSig = GetFunctionSignature(methodAbi);
+            callDataParams.Add($"\"{functionSig}\"");
+
+            string inputConstructorArg = string.Empty;
+            bool hasInputs = methodAbi.Inputs.Length > 0;
+            if (hasInputs)
+            {
+                var inputs = GenerateInputs(methodAbi.Inputs);
+                inputConstructorArg = GenerateInputString(inputs);
+
+                for (var i = 0; i < inputs.Length; i++)
+                {
+                    var encoderLine = $"EncoderFactory.LoadEncoder(\"{methodAbi.Inputs[i].Type}\", {inputs[i].Name})";
+                    callDataParams.Add(encoderLine);
+                }
+            }
+
+            string callDataString = string.Join(", ", callDataParams);
+
+            var outputs = GenerateOutputs(methodAbi.Outputs);
+            string outputParams = GenerateOutputString(outputs);
+            string outputClrTypes = string.Empty;
+            if (outputs.Length > 0)
+            {
+                outputClrTypes = "<" + string.Join(", ", outputs.Select(s => s.Type)) + ">";
+            }
+            string returnType;
+            if (outputs.Length == 0)
+            {
+                returnType = string.Empty;
+            }
+            else if (outputs.Length == 1)
+            {
+                returnType = $"<{outputs[0].Type}>";
+            }
+            else
+            {
+                returnType = $"<({outputParams})>";
+            }
+
+            string[] decoderParams = new string[outputs.Length];
+            for(var i = 0; i < outputs.Length; i++)
+            {
+                string decoder;
+                if (outputs[i].AbiType.IsArrayType)
+                {
+                    decoder = $"DecoderFactory.GetArrayDecoder(EncoderFactory.LoadEncoder(\"{outputs[i].AbiType.ArrayItemInfo.SolidityName}\", default({outputs[i].AbiType.ArrayItemInfo.ClrTypeName})))";
+                }
+                else
+                {
+                    decoder = "DecoderFactory.Decode";
+                }
+                decoderParams[i] = $"\"{methodAbi.Outputs[i].Type}\", {decoder}";
+            }
+
+            string decoderStr;
+            if (outputs.Length > 0)
+            {
+                decoderStr = "this, callData, " + string.Join(", ", decoderParams);
+            }
+            else
+            {
+                decoderStr = "this, callData";
+            }
 
             return $@"
-                public {returnType} {methodAbi.Name}({GenerateParameters(methodAbi.Inputs)})
+                public EthFunc{returnType} {methodAbi.Name}({inputConstructorArg})
                 {{
-                    
+                    var callData = GetCallData({callDataString});
 
+                    return EthFunc.Create{outputClrTypes}({decoderStr});
                 }}
             ";
         }
@@ -121,7 +246,8 @@ namespace SolCodeGen
 
         string GenerateEvent(Abi eventAbi)
         {
-            var parameters = GenerateParameters(eventAbi.Inputs);
+            return string.Empty;
+            var parameters = GenerateInputs(eventAbi.Inputs);
 
             return $@"
                 public class Event_{eventAbi.Name} : EventLog<({parameters})>
@@ -133,32 +259,72 @@ namespace SolCodeGen
             ";
         }
 
-        string GenerateParameters(Input[] inputs)
+        string GetFunctionSignature(Abi methodAbi)
         {
-            string[] items = new string[inputs.Length];
+            return $"{methodAbi.Name}({string.Join(",", methodAbi.Inputs.Select(i => i.Type))})";
+        }
+
+        (string Name, string Type, AbiTypeInfo abiType)[] GenerateInputs(Input[] inputs)
+        {
+            (string, string, AbiTypeInfo)[] items = new (string, string, AbiTypeInfo)[inputs.Length];
             int unnamed = 0;
             for (var i = 0; i < items.Length; i++)
             {
                 var input = inputs[i];
-                var type = AbiTypeMap.SolidityTypeToClrTypeString(input.Type);
+                var abiType = AbiTypeMap.GetSolidityTypeInfo(input.Type);
+                var type = abiType.ClrTypeName;
                 var name = string.IsNullOrEmpty(input.Name) ? $"unamed{unnamed++}" : input.Name;
-                items[i] = type + " " + name;
+                items[i] = (name, type, abiType);
+            }
+            return items;
+        }
+
+        string GenerateInputString((string Name, string Type, AbiTypeInfo AbiType)[] inputs)
+        {
+            string[] items = new string[inputs.Length];
+            for (var i = 0; i < items.Length; i++)
+            {
+                items[i] = inputs[i].Type + " " + inputs[i].Name;
             }
             return string.Join(", ", items);
         }
 
-        string GenerateOutputType(Output[] outputs)
+        string GenerateInputString(Input[] inputs)
         {
-            string[] items = new string[outputs.Length];
+            var p = GenerateInputs(inputs);
+            return GenerateInputString(p);
+        }
+
+        (string Name, string Type, AbiTypeInfo AbiType)[] GenerateOutputs(Output[] outputs)
+        {
+            (string, string, AbiTypeInfo)[] items = new(string, string, AbiTypeInfo)[outputs.Length];
             int unnamed = 0;
             for (var i = 0; i < items.Length; i++)
             {
                 var output = outputs[i];
-                var type = AbiTypeMap.SolidityTypeToClrTypeString(output.Type);
+                var abiType = AbiTypeMap.GetSolidityTypeInfo(output.Type);
+                var type = abiType.ClrTypeName;
                 var name = string.IsNullOrEmpty(output.Name) ? $"unamed{unnamed++}" : output.Name;
-                items[i] = type + " " + name;
+                items[i] = (name, type, abiType);
+            }
+            return items;
+        }
+
+
+        string GenerateOutputString((string Name, string Type, AbiTypeInfo abiType)[] outputs)
+        {
+            string[] items = new string[outputs.Length];
+            for (var i = 0; i < items.Length; i++)
+            {
+                items[i] = outputs[i].Type + " " + outputs[i].Name;
             }
             return string.Join(", ", items);
+        }
+
+        string GenerateOutputString(Output[] outputs)
+        {
+            var p = GenerateOutputs(outputs);
+            return GenerateOutputString(p);
         }
 
         string GenerateFunctionSignature(Abi abiItem)

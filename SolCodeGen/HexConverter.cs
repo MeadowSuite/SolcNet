@@ -367,6 +367,10 @@ namespace SolCodeGen
             StripHexPrefix(ref str);
             ReadOnlySpan<char> strSpan = str.AsSpan();
             var byteArr = new byte[strSpan.Length / 2];
+            if (byteArr.Length == 0)
+            {
+                return byteArr;
+            }
             Span<byte> bytes = byteArr;
             HexToSpan(strSpan, bytes);
             return byteArr;
