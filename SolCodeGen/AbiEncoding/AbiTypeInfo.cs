@@ -37,6 +37,9 @@ namespace SolCodeGen.AbiEncoding
 
         public bool IsArrayType => Category == SolidityTypeCategory.DynamicArray || Category == SolidityTypeCategory.FixedArray;
 
+        public bool IsStaticType => Category == SolidityTypeCategory.Elementary || Category == SolidityTypeCategory.BytesM;
+        public bool IsDynamicType => !IsStaticType;
+
         /// <summary>
         /// The elementary/base value of an array time. Null for non-array types.
         /// </summary>

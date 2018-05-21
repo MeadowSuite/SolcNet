@@ -9,8 +9,14 @@ namespace SolcNet.DataDescription.Output
         /// <summary>
         /// The bytecode as a hex string.
         /// </summary>
-        [JsonProperty("object"), JsonConverter(typeof(HexStringConverter))]
-        public byte[] Object { get; set; }
+        [JsonProperty("object")]
+        public string Object { get; set; }
+
+        [JsonIgnore]
+        byte[] _objectBytes;
+
+        [JsonIgnore]
+        public byte[] ObjectBytes => _objectBytes ?? (_objectBytes = EncodingUtils.HexToBytes(Object));
 
         /// <summary>
         /// Opcodes list (string)

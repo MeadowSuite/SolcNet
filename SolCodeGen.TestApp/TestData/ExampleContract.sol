@@ -13,6 +13,8 @@ contract ExampleContract {
     /// @notice A test event
     event TestEvent(address indexed _addr, uint64 indexed _id, uint _val);
 
+    event EmptyEvent();
+
 	string public givenName;
 	bool public enabledThing;
 	uint256 public last;

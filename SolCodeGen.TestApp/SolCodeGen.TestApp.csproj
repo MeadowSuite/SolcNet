@@ -7,13 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TestData\Crowdsale.sol" />
+    <None Remove="TestData\ERC20.sol" />
+    <None Remove="TestData\ERC20Basic.sol" />
     <None Remove="TestData\ExampleContract.sol" />
     <None Remove="TestData\StandardBurnableToken.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="TestData\Crowdsale.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\ERC20.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\ERC20Basic.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestData\ExampleContract.sol">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\StandardBurnableToken.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -24,6 +36,48 @@
     <ProjectReference Include="..\SolcNet.OpenZeppelinSource\SolcNet.OpenZeppelinSource.csproj" />
     <ProjectReference Include="..\SolcNet\SolcNet.csproj" />
     <ProjectReference Include="..\SolCodeGen\SolCodeGen.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TestData\BasicToken.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\CappedCrowdsale.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\FinalizableCrowdsale.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\IndividuallyCappedCrowdsale.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\MintableToken.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\MintedCrowdsale.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Ownable.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\RefundableCrowdsale.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\RefundVault.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\SafeMath.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\SampleCrowdsale.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\StandardToken.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TimedCrowdsale.sol">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

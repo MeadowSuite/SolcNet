@@ -70,14 +70,19 @@ namespace SolCodeGen
                     public override Lazy<Doc> DevDoc {{ get; }} = new Lazy<Doc>(() => DEV_DOC_JSON);
                     public override Lazy<Doc> UserDoc {{ get; }} = new Lazy<Doc>(() => USER_DOC_JSON);
 
-                    public const string BYTECODE_HEX = ""{_contract.Evm.Bytecode.Object.ToHexString()}"";
-                    public const string ABI_JSON = """";
+                    public const string BYTECODE_HEX = ""{_contract.Evm.Bytecode.Object}"";
+                    public const string ABI_JSON = ""{_contract.AbiJsonString.Replace("\"", "\\\"")}"";
                     public const string DEV_DOC_JSON = """";
                     public const string USER_DOC_JSON = """";
 
                     private {_name}(JsonRpcClient rpcClient, Address address, Address defaultFromAccount)
                         : base(rpcClient, address, defaultFromAccount)
                     {{  }}
+
+                    public static {_name} At(JsonRpcClient rpcClient, Address address, Address defaultFromAccount)
+                    {{
+                        return new {_name}(rpcClient, address, defaultFromAccount);
+                    }}
 
                     {GenerateClassMembers()}
                 }}
@@ -139,11 +144,6 @@ namespace SolCodeGen
             }
 
             return $@"
-                public static {_name} At(JsonRpcClient rpcClient, Address address, Address defaultFromAccount)
-                {{
-                    return new {_name}(rpcClient, address, defaultFromAccount);
-                }}
-
                 public static async Task<{_name}> New(
                     JsonRpcClient rpcClient, 
                     {inputConstructorArg}
@@ -246,14 +246,53 @@ namespace SolCodeGen
 
         string GenerateEvent(Abi eventAbi)
         {
-            return string.Empty;
-            var parameters = GenerateInputs(eventAbi.Inputs);
+            var inputs = GenerateInputs(eventAbi.Inputs);
+            string[] propertyLines = new string[eventAbi.Inputs.Length];
+            string[] paramArgs = new string[eventAbi.Inputs.Length];
+            string[] propAssignmentLines = new string[eventAbi.Inputs.Length];
+            string[] logBoxArgs = new string[eventAbi.Inputs.Length];
+
+            for (var i = 0; i < eventAbi.Inputs.Length; i++)
+            {
+                string clrType;
+                if (inputs[i].AbiType.IsDynamicType)
+                {
+                    clrType = typeof(Hash).FullName;
+                }
+                else
+                {
+                    clrType = inputs[i].Type;
+                }
+                propertyLines[i] = $"public readonly (string Name, string Type, bool Indexed, {clrType} Value) {eventAbi.Inputs[i].Name};";
+                paramArgs[i] = $"{clrType} _{eventAbi.Inputs[i].Name}";
+                propAssignmentLines[i] = $"{eventAbi.Inputs[i].Name} = (\"{eventAbi.Inputs[i].Name}\", \"{eventAbi.Inputs[i].Type}\", {eventAbi.Inputs[i].Indexed.Value.ToString().ToLowerInvariant()}, _{eventAbi.Inputs[i].Name});";
+                logBoxArgs[i] = $"Box({eventAbi.Inputs[i].Name})";
+            }
+
+            string propertyLinesString = string.Join(Environment.NewLine, propertyLines);
+            string paramArgsString = string.Empty;
+            if (paramArgs.Length > 0)
+            {
+                paramArgsString = ", " + string.Join(", ", paramArgs);
+            }
+            string propAssignmentString = string.Join(Environment.NewLine, propAssignmentLines);
+            string logBoxArgString = string.Join(", ", logBoxArgs);
 
             return $@"
-                public class Event_{eventAbi.Name} : EventLog<({parameters})>
+                public class Event_{eventAbi.Name} : EventLog
                 {{
-                    public Event_{eventAbi.Name}(({parameters}) logData, EventLog eventLog) : base(logData, eventLog)
+                    public override string EventName {{ get; }} = ""{eventAbi.Name}"";
+
+                    {propertyLinesString}
+
+                    public Event_{eventAbi.Name}(
+                        Address address, Hash? blockHash, long? blockNumber, long? logIndex, Hash? transactionHash
+                        {paramArgsString})
+                        : base(address, blockHash, blockNumber, logIndex, transactionHash)
                     {{
+                        {propAssignmentString}
+
+                        LogArgs = new (string, string, bool, object)[] {{ {logBoxArgString} }};
                     }}
                 }}
             ";
@@ -264,7 +303,7 @@ namespace SolCodeGen
             return $"{methodAbi.Name}({string.Join(",", methodAbi.Inputs.Select(i => i.Type))})";
         }
 
-        (string Name, string Type, AbiTypeInfo abiType)[] GenerateInputs(Input[] inputs)
+        (string Name, string Type, AbiTypeInfo AbiType)[] GenerateInputs(Input[] inputs)
         {
             (string, string, AbiTypeInfo)[] items = new (string, string, AbiTypeInfo)[inputs.Length];
             int unnamed = 0;

@@ -16,10 +16,20 @@ namespace SolCodeGen.TestApp
 {
     class Program
     {
+        static void TestSolCompile()
+        {
+            var outputType = new[] { OutputType.Abi, OutputType.EvmBytecodeObject, OutputType.DevDoc, OutputType.UserDoc };
+            outputType = OutputTypes.All;
+            var compiledExample = new SolcLib("TestData").Compile(new[] { "SampleCrowdsale.sol", "IndividuallyCappedCrowdsale.sol", "Ownable.sol", "Crowdsale.sol" }, outputType);
+            var contract = compiledExample.Contracts.Values.First().Values.First();
+            var bytecode = contract.Evm.Bytecode.Object;
+            var abi = contract.Abi;
+            var abiJson = JsonConvert.SerializeObject(abi, Formatting.None);
+        }
 
         static async Task Main(string[] args)
         {
-
+            //TestSolCompile();
             //await TestAbi();
             //await Rpc();
 
@@ -94,11 +104,11 @@ namespace SolCodeGen.TestApp
 
         static async Task TestAbi()
         {
-            var outputType = OutputTypes.GetItems(OutputType.Abi | OutputType.EvmBytecodeObject | OutputType.DevDoc | OutputType.UserDoc);
+            var outputType = new[] { OutputType.Abi, OutputType.EvmBytecodeObject, OutputType.DevDoc, OutputType.UserDoc };
             //outputType = OutputTypes.All;
             var compiledExample = new SolcLib("TestData").Compile("ExampleContract.sol", outputType);
 
-            var bytecode = compiledExample.Contracts.Values.First().Values.First().Evm.Bytecode.Object.ToHexString();
+            var bytecode = compiledExample.Contracts.Values.First().Values.First().Evm.Bytecode.Object;
             var abi = compiledExample.Contracts.Values.First().Values.First().Abi;
             var abiJson = JsonConvert.SerializeObject(abi, Formatting.None);
 

@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using SolcNet.DataDescription.Parsing;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 
@@ -36,35 +38,14 @@ namespace SolcNet.DataDescription.Output
         public Dictionary<string/*sol file name*/, Dictionary<string/*contract name*/, Contract>> Contracts { get; set; }
 
         [JsonIgnore]
+        (string, string, Contract)[] _contractsFlattened;
+
+        [JsonIgnore]
+        public (string SolFile, string ContractName, Contract Contract)[] ContractsFlattened => _contractsFlattened ?? (_contractsFlattened = Contracts.Flatten());
+
+        [JsonIgnore]
         public string RawJsonOutput { get; set; }
     }
-
-    /*
-    class OutputDescriptionConverter : JsonConverter<OutputDescription>
-    {
-        public override OutputDescription ReadJson(JsonReader reader, Type objectType, OutputDescription existingValue, bool hasExistingValue, JsonSerializer serializer)
-        {
-            var jObj = JObject.Load(reader);
-            var settings = new JsonSerializerSettings { ContractResolver = new StripContractResolver() };
-            var output = jObj.ToObject<OutputDescription>(JsonSerializer.Create(settings));
-            output.RawJsonOutput = jObj.ToString(Formatting.Indented);
-            return output;
-        }
-
-        public override void WriteJson(JsonWriter writer, OutputDescription value, JsonSerializer serializer)
-        {
-            var settings = new JsonSerializerSettings { ContractResolver = new StripContractResolver() };
-            var output = JObject.FromObject(value, JsonSerializer.Create(settings));
-            output.WriteTo(writer);
-        }
-
-        class StripContractResolver : DefaultContractResolver
-        {
-            protected override JsonConverter ResolveContractConverter(Type objectType) => null;
-        }
-
-    }
-    */
 
     public class SourceFileOutput
     {
@@ -81,6 +62,7 @@ namespace SolcNet.DataDescription.Output
         public Dictionary<string, object> LegacyAst { get; set; }
     }
 
+
     public class Contract
     {
         public static Contract FromJson(string json)
@@ -94,6 +76,12 @@ namespace SolcNet.DataDescription.Output
         /// </summary>
         [JsonProperty("abi")]
         public IList<Abi> Abi { get; set; }
+
+        [JsonIgnore]
+        string _abiJsonString;
+
+        [JsonIgnore]
+        public string AbiJsonString => _abiJsonString ?? (_abiJsonString = JsonConvert.SerializeObject(Abi));
 
         [JsonProperty("metadata")]
         public string Metadata { get; set; }
