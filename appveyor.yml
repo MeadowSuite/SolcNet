@@ -17,8 +17,8 @@ build:
   verbosity: minimal
 artifacts:
 - path: SolcNet/**/*.nupkg
-deploy:
-- provider: NuGet
-  server: https://www.nuget.org/api/v2/package
-  api_key:
-    secure: R1YXHbbr7H2aVnuezr1jTDEj5eZJeB/Fb0Ye+68/eWqZkLFS+skLqbtevqYhJ0sb
+#deploy:
+#- provider: NuGet
+#  server: https://www.nuget.org/api/v2/package
+#  api_key:
+#    secure: R1YXHbbr7H2aVnuezr1jTDEj5eZJeB/Fb0Ye+68/eWqZkLFS+skLqbtevqYhJ0sb
