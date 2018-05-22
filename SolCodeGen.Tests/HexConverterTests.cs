@@ -1,3 +1,4 @@
+using SolCodeGen.Utils;
 using System;
 using System.Collections.Generic;
 using Xunit;

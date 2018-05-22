@@ -1,4 +1,5 @@
-﻿using SolCodeGen.Utils;
+﻿using HoshoEthUtil;
+using SolCodeGen.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -119,9 +120,14 @@ namespace SolCodeGen.AbiEncoding.Encoders
 
             if (Signed)
             {
-                for (var i = byteSize; i < byteView.Length; i++)
+                // pad two's complement encoding into larger type by checking if most significant bit is set
+                var isNeg = (byteView[byteSize - 1] & (1 << 7)) != 0;
+                if (isNeg)
                 {
-                    byteView[i] = 0xFF;
+                    for (var i = byteSize; i < byteView.Length; i++)
+                    {
+                        byteView[i] = 0xFF;
+                    }
                 }
             }
 

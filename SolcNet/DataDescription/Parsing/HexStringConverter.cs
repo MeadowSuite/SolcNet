@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using HoshoEthUtil;
+using Newtonsoft.Json;
 using System;
 
 namespace SolcNet.DataDescription.Parsing
@@ -8,12 +9,12 @@ namespace SolcNet.DataDescription.Parsing
         public override byte[] ReadJson(JsonReader reader, Type objectType, byte[] existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             var hexStr = (string)reader.Value;
-            return EncodingUtils.HexToBytes(hexStr);
+            return HoshoEthUtil.HexUtil.HexToBytes(hexStr);
         }
 
         public override void WriteJson(JsonWriter writer, byte[] value, JsonSerializer serializer)
         {
-            var hexString = EncodingUtils.ByteArrayToHex(value);
+            var hexString = HoshoEthUtil.HexUtil.GetHexFromBytes(value);
             writer.WriteToken(JsonToken.String, hexString);
         }
     }

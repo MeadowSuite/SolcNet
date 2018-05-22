@@ -12,6 +12,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SolCodeGen.AbiEncoding;
 using SolCodeGen.Utils;
+using HoshoEthUtil;
 
 namespace SolCodeGen.Contract
 {
@@ -71,7 +72,7 @@ namespace SolCodeGen.Contract
         {
             var funcHash = MethodID.GetMethodID(funcSignature);
             var paramBytes = EncoderUtil.GetBytes(encoders);
-            var dataHex = HexConverter.GetHexFromBytes(hexPrefix: true, funcHash, paramBytes);
+            var dataHex = HexUtil.GetHexFromBytes(hexPrefix: true, funcHash, paramBytes);
             return dataHex;
         }
     }

@@ -1,4 +1,5 @@
-﻿using SolcNet.DataDescription.Output;
+﻿using HoshoEthUtil;
+using SolcNet.DataDescription.Output;
 using SolCodeGen.AbiEncoding;
 using SolCodeGen.AbiEncoding.Encoders;
 using SolCodeGen.JsonRpc;

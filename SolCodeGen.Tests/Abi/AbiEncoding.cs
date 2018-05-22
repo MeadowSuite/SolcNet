@@ -1,4 +1,5 @@
-﻿using SolCodeGen.AbiEncoding;
+﻿using HoshoEthUtil;
+using SolCodeGen.AbiEncoding;
 using SolCodeGen.AbiEncoding.Encoders;
 using SolCodeGen.Contract;
 using SolCodeGen.Utils;
@@ -68,7 +69,7 @@ namespace SolCodeGen.Tests.Abi
             var buffer = new AbiEncodeBuffer(data, "address");
             encoder.Encode(ref buffer);
             Assert.Equal(0, buffer.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data, hexPrefix: false);
+            var result = HexUtil.GetHexFromBytes(data, hexPrefix: false);
             Assert.Equal("00000000000000000000000011f4d0a3c12e86b4b5f39b213f7e19d048276dae", result);
         }
 
@@ -84,7 +85,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "uint24");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data, hexPrefix: false);
+            var result = HexUtil.GetHexFromBytes(data, hexPrefix: false);
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000000000", result);
         }
 
@@ -108,7 +109,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "uint24");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data, hexPrefix: false);
+            var result = HexUtil.GetHexFromBytes(data, hexPrefix: false);
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000005ba0", result);
         }
 
@@ -124,7 +125,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "int24");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data, hexPrefix: false);
+            var result = HexUtil.GetHexFromBytes(data, hexPrefix: false);
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000012da0", result);
         }
 
@@ -140,7 +141,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "int24");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data, hexPrefix: false);
+            var result = HexUtil.GetHexFromBytes(data, hexPrefix: false);
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000fed260", result);
         }
 
@@ -170,7 +171,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "int56");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data, hexPrefix: false);
+            var result = HexUtil.GetHexFromBytes(data, hexPrefix: false);
             Assert.Equal("00000000000000000000000000000000000000000000000000ffffffffffd492", result);
 
         }
@@ -187,7 +188,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "uint32");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data, hexPrefix: false);
+            var result = HexUtil.GetHexFromBytes(data, hexPrefix: false);
             Assert.Equal("00000000000000000000000000000000000000000000000000000000ffff5544", result);
         }
 
@@ -203,7 +204,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "uint256");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data, hexPrefix: false);
+            var result = HexUtil.GetHexFromBytes(data, hexPrefix: false);
             Assert.Equal("00000000000000000000000000000000000000000000000000000000ffff5544", result);
         }
 
@@ -219,7 +220,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "int256");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data, hexPrefix: false);
+            var result = HexUtil.GetHexFromBytes(data, hexPrefix: false);
             Assert.Equal("000000000000000000000000000000000000000000000000000000bcaa0000ff", result);
         }
 
@@ -235,7 +236,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "int256");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data, hexPrefix: false);
+            var result = HexUtil.GetHexFromBytes(data, hexPrefix: false);
             Assert.Equal("0000000000000000000000000000000000000000000000000000004455ffff00", result);
         }
 
@@ -252,7 +253,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "bool");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data);
+            var result = HexUtil.GetHexFromBytes(data);
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000000001", result);
         }
 
@@ -269,7 +270,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "bool");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data);
+            var result = HexUtil.GetHexFromBytes(data);
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000000000", result);
         }
 
@@ -286,7 +287,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "bool[4]");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data);
+            var result = HexUtil.GetHexFromBytes(data);
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001", result);
         }
 
@@ -303,7 +304,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "bool[]");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data);
+            var result = HexUtil.GetHexFromBytes(data);
             Assert.Equal("000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001", result);
         }
 
@@ -320,7 +321,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "string");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data);
+            var result = HexUtil.GetHexFromBytes(data);
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000", result);
         }
 
@@ -337,7 +338,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "string");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data);
+            var result = HexUtil.GetHexFromBytes(data);
             Assert.Equal("00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000028757466383b20342062797465733a20f0a0beb43b20332062797465733a20e28fb020776f726b7321000000000000000000000000000000000000000000000000", result);
 
         }
@@ -355,14 +356,14 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "string");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data);
+            var result = HexUtil.GetHexFromBytes(data);
             Assert.Equal("000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000f54c6f72656d20497073756d2069732073696d706c792064756d6d792074657874206f6620746865207072696e74696e6720616e64207479706573657474696e6720696e6475737472792e204c6f72656d20497073756d20686173206265656e2074686520696e6475737472792773207374616e646172642064756d6d79207465787420657665722073696e6365207468652031353030732c207768656e20616e20756e6b6e6f776e207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970652073706563696d656e20626f6f6b2e0000000000000000000000", result);
         }
 
         [Fact]
         public void Bytes()
         {
-            byte[] bytes = HexConverter.HexToBytes("207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970");
+            byte[] bytes = HexUtil.HexToBytes("207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970");
             var encoder = EncoderFactory.LoadEncoder("bytes", bytes);
             Assert.IsType<BytesEncoder>(encoder);
             var encodedSize = encoder.GetEncodedSize();
@@ -372,14 +373,14 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "bytes");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data);
+            var result = HexUtil.GetHexFromBytes(data);
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003d207072696e74657220746f6f6b20612067616c6c6579206f66207479706520616e6420736372616d626c656420697420746f206d616b65206120747970000000", result);
         }
 
         [Fact]
         public void Bytes_M()
         {
-            byte[] bytes = HexConverter.HexToBytes("072696e74657220746f6f6b20612067616c6c6579206");
+            byte[] bytes = HexUtil.HexToBytes("072696e74657220746f6f6b20612067616c6c6579206");
             var encoder = EncoderFactory.LoadEncoder("bytes22", bytes);
             Assert.IsType<BytesMEncoder>(encoder);
             var encodedSize = encoder.GetEncodedSize();
@@ -389,14 +390,14 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "bytes22");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data);
+            var result = HexUtil.GetHexFromBytes(data);
             Assert.Equal("072696e74657220746f6f6b20612067616c6c657920600000000000000000000", result);
         }
 
         [Fact]
         public void UInt8FixedArray()
         {
-            byte[] bytes = HexConverter.HexToBytes("072696e746");
+            byte[] bytes = HexUtil.HexToBytes("072696e746");
             var encoder = EncoderFactory.LoadEncoder("uint8[5]", bytes, EncoderFactory.LoadEncoder("uint8", default(byte)));
             Assert.IsType<FixedArrayEncoder<byte>>(encoder);
             var encodedSize = encoder.GetEncodedSize();
@@ -406,7 +407,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "uint8[5]");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data);
+            var result = HexUtil.GetHexFromBytes(data);
             Assert.Equal("00000000000000000000000000000000000000000000000000000000000000070000000000000000000000000000000000000000000000000000000000000026000000000000000000000000000000000000000000000000000000000000009600000000000000000000000000000000000000000000000000000000000000e70000000000000000000000000000000000000000000000000000000000000046", result);
         }
 
@@ -423,7 +424,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "int64[]");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data);
+            var result = HexUtil.GetHexFromBytes(data);
             Assert.Equal("00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000011c20000000000000000000000000000000000000000000000007fffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007fffffffffffffff", result);
         }
 
@@ -440,7 +441,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiEncodeBuffer(data, "int64[5]");
             encoder.Encode(ref buff);
             Assert.Equal(0, buff.HeadCursor.Length);
-            var result = HexConverter.GetHexFromBytes(data);
+            var result = HexUtil.GetHexFromBytes(data);
             Assert.Equal("000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000011c20000000000000000000000000000000000000000000000007fffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007fffffffffffffff", result);
         }
 

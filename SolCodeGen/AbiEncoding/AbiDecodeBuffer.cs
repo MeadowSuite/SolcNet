@@ -1,4 +1,5 @@
-﻿using SolCodeGen.Utils;
+﻿using HoshoEthUtil;
+using SolCodeGen.Utils;
 using System;
 
 namespace SolCodeGen.AbiEncoding

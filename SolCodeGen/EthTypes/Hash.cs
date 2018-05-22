@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using SolcNet;
+﻿using HoshoEthUtil;
+using Newtonsoft.Json;
 using SolCodeGen.JsonRpc;
 using SolCodeGen.Utils;
 using System;
@@ -38,7 +38,7 @@ namespace SolCodeGen
                 throw new ArgumentException("Hash hex string should be 40 chars long, or 42 with a 0x prefix, was given " + hexString.Length, nameof(hexString));
             }
 
-            Span<byte> bytes = EncodingUtils.HexToBytes(hexString);
+            Span<byte> bytes = HexUtil.HexToBytes(hexString);
             var uintView = MemoryMarshal.Cast<byte, ulong>(bytes);
             P1 = uintView[0];
             P2 = uintView[1];

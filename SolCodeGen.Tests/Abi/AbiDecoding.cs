@@ -1,4 +1,5 @@
-﻿using SolCodeGen.AbiEncoding;
+﻿using HoshoEthUtil;
+using SolCodeGen.AbiEncoding;
 using SolCodeGen.AbiEncoding.Encoders;
 using SolCodeGen.Contract;
 using SolCodeGen.Utils;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using Xunit;
 
@@ -106,7 +108,7 @@ namespace SolCodeGen.Tests.Abi
             DecoderFactory.Decode("bytes22", ref buff, out byte[] result);
             Assert.Equal(0, buff.HeadCursor.Length);
 
-            byte[] expected = HexConverter.HexToBytes("072696e74657220746f6f6b20612067616c6c6579206");
+            byte[] expected = HexUtil.HexToBytes("072696e74657220746f6f6b20612067616c6c6579206");
             Assert.Equal(expected, result);
         }
 
@@ -275,6 +277,32 @@ namespace SolCodeGen.Tests.Abi
         }
 
         [Fact]
+        public void Int56Random()
+        {
+            var rand = new Random();
+            var int56Encoder = EncoderFactory.LoadEncoder("int56", default(long));
+
+            for (var i = 0; i < 50_000; i++)
+            {
+                byte[] num = new byte[32];
+                Span<byte> bytes = num;
+                Span<long> view = MemoryMarshal.Cast<byte, long>(bytes);
+
+                byte[] tmp = new byte[7];
+                rand.NextBytes(tmp);
+                tmp.CopyTo(num, 25);
+
+                var buff = new AbiDecodeBuffer(bytes, "int56");
+                int56Encoder.Decode(ref buff, out var result);
+                Span<byte> resultBuff = new byte[32];
+                var abiEncodeBuff = new AbiEncodeBuffer(resultBuff, "int56");
+                int56Encoder.SetValue(result);
+                int56Encoder.Encode(ref abiEncodeBuff);
+                Assert.Equal(bytes.Slice(25).ToHexString(), resultBuff.Slice(25).ToHexString());
+            }
+        }
+
+        [Fact]
         public void UInt24()
         {
             var encodedNum = "0000000000000000000000000000000000000000000000000000000000005ba0";
@@ -342,7 +370,7 @@ namespace SolCodeGen.Tests.Abi
             var buff = new AbiDecodeBuffer(encodedArr, "uint8[5]");
             DecoderFactory.Decode("uint8[5]", ref buff, out byte[] result, EncoderFactory.LoadEncoder("uint8", default(byte)));
             Assert.Equal(0, buff.HeadCursor.Length);
-            byte[] expected = HexConverter.HexToBytes("072696e746");
+            byte[] expected = HexUtil.HexToBytes("072696e746");
             Assert.Equal(expected, result);
         }
 

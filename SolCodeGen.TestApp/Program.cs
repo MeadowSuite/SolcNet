@@ -5,18 +5,22 @@ using SolcNet.DataDescription.Output;
 using SolCodeGen.AbiEncoding;
 using SolCodeGen.Contract;
 using SolCodeGen.JsonRpc;
+using SolCodeGen.Utils;
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SolCodeGen.TestApp
 {
     class Program
     {
+
         static void TestSolCompile()
         {
             var outputType = new[] { OutputType.Abi, OutputType.EvmBytecodeObject, OutputType.DevDoc, OutputType.UserDoc };
@@ -30,6 +34,7 @@ namespace SolCodeGen.TestApp
 
         static async Task Main(string[] args)
         {
+
             //TestSolCompile();
             //await TestAbi();
             //await Rpc();

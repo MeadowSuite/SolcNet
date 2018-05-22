@@ -1,4 +1,5 @@
-﻿using JsonDiffPatchDotNet;
+﻿using HoshoEthUtil;
+using JsonDiffPatchDotNet;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SolCodeGen.JsonRpc;
@@ -25,8 +26,8 @@ namespace SolCodeGen.Tests
             foreach(var item in diff)
             {
                 var vals = item.Value.Values();
-                var b1 = HexConverter.HexToBytes(vals[0].ToString()).GetHexFromBytes(hexPrefix: true);
-                var b2 = HexConverter.HexToBytes(vals[1].ToString()).GetHexFromBytes(hexPrefix: true);
+                var b1 = HexUtil.HexToBytes(vals[0].ToString()).ToHexString(hexPrefix: true);
+                var b2 = HexUtil.HexToBytes(vals[1].ToString()).ToHexString(hexPrefix: true);
                 Assert.Equal(b1, b2);
             }
         }

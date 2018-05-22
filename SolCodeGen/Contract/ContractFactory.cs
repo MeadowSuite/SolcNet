@@ -1,4 +1,5 @@
-﻿using SolCodeGen.JsonRpc;
+﻿using HoshoEthUtil;
+using SolCodeGen.JsonRpc;
 using SolCodeGen.Utils;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace SolCodeGen.Contract
             ReadOnlyMemory<byte> abiEncodedConstructorArgs, 
             SendParams sendParams = null)
         {
-            var deploymentHex = HexConverter.GetHexFromBytes(hexPrefix: true, bytecode, abiEncodedConstructorArgs);
+            var deploymentHex = HexUtil.GetHexFromBytes(hexPrefix: true, bytecode, abiEncodedConstructorArgs);
             var transHash = await rpcClient.SendTransaction(deploymentHex, sendParams: sendParams);
             var receipt = await rpcClient.GetTransactionReceipt(transHash);
             return receipt.ContractAddress.Value;
@@ -34,7 +35,7 @@ namespace SolCodeGen.Contract
             ReadOnlyMemory<byte> bytecode,
             SendParams sendParams)
         {
-            var deploymentHex = HexConverter.GetHexFromBytes(hexPrefix: true, bytecode);
+            var deploymentHex = HexUtil.GetHexFromBytes(hexPrefix: true, bytecode);
             var transHash = await rpcClient.SendTransaction(deploymentHex, sendParams: sendParams);
             var receipt = await rpcClient.GetTransactionReceipt(transHash);
             return receipt.ContractAddress.Value;

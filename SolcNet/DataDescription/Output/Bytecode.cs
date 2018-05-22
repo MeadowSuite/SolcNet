@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using HoshoEthUtil;
+using Newtonsoft.Json;
 using SolcNet.DataDescription.Parsing;
 using System.Collections.Generic;
 
@@ -16,7 +17,7 @@ namespace SolcNet.DataDescription.Output
         byte[] _objectBytes;
 
         [JsonIgnore]
-        public byte[] ObjectBytes => _objectBytes ?? (_objectBytes = EncodingUtils.HexToBytes(Object));
+        public byte[] ObjectBytes => _objectBytes ?? (_objectBytes = HoshoEthUtil.HexUtil.HexToBytes(Object));
 
         /// <summary>
         /// Opcodes list (string)

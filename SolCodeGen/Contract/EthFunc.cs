@@ -1,4 +1,5 @@
-﻿using SolCodeGen.AbiEncoding;
+﻿using HoshoEthUtil;
+using SolCodeGen.AbiEncoding;
 using SolCodeGen.JsonRpc;
 using SolCodeGen.Utils;
 using System;
@@ -40,7 +41,7 @@ namespace SolCodeGen.Contract
 
         public TReturn ParseReturnData(string hexData)
         {
-            var bytes = HexConverter.HexToBytes(hexData);
+            var bytes = HexUtil.HexToBytes(hexData);
             var result = _parseResponse(bytes);
             return result;
         }

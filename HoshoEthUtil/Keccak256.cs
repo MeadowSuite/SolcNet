@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // Ported from https://github.com/monero-project/monero/blob/master/src/crypto/keccak.c
 // Optimizations taken from: https://bitbucket.org/jdluzen/sha3/src
 
-namespace SolCodeGen.Utils
+namespace HoshoEthUtil
 {
 
     public static class Keccak

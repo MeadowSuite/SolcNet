@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using HoshoEthUtil;
+using Newtonsoft.Json;
 using SolcNet;
 using SolCodeGen.JsonRpc;
 using SolCodeGen.Utils;
@@ -48,8 +49,8 @@ namespace SolCodeGen
             {
                 throw new ArgumentException("Address hex string should be 40 chars long, or 42 with a 0x prefix, was given " + hexString.Length, nameof(hexString));
             }
-            
-            Span<byte> bytes = EncodingUtils.HexToBytes(hexString);
+
+            Span<byte> bytes = HoshoEthUtil.HexUtil.HexToBytes(hexString);
             if (!ValidChecksum(hexString))
             {
                 throw new ArgumentException("Address does not pass mixed-case checksum validation, https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md");

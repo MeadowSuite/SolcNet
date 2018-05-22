@@ -32,7 +32,7 @@ namespace SolcNet.Tests
         {
             var solcLib = new SolcLib(nativeSolcLib, CONTRACT_SRC_DIR);
             var version = solcLib.Version;
-            Assert.Equal(Version.Parse("0.4.23"), version);
+            Assert.Equal(Version.Parse("0.4.24"), version);
         }
 
         [Theory]

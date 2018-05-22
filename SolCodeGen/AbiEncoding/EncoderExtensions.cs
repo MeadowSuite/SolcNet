@@ -1,4 +1,5 @@
-﻿using SolCodeGen.Utils;
+﻿using HoshoEthUtil;
+using SolCodeGen.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -48,7 +49,7 @@ namespace SolCodeGen.AbiEncoding
             WriteParams(encoders, ref buff);
 
             // hex encode
-            return HexConverter.GetHexFromBytes(data, hexPrefix: true);
+            return HexUtil.GetHexFromBytes(data, hexPrefix: true);
         }
 
         public static string ToEncodedHex(this IAbiTypeEncoder encoder)

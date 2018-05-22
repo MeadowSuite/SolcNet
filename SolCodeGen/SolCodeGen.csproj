@@ -24,6 +24,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\HoshoEthUtil\HoshoEthUtil.csproj" />
     <ProjectReference Include="..\SolcNet\SolcNet.csproj" />
   </ItemGroup>
 
@@ -53,6 +54,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>IntegerTypes.tt</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="MSBuiltTask\" />
   </ItemGroup>
 
 

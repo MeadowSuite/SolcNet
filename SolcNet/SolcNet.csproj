@@ -25,5 +25,9 @@
     <PackageReference Include="SolcLib.Native" Version="0.4.24.11" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HoshoEthUtil\HoshoEthUtil.csproj" />
+  </ItemGroup>
+
 
 </Project>

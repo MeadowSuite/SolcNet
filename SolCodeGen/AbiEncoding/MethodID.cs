@@ -1,4 +1,5 @@
-﻿using SolCodeGen.Utils;
+﻿using HoshoEthUtil;
+using SolCodeGen.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -25,7 +26,7 @@ namespace SolCodeGen.AbiEncoding
         {
             var bytes = Encoding.UTF8.GetBytes(functionSignature);
             var hash = Keccak.ComputeHash(bytes).Slice(0, 4);
-            string funcSignature = HexConverter.GetHexFromBytes(hash, hexPrefix: hexPrefix);
+            string funcSignature = HexUtil.GetHexFromBytes(hash, hexPrefix: hexPrefix);
             return funcSignature;
         }
 

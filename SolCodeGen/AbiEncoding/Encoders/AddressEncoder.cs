@@ -1,4 +1,5 @@
-﻿using SolCodeGen.Utils;
+﻿using HoshoEthUtil;
+using SolCodeGen.Utils;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
