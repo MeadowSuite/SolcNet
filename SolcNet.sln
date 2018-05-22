@@ -26,8 +26,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Nuget.Config = Nuget.Config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoshoEthUtil", "HoshoEthUtil\HoshoEthUtil.csproj", "{3A7A0799-FFDA-4277-8FC7-BCF6AF228DED}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,14 +102,6 @@ Global
 		{A37FBAA8-4C3F-4C59-854E-B1BA5BE47959}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A37FBAA8-4C3F-4C59-854E-B1BA5BE47959}.RelWithDebInfo|Any CPU.ActiveCfg = Release|Any CPU
 		{A37FBAA8-4C3F-4C59-854E-B1BA5BE47959}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
-		{3A7A0799-FFDA-4277-8FC7-BCF6AF228DED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A7A0799-FFDA-4277-8FC7-BCF6AF228DED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A7A0799-FFDA-4277-8FC7-BCF6AF228DED}.MinSizeRel|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A7A0799-FFDA-4277-8FC7-BCF6AF228DED}.MinSizeRel|Any CPU.Build.0 = Debug|Any CPU
-		{3A7A0799-FFDA-4277-8FC7-BCF6AF228DED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A7A0799-FFDA-4277-8FC7-BCF6AF228DED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A7A0799-FFDA-4277-8FC7-BCF6AF228DED}.RelWithDebInfo|Any CPU.ActiveCfg = Release|Any CPU
-		{3A7A0799-FFDA-4277-8FC7-BCF6AF228DED}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

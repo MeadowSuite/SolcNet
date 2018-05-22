@@ -19,14 +19,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="HoshoEthUtil" Version="0.1.7" />
     <PackageReference Include="NativeLibraryLoader" Version="1.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.Memory" Version="4.5.0-rc1" />
     <PackageReference Include="SolcLib.Native" Version="0.4.24.11" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\HoshoEthUtil\HoshoEthUtil.csproj" />
   </ItemGroup>
 
   <Import Project="SolcNet.targets" />

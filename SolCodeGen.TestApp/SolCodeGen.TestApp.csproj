@@ -13,7 +13,7 @@
   
   <UsingTask TaskName="SolCodeGen.ContractGeneratorTask" AssemblyFile="$(TaskAssembly)" />
 
-  <Target Name="MyTarget" BeforeTargets="Build">
+  <Target Name="MyTarget" BeforeTargets="Buildx">
     <ContractGeneratorTask MyProperty="Hello!" />
   </Target>
   
