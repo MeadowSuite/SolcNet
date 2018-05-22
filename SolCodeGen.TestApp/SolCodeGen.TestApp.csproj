@@ -6,6 +6,17 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <TaskAssembly Condition=" '$(MSBuildRuntimeType)' == 'Core'">.\bin\Debug\netcoreapp2.0\SolCodeGen.dll</TaskAssembly>
+    <TaskAssembly Condition=" '$(MSBuildRuntimeType)' != 'Core'">.\bin\Debug\net461\SolCodeGen.dll</TaskAssembly>
+  </PropertyGroup>
+  
+  <UsingTask TaskName="SolCodeGen.ContractGeneratorTask" AssemblyFile="$(TaskAssembly)" />
+
+  <Target Name="MyTarget" BeforeTargets="Build">
+    <ContractGeneratorTask MyProperty="Hello!" />
+  </Target>
+  
   <ItemGroup>
     <None Remove="TestData\Crowdsale.sol" />
     <None Remove="TestData\ERC20.sol" />
