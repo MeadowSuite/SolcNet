@@ -2,28 +2,37 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
-    <Platforms>AnyCPU</Platforms>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <Company>Hosho</Company>
     <PackageTags>solidity solc libsolc ethereum</PackageTags>
-    <Version>1.0.0</Version>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <FileVersion>1.0.0</FileVersion>
-    <Description>Native solc lib with .NET wrapper</Description>
+    <Description>.NET wrapper for native solc library</Description>
     <PackageProjectUrl>https://github.com/hosho/SolcNet/</PackageProjectUrl>
-    <PackageReleaseNotes>Ships with pre-compiled solc lib verison: 0.4.23-develop.2018.5.3+commit.124ca40d</PackageReleaseNotes>
     <NoWarn>1591,1573</NoWarn>
+    <PackageLicenseUrl>https://github.com/hosho/SolcNet/blob/master/LICENSE</PackageLicenseUrl>
+    <Authors>Matthew Litte</Authors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <Version>0.1.$(VersionSuffix)</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' != 'Release'">
+    <Version>0.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HoshoEthUtil" Version="0.1.7" />
+    <PackageReference Include="HoshoEthUtil" Version="0.1.9" />
     <PackageReference Include="NativeLibraryLoader" Version="1.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.Memory" Version="4.5.0-rc1" />
-    <PackageReference Include="SolcLib.Native" Version="0.4.24.11" />
+    <PackageReference Include="SolcLib.Native" Version="0.4.24.12" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.8.0" PrivateAssets="all" />
   </ItemGroup>
 
   <Import Project="SolcNet.targets" />
