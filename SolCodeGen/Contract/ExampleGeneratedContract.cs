@@ -2,12 +2,13 @@
 using SolCodeGen.AbiEncoding;
 using SolCodeGen.AbiEncoding.Encoders;
 using SolCodeGen.JsonRpc;
+using SolCodeGen.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SolCodeGen
+namespace SolCodeGen.Contract
 {
     public class ExampleGeneratedContract : BaseContract
     {

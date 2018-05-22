@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
-namespace SolCodeGen
+namespace SolCodeGen.Contract
 {
     public abstract class EventLog
     {

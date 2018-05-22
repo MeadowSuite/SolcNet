@@ -3,6 +3,7 @@ using SolcNet;
 using SolcNet.DataDescription.Input;
 using SolcNet.DataDescription.Output;
 using SolCodeGen.AbiEncoding;
+using SolCodeGen.Contract;
 using SolCodeGen.JsonRpc;
 using System;
 using System.Collections;

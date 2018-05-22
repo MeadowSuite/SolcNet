@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SolCodeGen.Contract;
 using SolCodeGen.JsonRpc.RequestMessages;
+using SolCodeGen.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;

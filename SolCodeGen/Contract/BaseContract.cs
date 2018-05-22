@@ -11,8 +11,9 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SolCodeGen.AbiEncoding;
+using SolCodeGen.Utils;
 
-namespace SolCodeGen
+namespace SolCodeGen.Contract
 {
 
     public class SendParams

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SolcNet;
 using SolCodeGen.JsonRpc;
+using SolCodeGen.Utils;
 using System;
 using System.Runtime.InteropServices;
 

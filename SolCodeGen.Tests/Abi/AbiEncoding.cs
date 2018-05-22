@@ -1,5 +1,7 @@
 ﻿using SolCodeGen.AbiEncoding;
 using SolCodeGen.AbiEncoding.Encoders;
+using SolCodeGen.Contract;
+using SolCodeGen.Utils;
 using System;
 using System.Collections.Generic;
 using System.Numerics;

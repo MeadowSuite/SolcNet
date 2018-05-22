@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace SolCodeGen
+namespace SolCodeGen.Utils
 {
     public static class EthUtil
     {

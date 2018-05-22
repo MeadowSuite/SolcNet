@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SolCodeGen.Utils;
+using System;
 using System.Collections.Generic;
 
 namespace SolCodeGen.AbiEncoding.Encoders

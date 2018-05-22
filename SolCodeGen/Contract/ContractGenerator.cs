@@ -10,14 +10,14 @@ using System.Numerics;
 using System.Text;
 
 
-namespace SolCodeGen
+namespace SolCodeGen.Contract
 {
     public class ContractGenerator
     {
         string _name;
-        Contract _contract;
+        SolcNet.DataDescription.Output.Contract _contract;
 
-        public ContractGenerator(string name, Contract contract)
+        public ContractGenerator(string name, SolcNet.DataDescription.Output.Contract contract)
         {
             _name = name;
             _contract = contract;
@@ -47,6 +47,8 @@ namespace SolCodeGen
                 using SolCodeGen.AbiEncoding;
                 using SolCodeGen.AbiEncoding.Encoders;
                 using SolCodeGen.JsonRpc;
+                using SolCodeGen.Utils;
+                using SolCodeGen.Contract;
                 using System;
                 using System.Collections.Generic;
                 using System.Linq;
@@ -62,7 +64,7 @@ namespace SolCodeGen
         string GenerateClassDef()
         {
             return $@"
-                public class {_name} : BaseContract
+                public class {_name} : {typeof(BaseContract).FullName}
                 {{
 
                     public override Lazy<ReadOnlyMemory<byte>> Bytecode {{ get; }} = new Lazy<ReadOnlyMemory<byte>>(() => BYTECODE_HEX.HexToReadOnlyMemory());

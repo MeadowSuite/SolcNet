@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace SolCodeGen
+namespace SolCodeGen.Utils
 {
     public static class HexConverter
     {

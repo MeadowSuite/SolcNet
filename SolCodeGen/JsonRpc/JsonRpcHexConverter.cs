@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SolCodeGen.Utils;
 using System;
 
 namespace SolCodeGen.JsonRpc

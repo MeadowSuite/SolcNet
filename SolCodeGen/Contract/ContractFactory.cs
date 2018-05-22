@@ -1,10 +1,11 @@
 ﻿using SolCodeGen.JsonRpc;
+using SolCodeGen.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SolCodeGen
+namespace SolCodeGen.Contract
 {
     public static class ContractFactory
     {

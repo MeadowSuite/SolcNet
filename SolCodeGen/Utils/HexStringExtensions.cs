@@ -1,10 +1,11 @@
 ﻿using SolCodeGen;
+using SolCodeGen.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace System
+namespace SolCodeGen.Utils
 {
     public static class HexStringExtensions
     {

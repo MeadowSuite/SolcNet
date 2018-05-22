@@ -1,10 +1,11 @@
 ﻿using SolCodeGen.AbiEncoding;
 using SolCodeGen.JsonRpc;
+using SolCodeGen.Utils;
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace SolCodeGen
+namespace SolCodeGen.Contract
 {
 
     public class EthFunc<TReturn>
