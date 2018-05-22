@@ -15,12 +15,9 @@
     <Authors>Matthew Litte</Authors>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <Version>1.1.$(VersionSuffix)</Version>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)' != 'Release'">
-    <Version>1.1.0</Version>
+  <PropertyGroup>
+    <Version Condition="'$(VersionSuffix)' != ''">1.1.$(VersionSuffix)</Version>
+    <Version Condition="'$(VersionSuffix)' == ''">1.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
