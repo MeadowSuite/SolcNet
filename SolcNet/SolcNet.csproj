@@ -29,5 +29,6 @@
     <ProjectReference Include="..\HoshoEthUtil\HoshoEthUtil.csproj" />
   </ItemGroup>
 
+  <Import Project="SolcNet.targets" />
 
 </Project>
