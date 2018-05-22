@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
     <Platforms>AnyCPU</Platforms>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -17,36 +17,13 @@
     <PackageReleaseNotes>Ships with pre-compiled solc lib verison: 0.4.23-develop.2018.5.3+commit.124ca40d</PackageReleaseNotes>
     <NoWarn>1591,1573</NoWarn>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="NativeLibraryLoader" Version="1.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.Memory" Version="4.5.0-rc1" />
+    <PackageReference Include="SolcLib.Native" Version="0.4.24.11" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="lib\**\*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <_PackageFiles Include="$(OutputPath)\lib\win-x64\solc.dll">
-      <BuildAction>content</BuildAction>
-      <PackagePath>lib\$(TargetFramework)\lib\win-x64\</PackagePath>
-    </_PackageFiles>
-    <_PackageFiles Include="$(OutputPath)\lib\win-x86\solc.dll">
-      <BuildAction>content</BuildAction>
-      <PackagePath>lib\$(TargetFramework)\lib\win-x86\</PackagePath>
-    </_PackageFiles>
-    <_PackageFiles Include="$(OutputPath)\lib\macos-x64\libsolc.dylib">
-      <BuildAction>content</BuildAction>
-      <PackagePath>lib\$(TargetFramework)\lib\osx-x64\</PackagePath>
-    </_PackageFiles>
-    <_PackageFiles Include="$(OutputPath)\lib\linux-x64\libsolc.so">
-      <BuildAction>content</BuildAction>
-      <PackagePath>lib\$(TargetFramework)\lib\linux-x64\</PackagePath>
-    </_PackageFiles>
-  </ItemGroup>
 
 </Project>

@@ -17,7 +17,7 @@ namespace SolcNet.NativeLib
             [(Windows, X64)] = ("win-x64", "", ".dll"),
             [(Windows, X86)] = ("win-x86", "", ".dll"),
             [(Linux, X64)] = ("linux-x64", "lib", ".so"),
-            [(OSX, X64)] = ("macos-x64", "lib", ".dylib"),
+            [(OSX, X64)] = ("osx-x64", "lib", ".dylib"),
         };
 
         static readonly OSPlatform[] SupportedPlatforms = { Windows, OSX, Linux };
@@ -47,28 +47,37 @@ namespace SolcNet.NativeLib
 
                 string libLocation = Path.GetDirectoryName(typeof(INativeSolcLib).Assembly.Location);
 
-                string GetPath(string subDir = "")
+                string publishedPath = Path.Combine(libLocation, platform.LibPrefix + library) + platform.Extension;
+                if (File.Exists(publishedPath))
                 {
-                    return Path.Combine(libLocation, "lib", platform.Prefix, subDir, platform.LibPrefix + library) + platform.Extension;
-                }
-
-                string filePath = GetPath();
-                
-#if DEBUG
-                string debugFilePath = GetPath("Debug");
-                if (File.Exists(debugFilePath))
-                {
-                    filePath = debugFilePath;
-                }
-#endif
-           
-                if (!File.Exists(filePath))
-                {
-                    throw new Exception($"Platform can be supported but '{library}' lib not found for {CurrentPlatformDesc.Value} at {filePath}");
+                    result = publishedPath;
                 }
                 else
                 {
-                    result = filePath;
+
+                    string GetPath(string subDir = "")
+                    {
+                        return Path.Combine(libLocation, "native", platform.Prefix, subDir, platform.LibPrefix + library) + platform.Extension;
+                    }
+
+                    string filePath = GetPath();
+
+#if DEBUG
+                    string debugFilePath = GetPath("Debug");
+                    if (File.Exists(debugFilePath))
+                    {
+                        filePath = debugFilePath;
+                    }
+#endif
+
+                    if (!File.Exists(filePath))
+                    {
+                        throw new Exception($"Platform can be supported but '{library}' lib not found for {CurrentPlatformDesc.Value} at {filePath}");
+                    }
+                    else
+                    {
+                        result = filePath;
+                    }
                 }
             }
 
