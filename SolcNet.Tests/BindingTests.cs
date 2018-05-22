@@ -11,9 +11,9 @@ namespace SolcNet.Tests
     {
         public NativeLibProvider()
         {
-            Add(new SolcLibDynamicProvider());
             Add(new SolcLibPInvokeProvider());
-            Add(new SolcLibAdvDLProvider());
+            //Add(new SolcLibDynamicProvider());
+            //Add(new SolcLibAdvDLProvider());
         }
     }
 
