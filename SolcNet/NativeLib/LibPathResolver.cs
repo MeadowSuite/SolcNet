@@ -7,6 +7,7 @@ using static System.Runtime.InteropServices.OSPlatform;
 using static System.Runtime.InteropServices.Architecture;
 using static System.Runtime.InteropServices.RuntimeInformation;
 using PlatInfo = System.ValueTuple<System.Runtime.InteropServices.OSPlatform, System.Runtime.InteropServices.Architecture>;
+using System.Reflection;
 
 namespace SolcNet.NativeLib
 {
@@ -31,10 +32,11 @@ namespace SolcNet.NativeLib
 
         static readonly Dictionary<PlatInfo, string> Cache = new Dictionary<PlatInfo, string>();
 
+        public static List<string> ExtraNativeLibSearchPaths = new List<string>();
+
         public static string Resolve(string library)
         {
-            string result;
-            if (Cache.TryGetValue(CurrentPlatformInfo, out result))
+            if (Cache.TryGetValue(CurrentPlatformInfo, out string result))
             {
                 return result;
             }
@@ -42,48 +44,67 @@ namespace SolcNet.NativeLib
             {
                 throw new Exception(string.Join("\n", $"Unsupported platform: {CurrentPlatformDesc.Value}", "Must be one of:", SupportedPlatformDescriptions()));
             }
-            else
+
+            string ReturnFoundFile(string found)
             {
+                Cache[CurrentPlatformInfo] = found;
+                return found;
+            }
 
-                string libLocation = Path.GetDirectoryName(typeof(INativeSolcLib).Assembly.Location);
+            var searchedPaths = new List<string>();
 
-                string publishedPath = Path.Combine(libLocation, platform.LibPrefix + library) + platform.Extension;
-                if (File.Exists(publishedPath))
-                {
-                    result = publishedPath;
-                }
-                else
-                {
+            string libLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-                    string GetPath(string subDir = "")
-                    {
-                        return Path.Combine(libLocation, "native", platform.Prefix, subDir, platform.LibPrefix + library) + platform.Extension;
-                    }
+            string publishedPath = Path.Combine(libLocation, platform.LibPrefix + library) + platform.Extension;
+            searchedPaths.Add(publishedPath);
+            if (File.Exists(publishedPath))
+            {
+                return ReturnFoundFile(publishedPath);
+            }
 
-                    string filePath = GetPath();
+            string GetPath(string subDir = "")
+            {
+                return Path.Combine(libLocation, "native", platform.Prefix, subDir, platform.LibPrefix + library) + platform.Extension;
+            }
 
+            string filePath = GetPath();
+            searchedPaths.Add(filePath);
 #if DEBUG
-                    string debugFilePath = GetPath("Debug");
-                    if (File.Exists(debugFilePath))
-                    {
-                        filePath = debugFilePath;
-                    }
+            string debugFilePath = GetPath("Debug");
+            searchedPaths.Add(debugFilePath);
+            if (File.Exists(debugFilePath))
+            {
+                filePath = debugFilePath;
+            }
 #endif
 
-                    if (!File.Exists(filePath))
-                    {
-                        throw new Exception($"Platform can be supported but '{library}' lib not found for {CurrentPlatformDesc.Value} at {filePath}");
-                    }
-                    else
-                    {
-                        result = filePath;
-                    }
+            if (File.Exists(filePath))
+            {
+                return ReturnFoundFile(filePath);
+            }
+            
+            libLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            filePath = GetPath();
+            searchedPaths.Add(filePath);
+            if (File.Exists(filePath))
+            {
+                return ReturnFoundFile(filePath);
+            }
+            
+            foreach (var extraPath in ExtraNativeLibSearchPaths)
+            {
+                libLocation = extraPath;
+                filePath = GetPath();
+                searchedPaths.Add(filePath);
+                if (File.Exists(filePath))
+                {
+                    return ReturnFoundFile(filePath);
                 }
             }
 
-            Cache[CurrentPlatformInfo] = result;
-            return result;
+            throw new Exception($"Platform can be supported but '{library}' lib not found for {CurrentPlatformDesc.Value} at: {Environment.NewLine}{string.Join(Environment.NewLine, searchedPaths)}");
 
         }
+
     }
 }

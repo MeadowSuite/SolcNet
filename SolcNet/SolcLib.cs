@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -24,8 +25,12 @@ namespace SolcNet
         string _solSourceRoot = null;
         string _lastSourceDir = null;
 
-        public SolcLib(string solSourceRoot = null)
+        public SolcLib(string solSourceRoot = null, string[] extraLibSearchDirs = null)
         {
+            if (extraLibSearchDirs != null)
+            {
+                LibPathResolver.ExtraNativeLibSearchPaths.AddRange(extraLibSearchDirs);
+            }
             _native = new SolcLibDynamicProvider();
             _solSourceRoot = solSourceRoot;
         }
@@ -38,7 +43,8 @@ namespace SolcNet
 
         public static SolcLib Create(string solSourceRoot = null)
         {
-            return new SolcLib(solSourceRoot);
+            var callingAssembly = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+            return new SolcLib(solSourceRoot, extraLibSearchDirs : new [] { callingAssembly });
         }
 
         public static SolcLib Create<TNativeLib>(string solSourceRoot = null) where TNativeLib : INativeSolcLib, new()
