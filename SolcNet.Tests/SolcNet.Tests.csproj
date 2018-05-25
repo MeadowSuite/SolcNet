@@ -7,10 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="OpenZeppelin\contracts\AddressUtils.sol" />
     <None Remove="TestOutput\ExampleContract.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="OpenZeppelin\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestOutput\ExampleContract.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
