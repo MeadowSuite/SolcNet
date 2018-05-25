@@ -1,4 +1,3 @@
-using SolcNet.AdvDL;
 using SolcNet.NativeLib;
 using System;
 using System.Collections;
@@ -13,7 +12,7 @@ namespace SolcNet.Tests
         {
             Add(new SolcLibPInvokeProvider());
             //Add(new SolcLibDynamicProvider());
-            //Add(new SolcLibAdvDLProvider());
+            //Add(new SolcNet.AdvDL.SolcLibAdvDLProvider());
         }
     }
 

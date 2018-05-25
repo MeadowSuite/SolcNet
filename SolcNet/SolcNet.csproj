@@ -13,6 +13,7 @@
     <NoWarn>1591,1573</NoWarn>
     <PackageLicenseUrl>https://github.com/hosho/SolcNet/blob/master/LICENSE</PackageLicenseUrl>
     <Authors>Matthew Litte</Authors>
+    <Configurations>Debug;Release;DebugToolchain</Configurations>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -21,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HoshoEthUtil" Version="0.1.9" />
+    <PackageReference Include="HoshoEthUtil" Version="0.1.9" Condition="'$(Configuration)'!='DebugToolchain'" />
     <PackageReference Include="NativeLibraryLoader" Version="1.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.Memory" Version="4.5.0-rc1" />
@@ -30,6 +31,10 @@
   
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
     <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.8.1" PrivateAssets="all" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\HoshoEthUtil\HoshoEthUtil\HoshoEthUtil.csproj" Condition="'$(Configuration)'=='DebugToolchain'" />
   </ItemGroup>
 
   <Import Project="SolcNet.targets" />
