@@ -22,10 +22,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HoshoEthUtil" Version="0.1.15" Condition="'$(Configuration)'!='DebugToolchain'" />
+    <PackageReference Include="HoshoEthUtil" Version="0.1.18" Condition="'$(Configuration)'!='DebugToolchain'" />
     <PackageReference Include="NativeLibraryLoader" Version="1.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="System.Memory" Version="4.5.0-rc1" />
+    <PackageReference Include="System.Memory" Version="4.5.0" />
     <PackageReference Include="SolcLib.Native" Version="0.4.24.12" />
   </ItemGroup>
   
