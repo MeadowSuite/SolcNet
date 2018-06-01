@@ -13,89 +13,57 @@ contract ExampleContract {
     /// @notice A test event
     event TestEvent(address indexed _addr, uint64 indexed _id, uint _val);
 
-    bool[] public typeArrayDynamic;
-    bool[10] public typeArrayFixed;
-    bool[2][5] public typeArray2DimFixed;
-    byte[] public typeByteArrayDynamic;
+    event EmptyEvent();
 
-    string public typeString;
-    bytes public typeBytes;
-    address public typeAddress;
-
-    bool public typeBool;
-
-    int public typeInt;
-    int8 public typeInt8;
-    int16 public typeInt16;
-    int24 public typeInt24;
-    int32 public typeInt32;
-    int40 public typeInt40;
-    int48 public typeInt48;
-    int56 public typeInt56;
-    int64 public typeInt64;
-    int72 public typeInt72;
-    int80 public typeInt80;
-    int88 public typeInt88;
-    int96 public typeInt96;
-    int104 public typeInt104;
-    int112 public typeInt112;
-    int120 public typeInt120;
-    int128 public typeInt128;
-    int136 public typeInt136;
-    int144 public typeInt144;
-    int152 public typeInt152;
-    int160 public typeInt160;
-    int168 public typeInt168;
-    int176 public typeInt176;
-    int184 public typeInt184;
-    int192 public typeInt192;
-    int200 public typeInt200;
-    int208 public typeInt208;
-    int216 public typeInt216;
-    int224 public typeInt224;
-    int232 public typeInt232;
-    int240 public typeInt240;
-    int248 public typeInt248;
-    int256 public typeInt256;
-
-    uint public typeUInt;
-    uint8 public typeUInt8;
-    uint16 public typeUInt16;
-    uint24 public typeUInt24;
-    uint32 public typeUInt32;
-    uint40 public typeUInt40;
-    uint48 public typeUInt48;
-    uint56 public typeUInt56;
-    uint64 public typeUInt64;
-    uint72 public typeUInt72;
-    uint80 public typeUInt80;
-    uint88 public typeUInt88;
-    uint96 public typeUInt96;
-    uint104 public typeUInt104;
-    uint112 public typeUInt112;
-    uint120 public typeUInt120;
-    uint128 public typeUInt128;
-    uint136 public typeUInt136;
-    uint144 public typeUInt144;
-    uint152 public typeUInt152;
-    uint160 public typeUInt160;
-    uint168 public typeUInt168;
-    uint176 public typeUInt176;
-    uint184 public typeUInt184;
-    uint192 public typeUInt192;
-    uint200 public typeUInt200;
-    uint208 public typeUInt208;
-    uint216 public typeUInt216;
-    uint224 public typeUInt224;
-    uint232 public typeUInt232;
-    uint240 public typeUInt240;
-    uint248 public typeUInt248;
-    uint256 public typeUInt256;
+	string public givenName;
+	bool public enabledThing;
+	uint256 public last;
 
     /// @notice The constructor
-    /// @param _name Name param
-    constructor(string _name) public {
+    constructor(string _name, bool _enableThing, uint256 _last) public {
+		givenName = _name;
+		enabledThing = _enableThing;
+		last = _last;
+    }
 
+	function getArrayStatic() public returns (int16[4]) {
+		int16[4] arr;
+		arr[0] = 1;
+		arr[1] = -2;
+		arr[2] = 29;
+		arr[3] = 399;
+		return arr;
+	}
+
+	function getArrayDynamic() public returns (int16[]) {
+		int16[] arr;
+        arr.length = 4;
+		arr[0] = 1;
+		arr[1] = -2;
+		arr[2] = 29;
+		arr[3] = 399;
+		return arr;
+	}
+
+    function echoArrayDynamic(uint24[] input) returns (uint24[] result) {
+        return input;
+    }
+
+    function echoArrayStatic(uint24[5] input) returns (uint24[5] result) {
+        return input;
+    }
+
+    function echoMultipleStatic(uint32 p1, bool p2, address p3) public returns (uint32 r1, bool r2, address r3) {
+        return (p1, p2, p3);
+    }
+
+    function echoMultipleDynamic(string p1, string p2, string p3) public returns (string r1, string r2, string r3) {
+        return (p1, p2, p3);
+    }
+
+    function boat(bool p1, string p2, int56 p3, address[] p4, uint8 p5, uint64[3] p6) public
+        returns (bool r1, string r2, int56 r3, address[] r4, uint8 r5, uint64[3] r6) {
+            return (p1, p2, p3, p4, p5, p6);
     }
 
     /// @author Unknown author
@@ -103,28 +71,28 @@ contract ExampleContract {
     /// @dev Hi dev
     /// @param _num What number
     /// @return true if _num is 9
-    function myFunc(int256 _num) external pure returns (bool isNine) {
+    function myFunc(uint256 _num) external pure returns (bool isNine) {
         return _num == 9;
     }
 
-    function tupleTest() public pure returns (int p1, bool p2) {
-        return (8, false);
+	function echoString(string val) public returns (string) {
+		return val;
+	}
+
+	function echoAddress(address val) public returns (address) {
+		return val;
+	}
+
+	function echoMany(address addr, uint256 num, string str) public returns (address, uint256, string) {
+		return (addr, num, str);
+	}
+
+    function echoInt24(int24 _num) public returns (int24 _result) {
+        return _num;
     }
 
-    function overloadedFunc(string _stringParam) {
-
-    }
-
-    function overloadedFunc(int _intParam) {
-
-    }
-
-    function aPrivateFunc() private {
-
-    }
-
-    function examplePayableFunc() public payable {
-
+    function noopFunc() public {
+        
     }
 
     /// @notice The fallback function

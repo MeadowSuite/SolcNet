@@ -105,7 +105,8 @@ namespace SolcNet
             var inputDesc = new InputDescription();
             inputDesc.Settings.OutputSelection["*"] = new Dictionary<string, OutputType[]>
             {
-                ["*"] = outputSelection.ToArray()
+                ["*"] = outputSelection,
+                [""] = outputSelection
             };
 
             foreach (var filePath in contractFilePaths)
