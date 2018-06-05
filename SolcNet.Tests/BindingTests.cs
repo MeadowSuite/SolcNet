@@ -6,14 +6,24 @@ using Xunit;
 
 namespace SolcNet.Tests
 {
-    public class NativeLibProvider : TheoryData<Func<INativeSolcLib>>
+    public class NativeLibProvider : TheoryData<IInteropLibProvider>
     {
         public NativeLibProvider()
         {
-            Add(() => new SolcLibPInvokeProvider());
-            Add(() => new SolcNet.NativeLibraryLoader.SolcLibDynamicProvider());
-            Add(() => new SolcNet.AdvDL.SolcLibAdvDLProvider());
+            Add(new InteropLibProvider<SolcLibPInvokeProvider>());
+            Add(new InteropLibProvider<NativeLibraryLoader.SolcLibDynamicProvider>());
+            Add(new InteropLibProvider<AdvDL.SolcLibAdvDLProvider>());
         }
+    }
+
+    public interface IInteropLibProvider
+    {
+        INativeSolcLib InteropLib { get; }
+    }
+
+    public class InteropLibProvider<T> : IInteropLibProvider where T : INativeSolcLib, new()
+    {
+        public INativeSolcLib InteropLib => new T();
     }
 
     public class BindingTests
@@ -27,27 +37,27 @@ namespace SolcNet.Tests
 
         [Theory]
         [ClassData(typeof(NativeLibProvider))]
-        public void VersionTest(Func<INativeSolcLib> nativeSolcLib)
+        public void VersionTest(IInteropLibProvider nativeSolcLib)
         {
-            var solcLib = new SolcLib(nativeSolcLib(), CONTRACT_SRC_DIR);
+            var solcLib = new SolcLib(nativeSolcLib.InteropLib, CONTRACT_SRC_DIR);
             var version = solcLib.Version;
             Assert.Equal(Version.Parse("0.4.24"), version);
         }
 
         [Theory]
         [ClassData(typeof(NativeLibProvider))]
-        public void LicenseTest(Func<INativeSolcLib> nativeSolcLib)
+        public void LicenseTest(IInteropLibProvider nativeSolcLib)
         {
-            var solcLib = new SolcLib(nativeSolcLib(), CONTRACT_SRC_DIR);
+            var solcLib = new SolcLib(nativeSolcLib.InteropLib, CONTRACT_SRC_DIR);
             var license = solcLib.License;
             Assert.StartsWith("Most of the code is licensed under GPLv3", license);
         }
 
         [Theory]
         [ClassData(typeof(NativeLibProvider))]
-        public void CompileOpenZeppelin(Func<INativeSolcLib> nativeSolcLib)
+        public void CompileOpenZeppelin(IInteropLibProvider nativeSolcLib)
         {
-            var solcLib = new SolcLib(nativeSolcLib(), CONTRACT_SRC_DIR);
+            var solcLib = new SolcLib(nativeSolcLib.InteropLib, CONTRACT_SRC_DIR);
             var srcs = new[] {
                 "contracts/AddressUtils.sol",
                 "contracts/Bounty.sol",
