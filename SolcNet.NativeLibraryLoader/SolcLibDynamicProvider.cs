@@ -1,10 +1,11 @@
 ﻿using NativeLibraryLoader;
+using SolcNet.NativeLib;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace SolcNet.NativeLib
+namespace SolcNet.NativeLibraryLoader
 {
     public class SolcLibDynamicProvider : INativeSolcLib
     {

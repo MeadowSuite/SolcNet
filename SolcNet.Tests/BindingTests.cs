@@ -6,13 +6,13 @@ using Xunit;
 
 namespace SolcNet.Tests
 {
-    public class NativeLibProvider : TheoryData<INativeSolcLib>
+    public class NativeLibProvider : TheoryData<Func<INativeSolcLib>>
     {
         public NativeLibProvider()
         {
-            Add(new SolcLibPInvokeProvider());
-            //Add(new SolcLibDynamicProvider());
-            //Add(new SolcNet.AdvDL.SolcLibAdvDLProvider());
+            Add(() => new SolcLibPInvokeProvider());
+            Add(() => new SolcNet.NativeLibraryLoader.SolcLibDynamicProvider());
+            Add(() => new SolcNet.AdvDL.SolcLibAdvDLProvider());
         }
     }
 
@@ -27,27 +27,27 @@ namespace SolcNet.Tests
 
         [Theory]
         [ClassData(typeof(NativeLibProvider))]
-        public void VersionTest(INativeSolcLib nativeSolcLib)
+        public void VersionTest(Func<INativeSolcLib> nativeSolcLib)
         {
-            var solcLib = new SolcLib(nativeSolcLib, CONTRACT_SRC_DIR);
+            var solcLib = new SolcLib(nativeSolcLib(), CONTRACT_SRC_DIR);
             var version = solcLib.Version;
             Assert.Equal(Version.Parse("0.4.24"), version);
         }
 
         [Theory]
         [ClassData(typeof(NativeLibProvider))]
-        public void LicenseTest(INativeSolcLib nativeSolcLib)
+        public void LicenseTest(Func<INativeSolcLib> nativeSolcLib)
         {
-            var solcLib = new SolcLib(nativeSolcLib, CONTRACT_SRC_DIR);
+            var solcLib = new SolcLib(nativeSolcLib(), CONTRACT_SRC_DIR);
             var license = solcLib.License;
             Assert.StartsWith("Most of the code is licensed under GPLv3", license);
         }
 
         [Theory]
         [ClassData(typeof(NativeLibProvider))]
-        public void CompileOpenZeppelin(INativeSolcLib nativeSolcLib)
+        public void CompileOpenZeppelin(Func<INativeSolcLib> nativeSolcLib)
         {
-            var solcLib = new SolcLib(nativeSolcLib, CONTRACT_SRC_DIR);
+            var solcLib = new SolcLib(nativeSolcLib(), CONTRACT_SRC_DIR);
             var srcs = new[] {
                 "contracts/AddressUtils.sol",
                 "contracts/Bounty.sol",

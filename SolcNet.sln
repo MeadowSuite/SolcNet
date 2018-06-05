@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolcNet.NativeLibraryLoader", "SolcNet.NativeLibraryLoader\SolcNet.NativeLibraryLoader.csproj", "{7255F657-E574-4EF7-9708-58A2120B98CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,8 +51,8 @@ Global
 		{85DBA835-57BD-468F-8878-9588675ECF00}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
 		{3222AC02-705A-4007-A001-4BB09A66457A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3222AC02-705A-4007-A001-4BB09A66457A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3222AC02-705A-4007-A001-4BB09A66457A}.DebugToolchain|Any CPU.ActiveCfg = Debug|Any CPU
-		{3222AC02-705A-4007-A001-4BB09A66457A}.DebugToolchain|Any CPU.Build.0 = Debug|Any CPU
+		{3222AC02-705A-4007-A001-4BB09A66457A}.DebugToolchain|Any CPU.ActiveCfg = DebugToolchain|Any CPU
+		{3222AC02-705A-4007-A001-4BB09A66457A}.DebugToolchain|Any CPU.Build.0 = DebugToolchain|Any CPU
 		{3222AC02-705A-4007-A001-4BB09A66457A}.MinSizeRel|Any CPU.ActiveCfg = Debug|Any CPU
 		{3222AC02-705A-4007-A001-4BB09A66457A}.MinSizeRel|Any CPU.Build.0 = Debug|Any CPU
 		{3222AC02-705A-4007-A001-4BB09A66457A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -59,14 +61,24 @@ Global
 		{3222AC02-705A-4007-A001-4BB09A66457A}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
 		{A95DD8FD-81CF-41C3-8B45-C1F2340B5925}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A95DD8FD-81CF-41C3-8B45-C1F2340B5925}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A95DD8FD-81CF-41C3-8B45-C1F2340B5925}.DebugToolchain|Any CPU.ActiveCfg = Debug|Any CPU
-		{A95DD8FD-81CF-41C3-8B45-C1F2340B5925}.DebugToolchain|Any CPU.Build.0 = Debug|Any CPU
+		{A95DD8FD-81CF-41C3-8B45-C1F2340B5925}.DebugToolchain|Any CPU.ActiveCfg = DebugToolchain|Any CPU
+		{A95DD8FD-81CF-41C3-8B45-C1F2340B5925}.DebugToolchain|Any CPU.Build.0 = DebugToolchain|Any CPU
 		{A95DD8FD-81CF-41C3-8B45-C1F2340B5925}.MinSizeRel|Any CPU.ActiveCfg = Debug|Any CPU
 		{A95DD8FD-81CF-41C3-8B45-C1F2340B5925}.MinSizeRel|Any CPU.Build.0 = Debug|Any CPU
 		{A95DD8FD-81CF-41C3-8B45-C1F2340B5925}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A95DD8FD-81CF-41C3-8B45-C1F2340B5925}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A95DD8FD-81CF-41C3-8B45-C1F2340B5925}.RelWithDebInfo|Any CPU.ActiveCfg = Release|Any CPU
 		{A95DD8FD-81CF-41C3-8B45-C1F2340B5925}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
+		{7255F657-E574-4EF7-9708-58A2120B98CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7255F657-E574-4EF7-9708-58A2120B98CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7255F657-E574-4EF7-9708-58A2120B98CB}.DebugToolchain|Any CPU.ActiveCfg = DebugToolchain|Any CPU
+		{7255F657-E574-4EF7-9708-58A2120B98CB}.DebugToolchain|Any CPU.Build.0 = DebugToolchain|Any CPU
+		{7255F657-E574-4EF7-9708-58A2120B98CB}.MinSizeRel|Any CPU.ActiveCfg = Debug|Any CPU
+		{7255F657-E574-4EF7-9708-58A2120B98CB}.MinSizeRel|Any CPU.Build.0 = Debug|Any CPU
+		{7255F657-E574-4EF7-9708-58A2120B98CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7255F657-E574-4EF7-9708-58A2120B98CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7255F657-E574-4EF7-9708-58A2120B98CB}.RelWithDebInfo|Any CPU.ActiveCfg = Release|Any CPU
+		{7255F657-E574-4EF7-9708-58A2120B98CB}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

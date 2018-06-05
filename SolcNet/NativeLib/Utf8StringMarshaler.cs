@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace SolcNet.NativeLib
 {
-    class Utf8StringMarshaler : ICustomMarshaler
+    public class Utf8StringMarshaler : ICustomMarshaler
     {
         string _clean;
 
