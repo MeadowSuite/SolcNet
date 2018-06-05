@@ -82,7 +82,15 @@ namespace SolcNet.NativeLib
             {
                 return ReturnFoundFile(filePath);
             }
-            
+
+
+            filePath = Path.Combine(libLocation, "runtimes", platform.Prefix, "native", platform.LibPrefix + library) + platform.Extension;
+            searchedPaths.Add(filePath);
+            if (File.Exists(filePath))
+            {
+                return ReturnFoundFile(filePath);
+            }
+
             libLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             filePath = GetPath();
             searchedPaths.Add(filePath);
@@ -90,7 +98,7 @@ namespace SolcNet.NativeLib
             {
                 return ReturnFoundFile(filePath);
             }
-            
+
             foreach (var extraPath in ExtraNativeLibSearchPaths)
             {
                 libLocation = extraPath;
