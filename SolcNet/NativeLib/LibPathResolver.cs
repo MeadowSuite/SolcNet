@@ -67,6 +67,11 @@ namespace SolcNet.NativeLib
                 return Path.Combine(libLocation, "native", platform.Prefix, subDir, platform.LibPrefix + library) + platform.Extension;
             }
 
+            string GetRuntimesPath()
+            {
+                return Path.Combine(libLocation, "runtimes", platform.Prefix, "native", platform.LibPrefix + library) + platform.Extension;
+            }
+
             string filePath = GetPath();
             searchedPaths.Add(filePath);
 #if DEBUG
@@ -83,7 +88,15 @@ namespace SolcNet.NativeLib
                 return ReturnFoundFile(filePath);
             }
 
-            filePath = Path.Combine(libLocation, "runtimes", platform.Prefix, "native", platform.LibPrefix + library) + platform.Extension;
+            filePath = GetRuntimesPath();
+            searchedPaths.Add(filePath);
+            if (File.Exists(filePath))
+            {
+                return ReturnFoundFile(filePath);
+            }
+
+            libLocation = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "publish");
+            filePath = GetRuntimesPath();
             searchedPaths.Add(filePath);
             if (File.Exists(filePath))
             {
@@ -98,7 +111,15 @@ namespace SolcNet.NativeLib
                 return ReturnFoundFile(filePath);
             }
 
-            filePath = Path.Combine(libLocation, "runtimes", platform.Prefix, "native", platform.LibPrefix + library) + platform.Extension;
+            filePath = GetRuntimesPath();
+            searchedPaths.Add(filePath);
+            if (File.Exists(filePath))
+            {
+                return ReturnFoundFile(filePath);
+            }
+
+            libLocation = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "publish");
+            filePath = GetRuntimesPath();
             searchedPaths.Add(filePath);
             if (File.Exists(filePath))
             {
