@@ -25,27 +25,27 @@ namespace SolcNet.NativeLib
             ref string error);
 
         [DllImport(LIB_FILE, EntryPoint = "license", CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaler))]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         static extern string NativeLicense();
 
         [DllImport(LIB_FILE, EntryPoint = "version", CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaler))]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         static extern string NativeVersion();
 
         [DllImport(LIB_FILE, EntryPoint = "compileStandard", CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaler))]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         static extern string NativeCompileStandard(string input, NativeReadFileCallback readCallback);
 
         [DllImport(LIB_FILE, EntryPoint = "compileJSON", CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaler))]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         static extern string NativeCompileLegacyJson(string input, bool optimize);
 
         [DllImport(LIB_FILE, EntryPoint = "compileJSONMulti", CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaler))]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         static extern string NativeCompileLegacyJsonMutli(string input, bool optimize);
 
         [DllImport(LIB_FILE, EntryPoint = "compileJSONCallback", CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaler))]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         static extern string NativeCompileLegacyJson(string input, bool optimize, NativeReadFileCallback readCallback);
 
 

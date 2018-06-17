@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <Configurations>Debug;Release;DebugToolchain</Configurations>
   </PropertyGroup>
 
@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SolcNet.Tests\SolcNet.Tests.csproj" />
     <ProjectReference Include="..\SolcNet\SolcNet.csproj" />
   </ItemGroup>
 

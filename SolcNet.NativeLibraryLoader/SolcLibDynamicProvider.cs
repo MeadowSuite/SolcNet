@@ -34,27 +34,27 @@ namespace SolcNet.NativeLibraryLoader
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaler))]
             ref string error);
 
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaler))]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         delegate string CompileStandardDelegate(string input, NativeReadFileCallback readCallback);
         Lazy<CompileStandardDelegate> _compileStandard = LoadFunction<CompileStandardDelegate>("compileStandard");
 
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaler))]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         delegate string CompileJsonDelegate(string input, bool optimize);
         Lazy<CompileJsonDelegate> _compileJson = LoadFunction<CompileJsonDelegate>("compileJSON");
 
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaler))]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         delegate string CompileJsonMultiDelegate(string input, bool optimize);
         Lazy<CompileJsonMultiDelegate> _compileJsonMulti = LoadFunction<CompileJsonMultiDelegate>("compileJSONMulti");
 
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaler))]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         delegate string CompileJsonCallbackDelegate(string input, bool optimize, NativeReadFileCallback readCallback);
         Lazy<CompileJsonCallbackDelegate> _compileJsonCallback = LoadFunction<CompileJsonCallbackDelegate>("compileJSONCallback");
 
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaler))]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         delegate string LicenseDelegate();
         Lazy<LicenseDelegate> _license = LoadFunction<LicenseDelegate>("license");
 
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaler))]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         delegate string VersionDelegate();
         Lazy<VersionDelegate> _version = LoadFunction<VersionDelegate>("version");
 

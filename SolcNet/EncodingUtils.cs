@@ -8,34 +8,55 @@ namespace SolcNet
 {
     public static class EncodingUtils
     {
-        static string BOMMarkUtf8 = Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble());
+        readonly static Encoding UTF8_ENCODING = new UTF8Encoding(false, false);
 
-        public static string RemoveBom(string p)
-        {
-            return p.Trim(new char[] { '\uFEFF', '\u200B' });
-        }
-
-        public static IntPtr StringToUtf8(string str)
+        public static unsafe IntPtr StringToUtf8(string str)
         {
             if (str == null)
             {
                 return IntPtr.Zero;
             }
-            int len = Encoding.UTF8.GetByteCount(str);
-            byte[] buffer = new byte[len + 1];
-            Encoding.UTF8.GetBytes(str, 0, str.Length, buffer, 0);
-            IntPtr nativeUtf8 = Marshal.AllocHGlobal(buffer.Length);
-            Marshal.Copy(buffer, 0, nativeUtf8, buffer.Length);
-            return nativeUtf8;
+
+            int length = UTF8_ENCODING.GetByteCount(str);
+            var buffer = (byte*)Marshal.AllocHGlobal(length + 1);
+
+            if (length > 0)
+            {
+                fixed (char* pValue = str)
+                {
+                    UTF8_ENCODING.GetBytes(pValue, str.Length, buffer, length);
+                }
+            }
+
+            buffer[length] = 0;
+
+            return new IntPtr(buffer);
         }
 
-        public static string Utf8ToString(IntPtr utf8)
+        public static unsafe string Utf8ToString(IntPtr utf8)
         {
-            int len = 0;
-            while (Marshal.ReadByte(utf8, len) != 0) ++len;
-            byte[] buffer = new byte[len];
-            Marshal.Copy(utf8, buffer, 0, buffer.Length);
-            return Encoding.UTF8.GetString(buffer);
+            if (utf8 == IntPtr.Zero)
+            {
+                return null;
+            }
+
+            var pNativeData = (byte*)utf8;
+
+            var start = pNativeData;
+            byte* walk = start;
+
+            // Find the end of the string
+            while (*walk != 0)
+            {
+                walk++;
+            }
+
+            if (walk == start)
+            {
+                return String.Empty;
+            }
+
+            return new String((sbyte*)pNativeData, 0, (int)(walk - start), UTF8_ENCODING);
         }
 
         public static ValueTuple<T1, T2, T3>[] Flatten<T1, T2, T3>(this Dictionary<T1, Dictionary<T2, T3>> dicts)

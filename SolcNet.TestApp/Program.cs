@@ -34,7 +34,8 @@ namespace SolcNet.TestApp
                     OutputType.EvmBytecode,
                     OutputType.IR,
                     OutputType.DevDoc,
-                    OutputType.UserDoc
+                    OutputType.UserDoc,
+                    OutputType.Metadata
                 };
 
             var srcs = new[] {
