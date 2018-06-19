@@ -22,7 +22,7 @@ namespace SolcNet
 
         public string License => _native.GetLicense();
 
-        string _solSourceRoot = null;
+        readonly string _solSourceRoot;
         string _lastSourceDir = null;
 
         public SolcLib(string solSourceRoot = null, string[] extraLibSearchDirs = null)

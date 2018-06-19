@@ -2,7 +2,11 @@ using SolcNet.NativeLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
+
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
 
 namespace SolcNet.Tests
 {
@@ -58,6 +62,11 @@ namespace SolcNet.Tests
         public void CompileCallbackTest(IInteropLibProvider nativeSolcLib)
         {
             var solcLib = new SolcLib(nativeSolcLib.InteropLib, CONTRACT_SRC_DIR);
+            CompileSeveralContracts(solcLib);
+        }
+
+        static void CompileSeveralContracts(SolcLib solcLib)
+        {
             var srcs = new[] {
                 "contracts/AddressUtils.sol",
                 "contracts/Bounty.sol",
@@ -129,5 +138,6 @@ namespace SolcNet.Tests
 
             solcLib.Compile(srcs);
         }
+
     }
 }
