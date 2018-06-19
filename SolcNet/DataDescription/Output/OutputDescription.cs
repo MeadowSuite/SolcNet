@@ -14,7 +14,9 @@ namespace SolcNet.DataDescription.Output
     {
         public static OutputDescription FromJsonString(string jsonStr)
         {
-            var output = JsonConvert.DeserializeObject<OutputDescription>(jsonStr, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
+            var jObj = JObject.Parse(jsonStr);
+            var output = jObj.ToObject<OutputDescription>(JsonSerializer.CreateDefault(new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error }));
+            output.JObject = jObj;
             output.RawJsonOutput = jsonStr;
             return output;
         }
@@ -45,6 +47,9 @@ namespace SolcNet.DataDescription.Output
 
         [JsonIgnore]
         public string RawJsonOutput { get; set; }
+
+        [JsonIgnore]
+        public JObject JObject { get; set; }
     }
 
     public class SourceFileOutput

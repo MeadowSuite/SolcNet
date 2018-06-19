@@ -55,7 +55,7 @@ namespace SolcNet.Tests
 
         [Theory]
         [ClassData(typeof(NativeLibProvider))]
-        public void CompileOpenZeppelin(IInteropLibProvider nativeSolcLib)
+        public void CompileCallbackTest(IInteropLibProvider nativeSolcLib)
         {
             var solcLib = new SolcLib(nativeSolcLib.InteropLib, CONTRACT_SRC_DIR);
             var srcs = new[] {

@@ -12,13 +12,11 @@ import "../ECRecovery.sol";
  * @dev is valid. The owner of the contract adds/removes bouncers.
  * @dev Bouncer addresses can be individual servers signing grants or different
  * @dev users within a decentralized club that have permission to invite other members.
- * @dev
  * @dev This technique is useful for whitelists and airdrops; instead of putting all
  * @dev valid addresses on-chain, simply sign a grant of the form
  * @dev keccak256(`:contractAddress` + `:granteeAddress`) using a valid bouncer address.
  * @dev Then restrict access to your crowdsale/whitelist/airdrop using the
  * @dev `onlyValidSignature` modifier (or implement your own using isValidSignature).
- * @dev
  * @dev See the tests Bouncer.test.js for specific usage examples.
  */
 contract SignatureBouncer is Ownable, RBAC {
