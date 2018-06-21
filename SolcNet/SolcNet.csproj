@@ -38,4 +38,13 @@
 
   <Import Project="SolcNet.targets" />
 
+  <Target Name="PackTaskDependencies" BeforeTargets="GenerateNuspec">
+    <ItemGroup>
+      <_PackageFiles Include="$(OutputPath)/native/**/*">
+        <BuildAction>Content</BuildAction>
+        <PackagePath>content/native/</PackagePath>
+      </_PackageFiles>
+    </ItemGroup>
+  </Target>
+
 </Project>
