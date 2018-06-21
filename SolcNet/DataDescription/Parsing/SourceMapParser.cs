@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using SolcNet.DataDescription.Output;
-using System;
+﻿using SolcNet.DataDescription.Output;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -8,20 +6,15 @@ using System.Text;
 
 namespace SolcNet.DataDescription.Parsing
 {
-    class SourceMapParser : JsonConverter<SourceMapEntry[]>
+
+    public static class SourceMapParser
     {
-        public override SourceMapEntry[] ReadJson(JsonReader reader, Type objectType, SourceMapEntry[] existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public static SourceMapEntry[] Parse(string encodedValue)
         {
-            var val = reader.Value as string;
-            if (string.IsNullOrEmpty(val))
-            {
-                return null;
-            }
-            var valParts = val.Split(';');
+            var valParts = encodedValue.Split(';');
             var entries = new SourceMapEntry[valParts.Length];
             for (var i = 0; i < entries.Length; i++)
             {
-                entries[i].Raw = valParts[i];
                 // If a : is missing, all following fields are considered empty.
                 if (valParts[i] == string.Empty)
                 {
@@ -30,8 +23,8 @@ namespace SolcNet.DataDescription.Parsing
                 else
                 {
                     var entryParts = valParts[i].Split(':');
-                    
-                    entries[i].Offset = entryParts[0] != string.Empty 
+
+                    entries[i].Offset = entryParts[0] != string.Empty
                         ? int.Parse(entryParts[0], CultureInfo.InvariantCulture)
                         : entries[i - 1].Offset;
 
@@ -49,11 +42,6 @@ namespace SolcNet.DataDescription.Parsing
                 }
             }
             return entries;
-        }
-
-        public override void WriteJson(JsonWriter writer, SourceMapEntry[] value, JsonSerializer serializer)
-        {
-            writer.WriteToken(JsonToken.String, string.Join(";", value.Select(v => v.Raw)));
         }
     }
 }

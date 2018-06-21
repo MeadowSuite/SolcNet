@@ -1,6 +1,7 @@
 ﻿using HoshoEthUtil;
 using Newtonsoft.Json;
 using SolcNet.DataDescription.Parsing;
+using System;
 using System.Collections.Generic;
 
 namespace SolcNet.DataDescription.Output
@@ -27,9 +28,10 @@ namespace SolcNet.DataDescription.Output
 
         /// <summary>
         /// The source mapping as a string. See the source mapping definition.
+        /// <see href="http://solidity.readthedocs.io/en/v0.4.24/miscellaneous.html#source-mappings"/>
         /// </summary>
-        [JsonProperty("sourceMap"), JsonConverter(typeof(SourceMapParser))]
-        public SourceMapEntry[] SourceMap { get; set; }
+        [JsonProperty("sourceMap"), JsonConverter(typeof(SourceMapJsonConverter))]
+        public SourceMaps SourceMap { get; set; }
 
         /// <summary>
         /// If given, this is an unlinked object.
@@ -38,6 +40,30 @@ namespace SolcNet.DataDescription.Output
         public Dictionary<string /*sol file*/, Dictionary<string/*contract name*/, LinkReference[]>> LinkReferences { get; set; }
     }
 
+    /// <summary>
+    /// Initially only holds the encoded source map string in <see cref="EncodedValue"/>.
+    /// The source map entries are lazily parsed when <see cref="Entries"/> is first accessed.
+    /// </summary>
+    public class SourceMaps
+    {
+        /// <summary>
+        /// The encoded source map string.
+        /// <see href="http://solidity.readthedocs.io/en/v0.4.24/miscellaneous.html#source-mappings"/>
+        /// </summary>
+        public string EncodedValue { get; set; }
+
+        SourceMapEntry[] _entries;
+
+        /// <summary>
+        /// Lazily parses the <see cref="EncodedValue"/> when first accessed.
+        /// </summary>
+        public SourceMapEntry[] Entries => _entries ?? (_entries = EncodedValue == null ? null : SourceMapParser.Parse(EncodedValue));
+    }
+
+    /// <summary>
+    /// The parsed source map data.
+    /// <see href="http://solidity.readthedocs.io/en/v0.4.24/miscellaneous.html#source-mappings"/>
+    /// </summary>
     public struct SourceMapEntry
     {
         /*
@@ -64,8 +90,6 @@ namespace SolcNet.DataDescription.Output
         public int Index;
         /// <summary></summary>
         public JumpInstruction Jump;
-
-        public string Raw;
     }
 
     public enum JumpInstruction : byte

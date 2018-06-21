@@ -5,6 +5,7 @@ using SolcNet.DataDescription.Input;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -29,7 +30,21 @@ namespace SolcNet.Tests
             //var expectedOutput = JObject.Parse(File.ReadAllText("TestOutput/ExampleContract.json"));
             var serializedOutput = JsonConvert.SerializeObject(output, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var jdp = new JsonDiffPatch();
-            var diff = JObject.Parse(jdp.Diff(originalOutput, serializedOutput)).ToString(Formatting.Indented);
+            var diffStr = jdp.Diff(originalOutput, serializedOutput);
+            if (!string.IsNullOrEmpty(diffStr))
+            {
+                var diff = JObject.Parse(diffStr).ToString(Formatting.Indented);
+            }
+        }
+
+        [Fact]
+        public void SourceMapParsing()
+        {
+            var exampleContract = "TestContracts/ExampleContract.sol";
+            var output = _lib.Compile(exampleContract, OutputType.EvmBytecodeSourceMap);
+            var sourceMaps = output.Contracts.Values.First().Values.First().Evm.Bytecode.SourceMap;
+            var parsed = sourceMaps.Entries;
+            Assert.True(parsed.Length > 0);
         }
 
     }
