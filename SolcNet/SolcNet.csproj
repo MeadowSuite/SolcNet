@@ -22,18 +22,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HoshoEthUtil" Version="0.1.18" Condition="'$(Configuration)'!='DebugToolchain'" />
+    <PackageReference Include="HoshoEthUtil" Version="0.1.24" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="System.Memory" Version="4.5.0" />
+    <PackageReference Include="System.Memory" Version="4.5.1" />
     <PackageReference Include="SolcLib.Native" Version="0.4.24.12" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.8.1" PrivateAssets="all" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\..\HoshoEthUtil\HoshoEthUtil\HoshoEthUtil.csproj" Condition="'$(Configuration)'=='DebugToolchain'" />
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.8.2" PrivateAssets="all" />
   </ItemGroup>
 
   <Import Project="SolcNet.targets" />
