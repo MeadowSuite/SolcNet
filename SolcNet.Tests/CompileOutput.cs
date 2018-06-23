@@ -47,5 +47,14 @@ namespace SolcNet.Tests
             Assert.True(parsed.Length > 0);
         }
 
+        [Fact]
+        public void SourceFileContentTracking()
+        {
+            var exampleContract = "TestContracts/ExampleContract.sol";
+            var sourceContent = new Dictionary<string, string>();
+            var output = _lib.Compile(exampleContract, OutputType.EvmBytecodeSourceMap, soliditySourceFileContent: sourceContent);
+            Assert.Equal(sourceContent.First().Key, exampleContract);
+        }
+
     }
 }

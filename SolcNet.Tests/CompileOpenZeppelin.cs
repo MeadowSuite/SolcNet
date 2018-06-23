@@ -13,9 +13,10 @@ namespace SolcNet.Tests
         [Fact]
         public void CompileAll()
         {
+            var sourceContent = new Dictionary<string, string>();
             var contractFiles = Directory.GetFiles("OpenZeppelin", "*.sol", SearchOption.AllDirectories);
             var solc = new SolcLib();
-            var output = solc.Compile(contractFiles, OutputTypes.All, CompileErrorHandling.ThrowOnError);
+            var output = solc.Compile(contractFiles, OutputType.EvmDeployedBytecodeSourceMap, CompileErrorHandling.ThrowOnError, sourceContent);
         }
     }
 }
