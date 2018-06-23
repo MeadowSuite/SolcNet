@@ -79,25 +79,41 @@ namespace SolcNet.DataDescription.Input
         [EnumMember(Value = "evm.deployedBytecode")]
         EvmDeployedBytecode = 1L << 15,
 
+        /// <summary>Bytecode object</summary>
+        [EnumMember(Value = "evm.deployedBytecode.object")]
+        EvmDeployedBytecodeObject = 1L << 16,
+
+        /// <summary>Opcodes list</summary>
+        [EnumMember(Value = "evm.deployedBytecode.opcodes")]
+        EvmDeployedBytecodeOpcodes = 1L << 17,
+
+        /// <summary>Source mapping (useful for debugging)</summary>
+        [EnumMember(Value = "evm.deployedBytecode.sourceMap")]
+        EvmDeployedBytecodeSourceMap = 1L << 18,
+
+        /// <summary>Link references (if unlinked object)</summary>
+        [EnumMember(Value = "evm.deployedBytecode.linkReferences")]
+        EvmDeployedBytecodeLinkReferences = 1L << 19,
+
         /// <summary>The list of function hashes</summary>
         [EnumMember(Value = "evm.methodIdentifiers")]
-        EvmMethodIdentifiers = 1L << 16,
+        EvmMethodIdentifiers = 1L << 20,
 
         /// <summary>Function gas estimates</summary>
         [EnumMember(Value = "evm.gasEstimates")]
-        EvmGasEstimates = 1L << 17,
+        EvmGasEstimates = 1L << 21,
 
         /// <summary>All eWASM related targets</summary>
         [EnumMember(Value = "ewasm")]
-        Ewasm = 1L << 18,
+        Ewasm = 1L << 22,
 
         /// <summary>eWASM S-expressions format (not supported atm)</summary>
         [EnumMember(Value = "ewasm.wast")]
-        EwasmWast = 1L << 19,
+        EwasmWast = 1L << 23,
 
         /// <summary>eWASM binary format (not supported atm)</summary>
         [EnumMember(Value = "ewasm.wasm")]
-        EwasmWasm = 1L << 20
+        EwasmWasm = 1L << 24
     }
 
     public static class OutputTypes
