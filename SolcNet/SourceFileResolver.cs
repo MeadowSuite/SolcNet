@@ -40,6 +40,7 @@ namespace SolcNet
                     {
                         _lastSourceDir = Path.GetDirectoryName(sourceFilePath);
                         contents = File.ReadAllText(sourceFilePath, Encoding.UTF8);
+                        contents = contents.Replace("\r\n", "\n");
                         _fileContents.Add(sourceFilePath, contents);
                     }
                     else
