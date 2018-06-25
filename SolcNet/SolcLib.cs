@@ -54,16 +54,20 @@ namespace SolcNet
             CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError,
             Dictionary<string, string> soliditySourceFileContent = null)
         {
-            var sourceResolver = new SourceFileResolver(_solSourceRoot, soliditySourceFileContent);
-            var res = _native.Compile(jsonInput, sourceResolver.ReadSolSourceFileManaged);
-            var output = OutputDescription.FromJsonString(res);
-
-            var compilerException = CompilerException.GetCompilerExceptions(output.Errors, errorHandling);
-            if (compilerException != null)
+            // Wrap the resolver object in a using to avoid it from being garbage collected during the
+            // execution of the native solc compile function.
+            using (var sourceResolver = new SourceFileResolver(_solSourceRoot, soliditySourceFileContent))
             {
-                throw compilerException;
+                var res = _native.Compile(jsonInput, sourceResolver.ReadFileDelegate);
+                var output = OutputDescription.FromJsonString(res);
+
+                var compilerException = CompilerException.GetCompilerExceptions(output.Errors, errorHandling);
+                if (compilerException != null)
+                {
+                    throw compilerException;
+                }
+                return output;
             }
-            return output;
         }
 
         public OutputDescription Compile(InputDescription input, 

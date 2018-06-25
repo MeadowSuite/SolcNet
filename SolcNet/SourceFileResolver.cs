@@ -1,14 +1,17 @@
-﻿using System;
+﻿using SolcNet.NativeLib;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
 namespace SolcNet
 {
-    class SourceFileResolver
+    class SourceFileResolver : IDisposable
     {
         string _solSourceRoot;
         string _lastSourceDir;
+
+        public readonly ReadFileCallback ReadFileDelegate;
 
         Dictionary<string, string> _fileContents = new Dictionary<string, string>();
 
@@ -16,6 +19,7 @@ namespace SolcNet
         {
             _solSourceRoot = solSourceRoot;
             _fileContents = fileContents ?? new Dictionary<string, string>();
+            ReadFileDelegate = ReadSolSourceFileManaged;
         }
 
         public void ReadSolSourceFileManaged(string path, ref string contents, ref string error)
@@ -53,6 +57,11 @@ namespace SolcNet
             {
                 error = ex.ToString();
             }
+        }
+
+        public void Dispose()
+        {
+
         }
     }
 }
