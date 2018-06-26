@@ -55,6 +55,9 @@ namespace SolcNet.DataDescription.Output
         SourceMapEntry[] _entries;
 
         /// <summary>
+        /// Each of these elements corresponds to an instruction, i.e. you cannot use the byte 
+        /// offset but have to use the instruction offset (push instructions are longer than a 
+        /// single byte).
         /// Lazily parses the <see cref="EncodedValue"/> when first accessed.
         /// </summary>
         public SourceMapEntry[] Entries => _entries ?? (_entries = EncodedValue == null ? null : SourceMapParser.Parse(EncodedValue));
@@ -82,13 +85,24 @@ namespace SolcNet.DataDescription.Output
             If a : is missing, all following fields are considered empty.
         */
 
-        /// <summary>the byte-offset to the start of the range in the source file</summary>
+        /// <summary>The byte-offset to the start of the range in the source file.</summary>
         public int Offset;
-        /// <summary>the length of the source range in bytes</summary>
+
+        /// <summary>The length of the source range in bytes.</summary>
         public int Length;
-        /// <summary>integer indentifier to refer to source file</summary>
+
+        /// <summary>
+        /// Integer indentifier to refer to source file. In the case of instructions that are not 
+        /// associated with any particular source file, the source mapping assigns an integer 
+        /// identifier of -1. This may happen for bytecode sections stemming from compiler-generated 
+        /// inline assembly statements.
+        /// </summary>
         public int Index;
-        /// <summary></summary>
+
+        /// <summary>
+        /// Signifies whether a jump instruction goes into a function, returns from a function or 
+        /// is a regular jump as part of e.g. a loop.
+        /// </summary>
         public JumpInstruction Jump;
     }
 
