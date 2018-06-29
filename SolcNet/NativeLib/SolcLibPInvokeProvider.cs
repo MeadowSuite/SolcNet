@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -14,6 +15,9 @@ namespace SolcNet.NativeLib
 
         [DllImport("libdl")]
         static extern IntPtr dlopen(string path, int flags);
+
+        [DllImport("libdl")]
+        static extern IntPtr dlerror();
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         delegate void NativeReadFileCallback(
@@ -54,12 +58,25 @@ namespace SolcNet.NativeLib
             var libPath = LibPathResolver.Resolve(LIB_FILE);
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                LoadLibrary(libPath);
+                var loadResult = LoadLibrary(libPath);
+                if (loadResult == IntPtr.Zero)
+                {
+                    throw new Exception($"Library loading failed, file: {libPath}", new Win32Exception(Marshal.GetLastWin32Error()));
+                }
             }
             else
             {
                 const int RTLD_NOW = 0x002;
-                dlopen(libPath, RTLD_NOW);
+                var loadResult = dlopen(libPath, RTLD_NOW);
+                if (loadResult == IntPtr.Zero)
+                {
+                    var errorPtr = dlerror();
+                    if (errorPtr == IntPtr.Zero)
+                    {
+                        throw new Exception($"Library could not be loaded, and error information from dl library could not be found, file: {libPath}");
+                    }
+                    throw new Exception($"Library could not be loaded: {Marshal.PtrToStringAnsi(errorPtr)}, file: {libPath}");
+                }
             }
         }
 
