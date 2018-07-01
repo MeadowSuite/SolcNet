@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HoshoEthUtil" Version="0.1.24" />
+    <PackageReference Include="HoshoEthUtil" Version="0.1.25" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.Memory" Version="4.5.1" />
     <PackageReference Include="SolcLib.Native" Version="0.4.24.18" />
