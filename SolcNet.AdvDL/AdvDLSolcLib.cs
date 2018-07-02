@@ -54,5 +54,13 @@ namespace SolcNet.AdvDL
         {
             return _native.version();
         }
+
+        public void Dispose()
+        {
+            if (_native is NativeLibraryBase lib)
+            {
+                lib.Dispose();
+            }
+        }
     }
 }

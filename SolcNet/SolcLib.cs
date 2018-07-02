@@ -29,7 +29,7 @@ namespace SolcNet
             {
                 LibPathResolver.ExtraNativeLibSearchPaths.AddRange(extraLibSearchDirs);
             }
-            _native = new SolcLibPInvokeProvider();
+            _native = new SolcLibDefaultProvider();
             _solSourceRoot = solSourceRoot;
         }
 

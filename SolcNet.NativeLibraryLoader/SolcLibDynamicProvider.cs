@@ -92,5 +92,12 @@ namespace SolcNet.NativeLibraryLoader
             return _compileJsonMulti.Value(input, optimize);
         }
 
+        public void Dispose()
+        {
+            if (_native.IsValueCreated)
+            {
+                _native.Value.Dispose();
+            }
+        }
     }
 }
