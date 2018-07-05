@@ -19,6 +19,9 @@ namespace SolcNet.DataDescription.Output
         [JsonProperty("notice")]
         public string Notice { get; set; }
 
+        [JsonProperty("details")]
+        public string Details { get; set; }
+
         public static implicit operator Doc(string json) => JsonConvert.DeserializeObject<Doc>(json);
     }
 
