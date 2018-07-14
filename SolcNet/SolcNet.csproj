@@ -14,7 +14,6 @@
     <PackageLicenseUrl>https://github.com/hosho/SolcNet/blob/master/LICENSE</PackageLicenseUrl>
     <Authors>Matthew Litte</Authors>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <RestoreAdditionalProjectSources>https://www.myget.org/F/hosho/api/v3/index.json</RestoreAdditionalProjectSources>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -25,7 +24,7 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.Memory" Version="4.5.1" />
-    <PackageReference Include="SolcLib.Native" Version="0.4.24.20" PrivateAssets="all" />
+    <PackageReference Include="SolcLib.Native" Version="0.4.24.22" PrivateAssets="all" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(Configuration)' == 'Release'">

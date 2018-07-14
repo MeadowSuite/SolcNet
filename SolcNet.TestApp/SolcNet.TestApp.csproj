@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SolcNet.Tests\SolcNet.Tests.csproj" />
+    <ProjectReference Include="..\SolcNet.Test\SolcNet.Test.csproj" />
     <ProjectReference Include="..\SolcNet\SolcNet.csproj" />
   </ItemGroup>
 

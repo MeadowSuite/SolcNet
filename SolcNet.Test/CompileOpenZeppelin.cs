@@ -1,16 +1,16 @@
-﻿using SolcNet.CompileErrors;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SolcNet.CompileErrors;
 using SolcNet.DataDescription.Input;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using Xunit;
 
-namespace SolcNet.Tests
+namespace SolcNet.Test
 {
+    [TestClass]
     public class CompileOpenZeppelin
     {
-        [Fact]
+        [TestMethod]
         public void CompileAll()
         {
             var sourceContent = new Dictionary<string, string>();

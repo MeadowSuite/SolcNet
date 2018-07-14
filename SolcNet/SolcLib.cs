@@ -17,7 +17,7 @@ namespace SolcNet
         INativeSolcLib _native;
 
         public string VersionDescription => _native.GetVersion();
-        public Version Version => Version.Parse(VersionDescription.Split(new [] { "-" }, 2, StringSplitOptions.RemoveEmptyEntries)[0]);
+        public Version Version => Version.Parse(VersionDescription.Split(new [] { '-', '+' }, 2, StringSplitOptions.RemoveEmptyEntries)[0]);
 
         public string License => _native.GetLicense();
 

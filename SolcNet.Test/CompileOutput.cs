@@ -1,4 +1,5 @@
 ﻿using JsonDiffPatchDotNet;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SolcNet.DataDescription.Input;
@@ -7,10 +8,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Xunit;
 
-namespace SolcNet.Tests
+namespace SolcNet.Test
 {
+    [TestClass]
     public class CompileOutput
     {
 
@@ -21,7 +22,7 @@ namespace SolcNet.Tests
             _lib = new SolcLib();
         }
 
-        [Fact]
+        [TestMethod]
         public void ExpectedOutput()
         {
             var exampleContract = "TestContracts/ExampleContract.sol";
@@ -37,23 +38,23 @@ namespace SolcNet.Tests
             }
         }
 
-        [Fact]
+        [TestMethod]
         public void SourceMapParsing()
         {
             var exampleContract = "TestContracts/ExampleContract.sol";
             var output = _lib.Compile(exampleContract, OutputType.EvmBytecodeSourceMap);
             var sourceMaps = output.Contracts.Values.First().Values.First().Evm.Bytecode.SourceMap;
             var parsed = sourceMaps.Entries;
-            Assert.True(parsed.Length > 0);
+            Assert.IsTrue(parsed.Length > 0);
         }
 
-        [Fact]
+        [TestMethod]
         public void SourceFileContentTracking()
         {
             var exampleContract = "TestContracts/ExampleContract.sol";
             var sourceContent = new Dictionary<string, string>();
             var output = _lib.Compile(exampleContract, OutputType.EvmBytecodeSourceMap, soliditySourceFileContent: sourceContent);
-            Assert.Equal(sourceContent.First().Key, exampleContract);
+            Assert.AreEqual(sourceContent.First().Key, exampleContract);
         }
 
     }
