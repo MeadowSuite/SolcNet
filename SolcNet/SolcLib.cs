@@ -120,8 +120,9 @@ namespace SolcNet
 
             foreach (var filePath in contractFilePaths)
             {
-                var source = new Source { Urls = new List<string> { filePath } };
-                inputDesc.Sources.Add(filePath, source);
+                var normalizedPath = filePath.Replace('\\', '/');
+                var source = new Source { Urls = new List<string> { normalizedPath } };
+                inputDesc.Sources[normalizedPath] = source;
             }
 
             return Compile(inputDesc, errorHandling, soliditySourceFileContent);
