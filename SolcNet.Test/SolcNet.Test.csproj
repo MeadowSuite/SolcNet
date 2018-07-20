@@ -10,8 +10,9 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
     <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
-    <PackageReference Include="coverlet.msbuild" Version="2.1.0" />
+    <PackageReference Include="coverlet.msbuild" Version="2.1.1" />
     <PackageReference Include="JsonDiffPatch.Net" Version="2.1.0" />
+    <PackageReference Include="SolcNet.Legacy" Version="0.1.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +28,9 @@
     <Content Include="EthPMContracts\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="LegacyContracts\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Remove="EthPMContracts\deepdir\AcmeCoinDeep.sol" />
     <Content Include="TestOutput\ExampleContract.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -38,5 +42,5 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
+  
 </Project>

@@ -18,13 +18,13 @@ namespace SolcNet.NativeLib
         readonly Lazy<LicenseDelegate> _license;
         readonly Lazy<VersionDelegate> _version;
 
-        public readonly string LIB_PATH;
+        public readonly string LibPath;
         IntPtr _libHandle;
 
-        public SolcLibDefaultProvider()
+        public SolcLibDefaultProvider(string libPath)
         {
-            LIB_PATH = LibPathResolver.Resolve(LIB_FILE);
-            _libHandle = PlatformNativeLibInterop.LoadLib(LIB_PATH);
+            LibPath = libPath;
+            _libHandle = PlatformNativeLibInterop.LoadLib(LibPath);
 
             _compileStandard = LazyLoad<CompileStandardDelegate>("compileStandard");
             _compileJson = LazyLoad<CompileJsonDelegate>("compileJSON");
@@ -32,6 +32,10 @@ namespace SolcNet.NativeLib
             _compileJsonCallback = LazyLoad<CompileJsonCallbackDelegate>("compileJSONCallback");
             _license = LazyLoad<LicenseDelegate>("license");
             _version = LazyLoad<VersionDelegate>("version");
+        }
+
+        public SolcLibDefaultProvider() : this(LibPathResolver.Resolve(LIB_FILE))
+        {
         }
 
         Lazy<TDelegate> LazyLoad<TDelegate>(string symbol)

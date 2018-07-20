@@ -25,7 +25,7 @@ namespace SolcNet.DataDescription.Output
         /// Optional: not present if no errors/warnings were encountered
         /// </summary>
         [JsonProperty("errors")]
-        public Error[] Errors { get; set; }
+        public Error[] Errors { get; set; } = new Error[0];
 
         /// <summary>
         /// This contains the file-level outputs. In can be limited/filtered by the outputSelection settings.
