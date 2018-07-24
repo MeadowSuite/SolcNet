@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SolcNet.DataDescription.Input;
+using SolcNet.DataDescription.Output;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -55,6 +56,30 @@ namespace SolcNet.Test
             var sourceContent = new Dictionary<string, string>();
             var output = _lib.Compile(exampleContract, OutputType.EvmBytecodeSourceMap, soliditySourceFileContent: sourceContent);
             Assert.AreEqual(sourceContent.First().Key, exampleContract);
+        }
+
+        [TestMethod]
+        public void TestOptimizer()
+        {
+            OutputDescription CompileWithRuns(Optimizer optimizer)
+            {
+                var exampleContract = "TestContracts/ExampleContract.sol";
+                var sourceContent = new Dictionary<string, string>();
+                var output = _lib.Compile(exampleContract, optimizer: optimizer, soliditySourceFileContent: sourceContent);
+                return output;
+            }
+
+            var runs1 = CompileWithRuns(new Optimizer { Enabled = true, Runs = 1 });
+            var sizeRuns1 = runs1.ContractsFlattened[0].Contract.Evm.Bytecode.Object.Length;
+
+            var runs200 = CompileWithRuns(new Optimizer { Enabled = true, Runs = 200 });
+            var sizeRuns200 = runs200.ContractsFlattened[0].Contract.Evm.Bytecode.Object.Length;
+
+            var runsDisabled = CompileWithRuns(new Optimizer { Enabled = false });
+            var sizeRunsDisabled = runsDisabled.ContractsFlattened[0].Contract.Evm.Bytecode.Object.Length;
+
+            Assert.IsTrue(sizeRunsDisabled > sizeRuns200);
+            Assert.IsTrue(sizeRuns1 < sizeRuns200);
         }
 
     }

@@ -16,7 +16,7 @@ namespace SolcNet.Test
             var sourceContent = new Dictionary<string, string>();
             var contractFiles = Directory.GetFiles("OpenZeppelin", "*.sol", SearchOption.AllDirectories);
             var solc = new SolcLib();
-            var output = solc.Compile(contractFiles, OutputType.EvmDeployedBytecodeSourceMap, CompileErrorHandling.ThrowOnError, sourceContent);
+            var output = solc.Compile(contractFiles, OutputType.EvmDeployedBytecodeSourceMap, errorHandling: CompileErrorHandling.ThrowOnError, soliditySourceFileContent: sourceContent);
         }
     }
 }

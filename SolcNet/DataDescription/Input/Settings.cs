@@ -77,9 +77,16 @@ namespace SolcNet.DataDescription.Input
     /// </summary>
     public class Optimizer
     {
+        /// <summary>
+        /// Disabled by default
+        /// </summary>
         [JsonProperty("enabled", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Enabled { get; set; }
 
+        /// <summary>
+        /// Optimize for how many times you intend to run the code.
+        /// Lower values will optimize more for initial deployment cost, higher values will optimize more for high-frequency usage.
+        /// </summary>
         [JsonProperty("runs", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
         public long? Runs { get; set; }
     }

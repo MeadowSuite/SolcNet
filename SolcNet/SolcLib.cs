@@ -17,7 +17,7 @@ namespace SolcNet
         INativeSolcLib _native;
 
         public string VersionDescription => _native.GetVersion();
-        public Version Version => Version.Parse(VersionDescription.Split(new [] { '-', '+' }, 2, StringSplitOptions.RemoveEmptyEntries)[0]);
+        public Version Version => Version.Parse(VersionDescription.Split(new[] { '-', '+' }, 2, StringSplitOptions.RemoveEmptyEntries)[0]);
 
         public string License => _native.GetLicense();
 
@@ -42,7 +42,7 @@ namespace SolcNet
         public static SolcLib Create(string solSourceRoot = null)
         {
             var callingAssembly = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
-            return new SolcLib(solSourceRoot, extraLibSearchDirs : new [] { callingAssembly });
+            return new SolcLib(solSourceRoot, extraLibSearchDirs: new[] { callingAssembly });
         }
 
         public static SolcLib Create<TNativeLib>(string solSourceRoot = null) where TNativeLib : INativeSolcLib, new()
@@ -50,7 +50,7 @@ namespace SolcNet
             return new SolcLib(new TNativeLib(), solSourceRoot);
         }
 
-        private OutputDescription CompileInputDescriptionJson(string jsonInput, 
+        private OutputDescription CompileInputDescriptionJson(string jsonInput,
             CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError,
             Dictionary<string, string> soliditySourceFileContent = null)
         {
@@ -70,7 +70,7 @@ namespace SolcNet
             }
         }
 
-        public OutputDescription Compile(InputDescription input, 
+        public OutputDescription Compile(InputDescription input,
             CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError,
             Dictionary<string, string> soliditySourceFileContent = null)
         {
@@ -81,33 +81,37 @@ namespace SolcNet
         /// <param name="outputSelection">Defaults to all output types if not specified</param>
         public OutputDescription Compile(string contractFilePaths,
             OutputType[] outputSelection,
+            Optimizer optimizer = null,
             CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError,
             Dictionary<string, string> soliditySourceFileContent = null)
         {
-            return Compile(new[] { contractFilePaths }, outputSelection ?? OutputTypes.All, errorHandling, soliditySourceFileContent);
+            return Compile(new[] { contractFilePaths }, outputSelection ?? OutputTypes.All, optimizer, errorHandling, soliditySourceFileContent);
         }
 
         /// <param name="outputSelection">Defaults to all output types if not specified</param>
         public OutputDescription Compile(string contractFilePaths,
             OutputType? outputSelection = null,
+            Optimizer optimizer = null,
             CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError,
             Dictionary<string, string> soliditySourceFileContent = null)
         {
-            return Compile(new[] { contractFilePaths }, outputSelection, errorHandling, soliditySourceFileContent);
+            return Compile(new[] { contractFilePaths }, outputSelection, optimizer, errorHandling, soliditySourceFileContent);
         }
 
         /// <param name="outputSelection">Defaults to all output types if not specified</param>
         public OutputDescription Compile(string[] contractFilePaths,
             OutputType? outputSelection = null,
+            Optimizer optimizer = null,
             CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError,
             Dictionary<string, string> soliditySourceFileContent = null)
         {
             var outputs = outputSelection == null ? OutputTypes.All : OutputTypes.GetItems(outputSelection.Value);
-            return Compile(contractFilePaths, outputs, errorHandling, soliditySourceFileContent);
+            return Compile(contractFilePaths, outputs, optimizer, errorHandling, soliditySourceFileContent);
         }
 
         public OutputDescription Compile(string[] contractFilePaths,
-            OutputType[] outputSelection, 
+            OutputType[] outputSelection,
+            Optimizer optimizer = null,
             CompileErrorHandling errorHandling = CompileErrorHandling.ThrowOnError,
             Dictionary<string, string> soliditySourceFileContent = null)
         {
@@ -117,6 +121,11 @@ namespace SolcNet
                 ["*"] = outputSelection,
                 [""] = outputSelection
             };
+
+            if (optimizer != null)
+            {
+                inputDesc.Settings.Optimizer = optimizer;
+            }
 
             foreach (var filePath in contractFilePaths)
             {
