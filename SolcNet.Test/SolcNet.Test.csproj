@@ -12,7 +12,7 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
     <PackageReference Include="coverlet.msbuild" Version="2.1.1" />
     <PackageReference Include="JsonDiffPatch.Net" Version="2.1.0" />
-    <PackageReference Include="SolcNet.Legacy" Version="0.1.8" />
+    <PackageReference Include="SolcNet.Legacy" Version="0.1.12" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,7 +20,7 @@
     <ProjectReference Include="..\SolcNet.NativeLibraryLoader\SolcNet.NativeLibraryLoader.csproj" />
     <ProjectReference Include="..\SolcNet\SolcNet.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Content Include="OpenZeppelin\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -36,11 +36,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Update="TestContracts\ExampleContract.sol">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  
+
 </Project>

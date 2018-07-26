@@ -3,6 +3,7 @@ using SolcNet.NativeLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -47,6 +48,16 @@ namespace SolcNet.Test
         public BindingTests()
         {
 
+        }
+
+        [DataTestMethod]
+        [NativeLibProvider]
+        public void NativeLibPathTests(IInteropLibProvider nativeSolcLib)
+        {
+            var solcLib = new SolcLib(nativeSolcLib.InteropLib, CONTRACT_SRC_DIR);
+            var nativeLibPath = solcLib.NativeLibFilePath;
+            Assert.IsTrue(!string.IsNullOrEmpty(nativeLibPath));
+            Assert.IsTrue(File.Exists(nativeLibPath));
         }
 
         [DataTestMethod]

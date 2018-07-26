@@ -19,5 +19,7 @@ namespace SolcNet.NativeLib
         [Obsolete]
         string CompileLegacyJson(string input, bool optimize, ReadFileCallback readCallback);
 
+        string NativeLibFilePath { get; }
+
     }
 }

@@ -59,13 +59,13 @@ namespace SolcNet.Test
         }
 
         [TestMethod]
-        public void TestOptimizer()
+        public void OptimizerRuns()
         {
             OutputDescription CompileWithRuns(Optimizer optimizer)
             {
                 var exampleContract = "TestContracts/ExampleContract.sol";
                 var sourceContent = new Dictionary<string, string>();
-                var output = _lib.Compile(exampleContract, optimizer: optimizer, soliditySourceFileContent: sourceContent);
+                var output = _lib.Compile(exampleContract, OutputType.EvmBytecodeObject, optimizer: optimizer, soliditySourceFileContent: sourceContent);
                 return output;
             }
 

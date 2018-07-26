@@ -1,4 +1,4 @@
-﻿pragma solidity ^0.4.21;
+﻿pragma solidity ^0.4.20;
 
 /// @title An example contract title
 /// @author Matthew Little
@@ -20,7 +20,7 @@ contract ExampleContract {
 	uint256 public last;
 
     /// @notice The constructor
-    constructor(string _name, bool _enableThing, uint256 _last) public {
+    function ExampleContract(string _name, bool _enableThing, uint256 _last) public {
 		givenName = _name;
 		enabledThing = _enableThing;
 		last = _last;

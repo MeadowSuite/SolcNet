@@ -10,21 +10,16 @@ namespace SolcNet.AdvDL
         public const string LIB_FILE = "solc";
         IAdvDLSolcLib _native;
 
+        public string NativeLibFilePath { get; private set; }
+
         public SolcLibAdvDLProvider()
         {
             var config = ImplementationOptions.UseLazyBinding;
-            var resolver = new LibFilePathResolver();
-            try
-            {
-                var builder = new NativeLibraryBuilder(config, resolver);
-                _native = builder.ActivateInterface<IAdvDLSolcLib>(LIB_FILE);
-            }
-            catch (FileNotFoundException)
-            {
-                var result = resolver.Resolve(LIB_FILE);
-                throw result.Exception ?? new Exception(result.ErrorReason);
-            }
+            NativeLibFilePath = LibPathResolver.Resolve(LIB_FILE);
+            var builder = new NativeLibraryBuilder(config);
+            _native = builder.ActivateInterface<IAdvDLSolcLib>(NativeLibFilePath);
         }
+
         public string Compile(string input, ReadFileCallback readCallback)
         {
             return _native.compileStandard(input, new AvdDLReadFileCallback(readCallback));

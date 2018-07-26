@@ -14,7 +14,8 @@ namespace SolcNet
 {
     public class SolcLib
     {
-        INativeSolcLib _native;
+        private INativeSolcLib _native;
+        public string NativeLibFilePath => _native.NativeLibFilePath;
 
         public string VersionDescription => _native.GetVersion();
         public Version Version => ParseVersionString(VersionDescription);

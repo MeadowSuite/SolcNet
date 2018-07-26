@@ -1,29 +1,19 @@
 ﻿using NativeLibraryLoader;
 using SolcNet.NativeLib;
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
 namespace SolcNet.NativeLibraryLoader
 {
+
     public class SolcLibDynamicProvider : INativeSolcLib
     {
         public const string LIB_FILE = "solc";
 
-        static Lazy<NativeLibrary> _native = new Lazy<NativeLibrary>(() => new NativeLibrary(
-            LIB_FILE, 
-            LibraryLoader.GetPlatformDefaultLoader(), 
-            new CustomResolver())
-        );
-        
-        class CustomResolver : PathResolver
-        {
-            public override IEnumerable<string> EnumeratePossibleLibraryLoadTargets(string name)
-            {
-                yield return LibPathResolver.Resolve(name);
-            }
-        }
+        public string NativeLibFilePath { get; private set; }
+
+        NativeLibrary _native;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         delegate void NativeReadFileCallback(
@@ -36,36 +26,45 @@ namespace SolcNet.NativeLibraryLoader
 
         [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         delegate string CompileStandardDelegate(string input, NativeReadFileCallback readCallback);
-        Lazy<CompileStandardDelegate> _compileStandard = LoadFunction<CompileStandardDelegate>("compileStandard");
+        Lazy<CompileStandardDelegate> _compileStandard;
 
         [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         delegate string CompileJsonDelegate(string input, bool optimize);
-        Lazy<CompileJsonDelegate> _compileJson = LoadFunction<CompileJsonDelegate>("compileJSON");
+        Lazy<CompileJsonDelegate> _compileJson;
 
         [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         delegate string CompileJsonMultiDelegate(string input, bool optimize);
-        Lazy<CompileJsonMultiDelegate> _compileJsonMulti = LoadFunction<CompileJsonMultiDelegate>("compileJSONMulti");
+        Lazy<CompileJsonMultiDelegate> _compileJsonMulti;
 
         [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         delegate string CompileJsonCallbackDelegate(string input, bool optimize, NativeReadFileCallback readCallback);
-        Lazy<CompileJsonCallbackDelegate> _compileJsonCallback = LoadFunction<CompileJsonCallbackDelegate>("compileJSONCallback");
+        Lazy<CompileJsonCallbackDelegate> _compileJsonCallback;
 
         [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         delegate string LicenseDelegate();
-        Lazy<LicenseDelegate> _license = LoadFunction<LicenseDelegate>("license");
+        Lazy<LicenseDelegate> _license;
 
         [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
         delegate string VersionDelegate();
-        Lazy<VersionDelegate> _version = LoadFunction<VersionDelegate>("version");
+        Lazy<VersionDelegate> _version;
 
-        static Lazy<TDelegate> LoadFunction<TDelegate>(string name)
+        Lazy<TDelegate> LoadFunction<TDelegate>(string name)
         {
-            return new Lazy<TDelegate>(() => _native.Value.LoadFunction<TDelegate>(name));
+            return new Lazy<TDelegate>(() => _native.LoadFunction<TDelegate>(name));
         }
 
         public SolcLibDynamicProvider()
         {
+            NativeLibFilePath = LibPathResolver.Resolve(LIB_FILE);
+            var libPathResolver = new CustomResolver(NativeLibFilePath);
+            _native = new NativeLibrary(LIB_FILE, LibraryLoader.GetPlatformDefaultLoader(), libPathResolver);
 
+            _compileStandard = LoadFunction<CompileStandardDelegate>("compileStandard");
+            _compileJson = LoadFunction<CompileJsonDelegate>("compileJSON");
+            _compileJsonMulti = LoadFunction<CompileJsonMultiDelegate>("compileJSONMulti");
+            _compileJsonCallback = LoadFunction<CompileJsonCallbackDelegate>("compileJSONCallback");
+            _license = LoadFunction<LicenseDelegate>("license");
+            _version = LoadFunction<VersionDelegate>("version");
         }
 
         public string GetLicense() => _license.Value();
@@ -94,10 +93,7 @@ namespace SolcNet.NativeLibraryLoader
 
         public void Dispose()
         {
-            if (_native.IsValueCreated)
-            {
-                _native.Value.Dispose();
-            }
+            _native.Dispose();
         }
     }
 }

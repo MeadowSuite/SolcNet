@@ -18,6 +18,7 @@ namespace SolcNet.NativeLib
         readonly Lazy<LicenseDelegate> _license;
         readonly Lazy<VersionDelegate> _version;
 
+        public string NativeLibFilePath => LibPath;
         public readonly string LibPath;
         IntPtr _libHandle;
 
