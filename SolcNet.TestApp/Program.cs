@@ -4,6 +4,7 @@ using SolcNet.CompileErrors;
 using SolcNet.DataDescription.Input;
 using SolcNet.NativeLib;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -17,13 +18,14 @@ namespace SolcNet.TestApp
         {
             Console.WriteLine("Init");
 
+            TestMemoryUsage();
+        }
+
+        static void TestMemoryUsage()
+        {
             const string OPEN_ZEP_DIR = "OpenZeppelin";
 
             var solcLib = SolcLib.Create(OPEN_ZEP_DIR);
-
-            var ver = solcLib.VersionDescription;
-            Console.WriteLine("Loaded solc lib version: " + ver);
-
             var license = solcLib.License;
 
             var outputSelection = new[] {
@@ -54,7 +56,7 @@ namespace SolcNet.TestApp
                 "contracts/token/ERC721/ERC721Token.sol",
                 "contracts/token/ERC827/ERC827Token.sol"
             };
-            
+
             int runs = 0;
             while (true)
             {
@@ -65,6 +67,27 @@ namespace SolcNet.TestApp
             }
         }
 
+        static void TestNativeLibLoaders()
+        {
+            void TryLib<TLib>() where TLib : INativeSolcLib, new()
+            {
+                Console.WriteLine($"Trying {typeof(TLib)}");
+                try
+                {
+                    var solc = SolcLib.Create<TLib>();
+                    var ver = solc.VersionDescription;
+                    Console.WriteLine($"Loaded solc lib version: {ver}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
+
+            TryLib<SolcLibDefaultProvider>();
+            TryLib<NativeLibraryLoader.SolcLibDynamicProvider>();
+            TryLib<AdvDL.SolcLibAdvDLProvider>();
+        }
 
     }
 }

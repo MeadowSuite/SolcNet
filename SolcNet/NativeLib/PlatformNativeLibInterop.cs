@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SolcNet.NativeLib.DynamicLinking;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -8,41 +9,6 @@ namespace SolcNet.NativeLib
 {
     static class PlatformNativeLibInterop
     {
-        #region Windows Interop
-
-        const string KERNEL32 = "kernel32";
-
-        [DllImport(KERNEL32, SetLastError = true)]
-        static extern IntPtr LoadLibrary(string path);
-
-        [DllImport(KERNEL32, SetLastError = true)]
-        public static extern int FreeLibrary(IntPtr module);
-
-        [DllImport(KERNEL32, SetLastError = true, CharSet = CharSet.Ansi, ExactSpelling = true)]
-        static extern IntPtr GetProcAddress(IntPtr module, string procName);
-
-        #endregion
-
-
-
-        #region Unix Interop
-
-        const string LIBDL = "libdl";
-
-        [DllImport(LIBDL)]
-        static extern IntPtr dlopen(string path, int flags);
-
-        [DllImport(LIBDL)]
-        static extern int dlclose(IntPtr handle);
-
-        [DllImport(LIBDL)]
-        static extern IntPtr dlerror();
-
-        [DllImport(LIBDL)]
-        static extern IntPtr dlsym(IntPtr handle, string name);
-
-        #endregion
-
 
         static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         static readonly bool IsMacOS = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
@@ -54,14 +20,22 @@ namespace SolcNet.NativeLib
 
             if (IsWindows)
             {
-                libPtr = LoadLibrary(libPath);
+                libPtr = DynamicLinkingWindows.LoadLibrary(libPath);
+            }
+            else if (IsLinux)
+            {
+                const int RTLD_NOW = 2;
+                libPtr = DynamicLinkingLinux.dlopen(libPath, RTLD_NOW);
+            }
+            else if (IsMacOS)
+            {
+                const int RTLD_NOW = 2;
+                libPtr = DynamicLinkingMacOS.dlopen(libPath, RTLD_NOW);
             }
             else
             {
-                const int RTLD_NOW = 0x002;
-                libPtr = dlopen(libPath, RTLD_NOW);
+                throw new Exception($"Unsupported platform: {RuntimeInformation.OSDescription}. The supported platforms are: {string.Join(", ", new []{ OSPlatform.Windows , OSPlatform.OSX, OSPlatform.Linux})}");
             }
-
             if (libPtr == IntPtr.Zero)
             {
                 throw new Exception($"Library loading failed, file: {libPath}", GetLastError());
@@ -70,15 +44,51 @@ namespace SolcNet.NativeLib
             return libPtr;
         }
 
+        public static void CloseLibrary(IntPtr lib)
+        {
+            if (lib == IntPtr.Zero)
+            {
+                return;
+            }
+            if (IsWindows)
+            {
+                DynamicLinkingWindows.FreeLibrary(lib);
+            }
+            else if (IsMacOS)
+            {
+                DynamicLinkingMacOS.dlclose(lib);
+            }
+            else if (IsLinux)
+            {
+                DynamicLinkingLinux.dlclose(lib);
+            }
+            else
+            {
+                throw new Exception("Unsupported platform");
+            }
+        }
+
         static Exception GetLastError()
         {
             if (IsWindows)
             {
-               return new Win32Exception(Marshal.GetLastWin32Error());
+                return new Win32Exception(Marshal.GetLastWin32Error());
             }
             else
             {
-                var errorPtr = dlerror();
+                IntPtr errorPtr;
+                if (IsLinux)
+                {
+                    errorPtr = DynamicLinkingLinux.dlerror();
+                }
+                else if (IsMacOS)
+                {
+                    errorPtr = DynamicLinkingMacOS.dlerror();
+                }
+                else
+                {
+                    throw new Exception("Unsupported platform");
+                }
                 if (errorPtr == IntPtr.Zero)
                 {
                     return new Exception("Error information could not be found");
@@ -92,11 +102,19 @@ namespace SolcNet.NativeLib
             IntPtr functionPtr;
             if (IsWindows)
             {
-                functionPtr = GetProcAddress(libPtr, symbolName);
+                functionPtr = DynamicLinkingWindows.GetProcAddress(libPtr, symbolName);
+            }
+            else if (IsMacOS)
+            {
+                functionPtr = DynamicLinkingMacOS.dlsym(libPtr, symbolName);
+            }
+            else if (IsLinux)
+            {
+                functionPtr = DynamicLinkingLinux.dlsym(libPtr, symbolName);
             }
             else
             {
-                functionPtr = dlsym(libPtr, symbolName);
+                throw new Exception("Unsupported platform");
             }
 
             if (functionPtr == IntPtr.Zero)

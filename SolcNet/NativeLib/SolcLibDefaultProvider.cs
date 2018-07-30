@@ -76,7 +76,7 @@ namespace SolcNet.NativeLib
         {
             if (_libHandle != IntPtr.Zero)
             {
-                PlatformNativeLibInterop.FreeLibrary(_libHandle);
+                PlatformNativeLibInterop.CloseLibrary(_libHandle);
             }
             _libHandle = IntPtr.Zero;
         }
