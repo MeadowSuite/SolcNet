@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SolcNet.DataDescription.Input;
 using SolcNet.NativeLib;
 using System;
 using System.Collections;
@@ -100,6 +101,40 @@ namespace SolcNet.Test
             var solcLib = new SolcLib(nativeSolcLib.InteropLib, CONTRACT_SRC_DIR);
             CompileSeveralContracts(solcLib);
         }
+
+        [DataTestMethod]
+        [NativeLibProvider]
+        public void CompileInMemorySources(IInteropLibProvider nativeSolcLib)
+        {
+            var contract1Source = @"
+                pragma solidity ^0.4.24;
+                import ""./interfaces/IHelloWorld.sol"";
+                contract HelloWorld {
+                    event HelloEvent(string _message, address _sender);
+                    function renderHelloWorld () public returns (string) {
+                        emit HelloEvent(""Hello world"", msg.sender);
+                        return ""Hello world"";
+                    }
+                }";
+
+            var contract2Source = @"
+                pragma solidity ^0.4.24;
+                contract IHelloWorld {
+                    event HelloEvent(string _message, address _sender);
+                    function renderHelloWorld () public returns (string);
+                }";
+
+            var solcLib = new SolcLib(nativeSolcLib.InteropLib);
+            var result = solcLib.Compile(new InputDescription
+            {
+                Sources = 
+                {
+                    ["HelloWorld.sol"] = new Source { Content = contract1Source },
+                    ["interfaces/IHelloWorld.sol"] = new Source { Content = contract2Source }
+                }
+            });
+        }
+
 
         static void CompileSeveralContracts(SolcLib solcLib)
         {
