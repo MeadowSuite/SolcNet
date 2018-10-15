@@ -67,7 +67,7 @@ namespace SolcNet.Test
         {
             var solcLib = new SolcLib(nativeSolcLib.InteropLib, CONTRACT_SRC_DIR);
             var version = solcLib.Version;
-            Assert.AreEqual(Version.Parse("0.4.24"), version);
+            Assert.AreEqual(Version.Parse("0.4.25"), version);
         }
 
         [DataTestMethod]

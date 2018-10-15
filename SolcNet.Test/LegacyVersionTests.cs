@@ -18,6 +18,7 @@ namespace SolcNet.Test
             yield return new object[] { Legacy.SolcVersion.v0_4_21 };
             yield return new object[] { Legacy.SolcVersion.v0_4_22 };
             yield return new object[] { Legacy.SolcVersion.v0_4_23 };
+            yield return new object[] { Legacy.SolcVersion.v0_4_24 };
         }
 
         public string GetDisplayName(MethodInfo methodInfo, object[] data)
