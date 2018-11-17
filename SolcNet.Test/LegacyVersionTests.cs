@@ -4,6 +4,7 @@ using SolcNet.DataDescription.Output;
 using SolcNet.NativeLib;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -19,6 +20,7 @@ namespace SolcNet.Test
             yield return new object[] { Legacy.SolcVersion.v0_4_22 };
             yield return new object[] { Legacy.SolcVersion.v0_4_23 };
             yield return new object[] { Legacy.SolcVersion.v0_4_24 };
+            yield return new object[] { Legacy.SolcVersion.v0_4_25 };
         }
 
         public string GetDisplayName(MethodInfo methodInfo, object[] data)
@@ -79,24 +81,24 @@ namespace SolcNet.Test
         {
             var libPath = Legacy.LibPath.GetLibPath(solcVersion);
             var libProvider = new SolcLibDefaultProvider(libPath);
-            var solcLib = new SolcLib(libProvider);
+            var solcLib = new SolcLib(libProvider, "LegacyContracts");
 
             OutputDescription CompileWithRuns(Optimizer optimizer)
             {
-                var exampleContract = "TestContracts/ExampleContract.sol";
+                var exampleContract = "token/ERC20/StandardToken.sol";
                 var sourceContent = new Dictionary<string, string>();
                 var output = solcLib.Compile(exampleContract, OutputType.EvmBytecodeObject, optimizer: optimizer, soliditySourceFileContent: sourceContent);
                 return output;
             }
 
             var runs1 = CompileWithRuns(new Optimizer { Enabled = true, Runs = 1 });
-            var sizeRuns1 = runs1.ContractsFlattened[0].Contract.Evm.Bytecode.Object.Length;
+            var sizeRuns1 = runs1.ContractsFlattened.First(c => c.ContractName == "StandardToken").Contract.Evm.Bytecode.Object.Length;
 
             var runs200 = CompileWithRuns(new Optimizer { Enabled = true, Runs = 200 });
-            var sizeRuns200 = runs200.ContractsFlattened[0].Contract.Evm.Bytecode.Object.Length;
+            var sizeRuns200 = runs200.ContractsFlattened.First(c => c.ContractName == "StandardToken").Contract.Evm.Bytecode.Object.Length;
 
             var runsDisabled = CompileWithRuns(new Optimizer { Enabled = false });
-            var sizeRunsDisabled = runsDisabled.ContractsFlattened[0].Contract.Evm.Bytecode.Object.Length;
+            var sizeRunsDisabled = runsDisabled.ContractsFlattened.First(c => c.ContractName == "StandardToken").Contract.Evm.Bytecode.Object.Length;
 
             Assert.IsTrue(sizeRunsDisabled > sizeRuns200);
             Assert.IsTrue(sizeRuns1 < sizeRuns200);

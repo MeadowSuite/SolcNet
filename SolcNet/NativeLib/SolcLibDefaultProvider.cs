@@ -11,10 +11,7 @@ namespace SolcNet.NativeLib
         public const string LIB_FILE = "solc";
 
 
-        readonly Lazy<CompileStandardDelegate> _compileStandard;
-        readonly Lazy<CompileJsonDelegate> _compileJson;
-        readonly Lazy<CompileJsonMultiDelegate> _compileJsonMulti;
-        readonly Lazy<CompileJsonCallbackDelegate> _compileJsonCallback;
+        readonly Lazy<CompileDelegate> _compile;
         readonly Lazy<LicenseDelegate> _license;
         readonly Lazy<VersionDelegate> _version;
 
@@ -22,17 +19,27 @@ namespace SolcNet.NativeLib
         public readonly string LibPath;
         IntPtr _libHandle;
 
+        readonly bool _isOld_API;
+
         public SolcLibDefaultProvider(string libPath)
         {
             LibPath = libPath;
             _libHandle = PlatformNativeLibInterop.LoadLib(LibPath);
 
-            _compileStandard = LazyLoad<CompileStandardDelegate>("compileStandard");
-            _compileJson = LazyLoad<CompileJsonDelegate>("compileJSON");
-            _compileJsonMulti = LazyLoad<CompileJsonMultiDelegate>("compileJSONMulti");
-            _compileJsonCallback = LazyLoad<CompileJsonCallbackDelegate>("compileJSONCallback");
-            _license = LazyLoad<LicenseDelegate>("license");
-            _version = LazyLoad<VersionDelegate>("version");
+            _isOld_API = !PlatformNativeLibInterop.GetFunctionPointer(_libHandle, "solidity_version", out _);
+
+            if (_isOld_API)
+            {
+                _compile = LazyLoad<CompileDelegate>("compileStandard");
+                _license = LazyLoad<LicenseDelegate>("license");
+                _version = LazyLoad<VersionDelegate>("version");
+            }
+            else
+            {
+                _compile = LazyLoad<CompileDelegate>("solidity_compile");
+                _license = LazyLoad<LicenseDelegate>("solidity_license");
+                _version = LazyLoad<VersionDelegate>("solidity_version");
+            }
         }
 
         public SolcLibDefaultProvider() : this(LibPathResolver.Resolve(LIB_FILE))
@@ -54,22 +61,7 @@ namespace SolcNet.NativeLib
 
         public string Compile(string input, ReadFileCallback readCallback)
         {
-            return _compileStandard.Value(input, new NativeReadFileCallbackDelegate(readCallback));
-        }
-
-        public string CompileLegacyJson(string input, bool optimize)
-        {
-            return _compileJson.Value(input, optimize);
-        }
-
-        public string CompileLegacyJson(string input, bool optimize, ReadFileCallback readCallback)
-        {
-            return _compileJsonCallback.Value(input, optimize, new NativeReadFileCallbackDelegate(readCallback));
-        }
-
-        public string CompileLegacyJsonMutli(string input, bool optimize)
-        {
-            return _compileJsonMulti.Value(input, optimize);
+            return _compile.Value(input, new NativeReadFileCallbackDelegate(readCallback));
         }
 
         public void Dispose()

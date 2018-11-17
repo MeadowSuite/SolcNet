@@ -85,8 +85,6 @@ namespace SolcNet.TestApp
             }
 
             TryLib<SolcLibDefaultProvider>();
-            TryLib<NativeLibraryLoader.SolcLibDynamicProvider>();
-            TryLib<AdvDL.SolcLibAdvDLProvider>();
         }
 
     }

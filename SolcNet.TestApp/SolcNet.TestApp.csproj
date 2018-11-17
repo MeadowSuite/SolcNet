@@ -11,8 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SolcNet.AdvDL\SolcNet.AdvDL.csproj" />
-    <ProjectReference Include="..\SolcNet.NativeLibraryLoader\SolcNet.NativeLibraryLoader.csproj" />
     <ProjectReference Include="..\SolcNet\SolcNet.csproj" />
   </ItemGroup>
 

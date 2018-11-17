@@ -99,30 +99,40 @@ namespace SolcNet.NativeLib
 
         public static TDelegate GetDelegate<TDelegate>(IntPtr libPtr, string symbolName)
         {
-            IntPtr functionPtr;
+            if (GetFunctionPointer(libPtr, symbolName, out var functionPtr))
+            {
+                return Marshal.GetDelegateForFunctionPointer<TDelegate>(functionPtr);
+            }
+            else
+            {
+                throw new Exception($"Library symbol failed, symbol: {symbolName}", GetLastError());
+            }
+        }
+
+        public static bool GetFunctionPointer(IntPtr libPtr, string symbolName, out IntPtr functionPointer)
+        {
             if (IsWindows)
             {
-                functionPtr = DynamicLinkingWindows.GetProcAddress(libPtr, symbolName);
+                functionPointer = DynamicLinkingWindows.GetProcAddress(libPtr, symbolName);
             }
             else if (IsMacOS)
             {
-                functionPtr = DynamicLinkingMacOS.dlsym(libPtr, symbolName);
+                functionPointer = DynamicLinkingMacOS.dlsym(libPtr, symbolName);
             }
             else if (IsLinux)
             {
-                functionPtr = DynamicLinkingLinux.dlsym(libPtr, symbolName);
+                functionPointer = DynamicLinkingLinux.dlsym(libPtr, symbolName);
             }
             else
             {
                 throw new Exception("Unsupported platform");
             }
 
-            if (functionPtr == IntPtr.Zero)
+            if (functionPointer == IntPtr.Zero)
             {
-                throw new Exception($"Library symbol failed, symbol: {symbolName}", GetLastError());
+                return false;
             }
-
-            return Marshal.GetDelegateForFunctionPointer<TDelegate>(functionPtr);
+            return true;
         }
     }
 }

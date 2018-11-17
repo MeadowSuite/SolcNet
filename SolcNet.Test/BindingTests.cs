@@ -17,8 +17,6 @@ namespace SolcNet.Test
         public IEnumerable<object[]> GetData(MethodInfo methodInfo)
         {
             yield return new object[] { new InteropLibProvider<SolcLibDefaultProvider>() };
-            yield return new object[] { new InteropLibProvider<NativeLibraryLoader.SolcLibDynamicProvider>() };
-            yield return new object[] { new InteropLibProvider<AdvDL.SolcLibAdvDLProvider>() };
         }
 
         public string GetDisplayName(MethodInfo methodInfo, object[] data)
@@ -44,7 +42,7 @@ namespace SolcNet.Test
     [TestClass]
     public class BindingTests
     {
-        const string CONTRACT_SRC_DIR = "OpenZeppelin";
+        const string CONTRACT_SRC_DIR = "TestContracts";
 
         public BindingTests()
         {
@@ -67,7 +65,7 @@ namespace SolcNet.Test
         {
             var solcLib = new SolcLib(nativeSolcLib.InteropLib, CONTRACT_SRC_DIR);
             var version = solcLib.Version;
-            Assert.AreEqual(Version.Parse("0.4.25"), version);
+            Assert.AreEqual(Version.Parse("0.5.0"), version);
         }
 
         [DataTestMethod]
@@ -107,21 +105,21 @@ namespace SolcNet.Test
         public void CompileInMemorySources(IInteropLibProvider nativeSolcLib)
         {
             var contract1Source = @"
-                pragma solidity ^0.4.24;
+                pragma solidity ^0.5.0;
                 import ""./interfaces/IHelloWorld.sol"";
                 contract HelloWorld {
                     event HelloEvent(string _message, address _sender);
-                    function renderHelloWorld () public returns (string) {
+                    function renderHelloWorld () public returns (string memory) {
                         emit HelloEvent(""Hello world"", msg.sender);
                         return ""Hello world"";
                     }
                 }";
 
             var contract2Source = @"
-                pragma solidity ^0.4.24;
+                pragma solidity ^0.5.0;
                 contract IHelloWorld {
                     event HelloEvent(string _message, address _sender);
-                    function renderHelloWorld () public returns (string);
+                    function renderHelloWorld () public returns (string memory);
                 }";
 
             var solcLib = new SolcLib(nativeSolcLib.InteropLib);
@@ -139,8 +137,8 @@ namespace SolcNet.Test
         static void CompileSeveralContracts(SolcLib solcLib)
         {
             var srcs = new[] {
-                "contracts/crowdsale/validation/WhitelistedCrowdsale.sol",
-                "contracts/token/ERC20/StandardBurnableToken.sol"
+                "ExampleContract.sol",
+                "ChildContract.sol"
             };
 
             solcLib.Compile(srcs);

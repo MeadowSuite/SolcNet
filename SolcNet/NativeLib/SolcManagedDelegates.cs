@@ -15,16 +15,7 @@ namespace SolcNet.NativeLib
             ref string error);
 
     [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
-    public delegate string CompileStandardDelegate(string input, NativeReadFileCallbackDelegate readCallback);
-
-    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
-    public delegate string CompileJsonDelegate(string input, bool optimize);
-
-    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
-    delegate string CompileJsonMultiDelegate(string input, bool optimize);
-
-    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
-    delegate string CompileJsonCallbackDelegate(string input, bool optimize, NativeReadFileCallbackDelegate readCallback);
+    public delegate string CompileDelegate(string input, NativeReadFileCallbackDelegate readCallback);
 
     [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshalerNoCleanup))]
     delegate string LicenseDelegate();
