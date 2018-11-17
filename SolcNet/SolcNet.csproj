@@ -17,8 +17,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version Condition="'$(VersionSuffix)' != ''">1.1.$(VersionSuffix)</Version>
-    <Version Condition="'$(VersionSuffix)' == ''">1.1.0</Version>
+    <Version Condition="'$(VersionSuffix)' != ''">1.1.$(VersionSuffix)-beta</Version>
+    <Version Condition="'$(VersionSuffix)' == ''">1.1.0-beta</Version>
   </PropertyGroup>
 
   <ItemGroup>

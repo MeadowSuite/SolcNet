@@ -12,6 +12,7 @@ namespace SolcNet.Test
 {
 
     [TestClass]
+    [Ignore("Pending solc v0.5.0 support for OZ")]
     public class EthPMTests
     {
         const string CONTRACT_SRC_DIR = "EthPMContracts";

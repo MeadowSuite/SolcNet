@@ -8,6 +8,7 @@ using System.IO;
 namespace SolcNet.Test
 {
     [TestClass]
+    [Ignore("Pending solc v0.5.0 support for OZ")]
     public class CompileOpenZeppelin
     {
         [TestMethod]
